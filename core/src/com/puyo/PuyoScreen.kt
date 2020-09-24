@@ -117,43 +117,17 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     }
 
     private fun rotatePuyo(){
-        if(puyo.rotateCount == 1){
-            if(isColliding(puyo.first.x+1, puyo.first.y+1)){
-                return
-            }
-            clearPrevPos(puyo.first)
-            puyo.first.x += 1
-            puyo.first.y += 1
-            puyo.rotate()
-            updateMovingPos(puyo.first)
-        } else if(puyo.rotateCount == 2){
-            if(isColliding(puyo.first.x-1, puyo.first.y+1)){
-                return
-            }
-            clearPrevPos(puyo.first)
-            puyo.first.x -= 1
-            puyo.first.y += 1
-            puyo.rotate()
-            updateMovingPos(puyo.first)
-        } else if(puyo.rotateCount == 3) {
-            if(isColliding(puyo.first.x-1, puyo.first.y-1)){
-                return
-            }
-            clearPrevPos(puyo.first)
-            puyo.first.x -= 1
-            puyo.first.y -= 1
-            puyo.rotate()
-            updateMovingPos(puyo.first)
-        } else if(puyo.rotateCount == 4) {
-            if(isColliding(puyo.first.x+1, puyo.first.y-1)){
-                return
-            }
-            clearPrevPos(puyo.first)
-            puyo.first.x += 1
-            puyo.first.y -= 1
-            puyo.rotate()
-            updateMovingPos(puyo.first)
+        val x = if(puyo.rotateCount == 1 || puyo.rotateCount == 4) 1 else -1
+        val y = if(puyo.rotateCount == 1 || puyo.rotateCount == 2) 1 else -1
+
+        if(isColliding(puyo.first.x + x, puyo.first.y + y)){
+            return
         }
+        clearPrevPos(puyo.first)
+        puyo.first.x += x
+        puyo.first.y += y
+        puyo.rotate()
+        updateMovingPos(puyo.first)
     }
 
     private fun moveBlock(block: Block, direction: Int){
