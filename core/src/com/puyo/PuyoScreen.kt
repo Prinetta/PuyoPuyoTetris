@@ -37,10 +37,11 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
         game.batch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined;
 
-        if(currentTimeMillis() - lastInputTime > 50){
+        if(currentTimeMillis() - lastInputTime > 50 && !puyo.startedDrop()){
             when {
                 Gdx.input.isKeyPressed(Input.Keys.LEFT) -> movePuyo(-1)
                 Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> movePuyo(1)
+                Gdx.input.isKeyPressed(Input.Keys.E) -> rotatePuyo()
             }
             lastInputTime = currentTimeMillis();
         }
@@ -98,8 +99,8 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     }
 
     private fun dropPuyo(){
-        when (puyo.degrees) {
-            0, 180 -> { // vertical puyo
+        when (puyo.rotateCount) {
+            1, 3 -> { // vertical puyo
                 if(puyo.first.y < puyo.second.y){
                     dropBlock(puyo.second)
                 }
@@ -115,9 +116,43 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun rotatePuyo(deg: Int){
-        if(deg == 0){
-            
+    private fun rotatePuyo(){
+        if(puyo.rotateCount == 1){
+            if(isColliding(puyo.first.x+1, puyo.first.y+1)){
+                return
+            }
+            clearPrevPos(puyo.first)
+            puyo.first.x += 1
+            puyo.first.y += 1
+            puyo.rotate()
+            updateMovingPos(puyo.first)
+        } else if(puyo.rotateCount == 2){
+            if(isColliding(puyo.first.x-1, puyo.first.y+1)){
+                return
+            }
+            clearPrevPos(puyo.first)
+            puyo.first.x -= 1
+            puyo.first.y += 1
+            puyo.rotate()
+            updateMovingPos(puyo.first)
+        } else if(puyo.rotateCount == 3) {
+            if(isColliding(puyo.first.x-1, puyo.first.y-1)){
+                return
+            }
+            clearPrevPos(puyo.first)
+            puyo.first.x -= 1
+            puyo.first.y -= 1
+            puyo.rotate()
+            updateMovingPos(puyo.first)
+        } else if(puyo.rotateCount == 4) {
+            if(isColliding(puyo.first.x+1, puyo.first.y-1)){
+                return
+            }
+            clearPrevPos(puyo.first)
+            puyo.first.x += 1
+            puyo.first.y -= 1
+            puyo.rotate()
+            updateMovingPos(puyo.first)
         }
     }
 
@@ -131,13 +166,13 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
         if(isColliding(puyo.first.x+direction, puyo.first.y) || isColliding(puyo.second.x+direction, puyo.second.y)){
             return
         }
-        when (puyo.degrees) {
-            90, 270 -> { // horizontal puyo
-                if(puyo.first.x < puyo.second.x){
+        when (puyo.rotateCount) {
+            2, 4 -> { // horizontal puyo
+                if (puyo.first.x*direction < puyo.second.x*direction) {
                     moveBlock(puyo.second, direction)
                 }
                 moveBlock(puyo.first, direction)
-                if(puyo.first.x >= puyo.second.x){
+                if (puyo.first.x*direction >= puyo.second.x*direction) {
                     moveBlock(puyo.second, direction)
                 }
             }
