@@ -1,9 +1,13 @@
 package com.puyo
 
-class Puyo(val first: Block, val second: Block, val puyoColor: PuyoColors){
+class Puyo(val first: Block, val second: Block){
     var rotateCount = 0
     var dropped = false
-    val color = puyoColor.color
+    val puyoColor = first.color
+
+    val minSpeed = 400
+    val maxSpeed = 50
+    var speed = minSpeed
 
     fun addRotationCount(){
         rotateCount += if (rotateCount >= 4) -3 else 1 // loop after 4

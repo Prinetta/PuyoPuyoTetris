@@ -42,15 +42,19 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             when {
                 Gdx.input.isKeyPressed(Input.Keys.LEFT) -> movePuyo(-1)
                 Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> movePuyo(1)
-                Gdx.input.isKeyPressed(Input.Keys.DOWN) -> movePuyo(1)
                 Gdx.input.isKeyPressed(Input.Keys.E) -> rotatePuyo(1)
                 Gdx.input.isKeyPressed(Input.Keys.Q) -> rotatePuyo(-1)
             }
             lastInputTime = currentTimeMillis();
+        } else if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+            puyo.speed = puyo.maxSpeed
+        } else {
+            puyo.speed = puyo.minSpeed
         }
 
-        if(currentTimeMillis() - lastDropTime > 300){
+        if(currentTimeMillis() - lastDropTime > puyo.speed){
             dropPuyo()
+            countNeigbours()
             lastDropTime = currentTimeMillis();
         }
 
@@ -60,32 +64,37 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
         drawBlocks()
     }
 
+    private fun countNeigbours(){
+        val q = arrayListOf<Int>()
+    }
+
     private fun clearPrevPos(block: Block){
-        grid.array[block.x][block.y] = 0
+        grid.array[block.x][block.y] = null //0
     }
 
     private fun updateMovingPos(block: Block){
-        grid.array[block.x][block.y] = 9
+        grid.array[block.x][block.y] = block//9
     }
 
-    private fun setToStandingState(block: Block, color: Int){ // number is index of PuyoColors
-        grid.array[block.x][block.y] = color+1
+    private fun setToStandingState(block: Block){ // number is index of PuyoColors
+        grid.array[block.x][block.y]?.standing = true
     }
 
     private fun updatePuyoState(){
-        if (!puyo.first.falling) setToStandingState(puyo.first, puyo.puyoColor.ordinal)
-        if (!puyo.second.falling) setToStandingState(puyo.second, puyo.puyoColor.ordinal)
+        if (!puyo.first.falling) setToStandingState(puyo.first)
+        if (!puyo.second.falling) setToStandingState(puyo.second)
         if(puyo.bothDropped()){
             spawnPuyo()
         }
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{
-        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] != 0 && grid.array[x][y] != 9// 1 means the puyo is set, 9 is in motion
+        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] != null && grid.array[x][y]?.standing!!
     }
 
     private fun spawnPuyo(){
-        puyo = Puyo(Block(grid.width/2, 0), Block(grid.width/2, 1), puyoColors[Random.nextInt(1, puyoColors.size)])
+        val color = puyoColors[Random.nextInt(0, puyoColors.size)]
+        puyo = Puyo(Block(grid.width/2, 0, color), Block(grid.width/2, 1, color))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
     }
@@ -97,7 +106,7 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             block.y++
             updateMovingPos(block)
         } else {
-            setToStandingState(block, puyo.puyoColor.ordinal)
+            setToStandingState(block)
         }
     }
 
@@ -160,13 +169,14 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     private fun drawBlocks(){
         for(i in 0 until grid.width){
             for(j in 0 until grid.length){
-                if(grid.array[i][j] == 0){
+                if(grid.array[i][j] == null){
                     continue
                 }
-                val color = if(grid.array[i][j] == 9) puyo.puyoColor else puyoColors[grid.array[i][j]-1]
+                val color = grid.array[i][j]!!.color
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
-                shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                shapeRenderer.circle(GRID_START_X+i*CELL_SIZE+CELL_SIZE/2, GRID_START_Y-j*CELL_SIZE+CELL_SIZE/2, CELL_SIZE/2);
+                //shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 shapeRenderer.end()
             }
         }
