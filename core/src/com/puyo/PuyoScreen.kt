@@ -3,16 +3,17 @@ package com.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import java.lang.System.currentTimeMillis
+import kotlin.random.Random
 
 class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     private val grid = Grid(6, 12)
     private var lastDropTime = currentTimeMillis()
     private var lastInputTime = currentTimeMillis()
+    private val puyoColors = PuyoColors.values()
 
     val SCREEN_WIDTH = 700f
     val SCREEN_HEIGHT = 800f
@@ -41,13 +42,14 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             when {
                 Gdx.input.isKeyPressed(Input.Keys.LEFT) -> movePuyo(-1)
                 Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> movePuyo(1)
+                Gdx.input.isKeyPressed(Input.Keys.DOWN) -> movePuyo(1)
                 Gdx.input.isKeyPressed(Input.Keys.E) -> rotatePuyo(1)
                 Gdx.input.isKeyPressed(Input.Keys.Q) -> rotatePuyo(-1)
             }
             lastInputTime = currentTimeMillis();
         }
 
-        if(currentTimeMillis() - lastDropTime > 700){
+        if(currentTimeMillis() - lastDropTime > 300){
             dropPuyo()
             lastDropTime = currentTimeMillis();
         }
@@ -66,24 +68,24 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
         grid.array[block.x][block.y] = 9
     }
 
-    private fun setToStandingState(block: Block){
-        grid.array[block.x][block.y] = 1
+    private fun setToStandingState(block: Block, color: Int){ // number is index of PuyoColors
+        grid.array[block.x][block.y] = color+1
     }
 
     private fun updatePuyoState(){
-        if (!puyo.first.falling) setToStandingState(puyo.first)
-        if (!puyo.second.falling) setToStandingState(puyo.second)
+        if (!puyo.first.falling) setToStandingState(puyo.first, puyo.puyoColor.ordinal)
+        if (!puyo.second.falling) setToStandingState(puyo.second, puyo.puyoColor.ordinal)
         if(puyo.bothDropped()){
             spawnPuyo()
         }
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{
-        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] == 1 // 1 means the puyo is set, 9 is in motion
+        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] != 0 && grid.array[x][y] != 9// 1 means the puyo is set, 9 is in motion
     }
 
     private fun spawnPuyo(){
-        puyo = Puyo(Block(grid.width/2, 0), Block(grid.width/2, 1), Color.BLUE)
+        puyo = Puyo(Block(grid.width/2, 0), Block(grid.width/2, 1), puyoColors[Random.nextInt(1, puyoColors.size)])
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
     }
@@ -95,7 +97,7 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             block.y++
             updateMovingPos(block)
         } else {
-            setToStandingState(block)
+            setToStandingState(block, puyo.puyoColor.ordinal)
         }
     }
 
@@ -158,17 +160,14 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     private fun drawBlocks(){
         for(i in 0 until grid.width){
             for(j in 0 until grid.length){
-                if(grid.array[i][j] == 1){
-                    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-                    shapeRenderer.setColor(0.8f, 0.4f, 0.5f, 1f)
-                    shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
-                    shapeRenderer.end()
-                } else if (grid.array[i][j] == 9){
-                    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-                    shapeRenderer.setColor(puyo.color.r, puyo.color.g, puyo.color.b, 1f)
-                    shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
-                    shapeRenderer.end()
+                if(grid.array[i][j] == 0){
+                    continue
                 }
+                val color = if(grid.array[i][j] == 9) puyo.puyoColor else puyoColors[grid.array[i][j]-1]
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+                shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
+                shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                shapeRenderer.end()
             }
         }
     }

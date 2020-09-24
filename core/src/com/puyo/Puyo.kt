@@ -1,10 +1,9 @@
 package com.puyo
 
-import com.badlogic.gdx.graphics.Color
-
-class Puyo(val first: Block, val second: Block, val color: Color){
+class Puyo(val first: Block, val second: Block, val puyoColor: PuyoColors){
     var rotateCount = 0
     var dropped = false
+    val color = puyoColor.color
 
     fun addRotationCount(){
         rotateCount += if (rotateCount >= 4) -3 else 1 // loop after 4
