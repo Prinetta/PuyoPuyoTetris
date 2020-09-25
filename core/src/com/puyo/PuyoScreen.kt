@@ -54,49 +54,112 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
 
         if(currentTimeMillis() - lastDropTime > puyo.speed){
             dropPuyo()
-            countNeigbours()
             lastDropTime = currentTimeMillis();
         }
 
         updatePuyoState()
-
         drawBackground()
         drawBlocks()
     }
 
-    private fun countNeigbours(){
-        val q = arrayListOf<Int>()
+    private fun unmark(){
+        for(i in 0 until grid.width) {
+            for (j in 0 until grid.length) {
+                grid.array[i][j]?.marked = false
+            }
+        }
+    }
+
+    private fun removeBlocks(i: Int, j: Int, color: PuyoColors){
+        if(i >= grid.width || j >= grid.length || i < 0 || j < 0 ||
+                grid.array[i][j] == null || grid.array[i][j]?.color != color){
+            return
+        }
+        grid.array[i][j] = null
+        removeBlocks(i, j-1, color)
+        removeBlocks(i, j+1, color)
+        removeBlocks(i+1, j, color)
+        removeBlocks(i-1, j, color)
+    }
+
+    private fun hasChain(): Boolean{
+        for(i in 0 until grid.width) {
+            for (j in 0 until grid.length) {
+                val neighbours = countNeighbours(i, j, grid.array[i][j]?.color)
+                if(neighbours > 3){
+                    removeBlocks(i, j, grid.array[i][j]?.color!!)
+                    unmark()
+                    dropAllBlocks()
+                    return true
+                }
+            }
+        }
+        unmark()
+        dropAllBlocks()
+        return false
+    }
+
+    private fun countNeighbours(i: Int, j: Int, color: PuyoColors?) : Int{
+        if(i >= grid.width || j >= grid.length || i < 0 || j < 0 ||
+                grid.array[i][j] == null || grid.array[i][j]?.color != color || grid.array[i][j]?.marked!!){
+            return 0
+        } else {
+            grid.array[i][j]?.marked = true
+            return 1 + countNeighbours(i, j-1, color) + countNeighbours(i, j+1, color) + countNeighbours(i+1, j, color) + countNeighbours(i-1, j, color)
+        }
     }
 
     private fun clearPrevPos(block: Block){
-        grid.array[block.x][block.y] = null //0
+        grid.array[block.x][block.y] = null
     }
 
     private fun updateMovingPos(block: Block){
-        grid.array[block.x][block.y] = block//9
-    }
-
-    private fun setToStandingState(block: Block){ // number is index of PuyoColors
-        grid.array[block.x][block.y]?.standing = true
+        grid.array[block.x][block.y] = block
     }
 
     private fun updatePuyoState(){
-        if (!puyo.first.falling) setToStandingState(puyo.first)
-        if (!puyo.second.falling) setToStandingState(puyo.second)
         if(puyo.bothDropped()){
+            printGrid()
+            while(hasChain()) continue
+            dropAllBlocks()
             spawnPuyo()
         }
     }
 
+    private fun printGrid(){
+        for (i in 0 until grid.width) {
+            for(j in 0 until grid.length) {
+                if (grid.array[i][j] == null) {
+                    print("-")
+                } else {
+                    print("o")
+                }
+            }
+            println()
+        }
+        println()
+
+
+    }
+
     private fun isColliding(x: Int, y: Int) : Boolean{
-        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] != null && grid.array[x][y]?.standing!!
+        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] != null && !grid.array[x][y]?.falling!!
     }
 
     private fun spawnPuyo(){
-        val color = puyoColors[Random.nextInt(0, puyoColors.size)]
-        puyo = Puyo(Block(grid.width/2, 0, color), Block(grid.width/2, 1, color))
+        puyo = Puyo(Block(grid.width/2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width/2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
+    }
+
+    private fun dropAllBlocks(){
+        for(i in 0 until grid.width) {
+            for (j in grid.length-1 downTo 0) {
+                if(grid.array[i][j] != null && grid.array[i][j] != puyo.first && grid.array[i][j] != puyo.second){
+                    dropBlock(grid.array[i][j]!!)
+                }
+            }
+        }
     }
 
     private fun dropBlock(block: Block){
@@ -105,8 +168,6 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             clearPrevPos(block)
             block.y++
             updateMovingPos(block)
-        } else {
-            setToStandingState(block)
         }
     }
 
