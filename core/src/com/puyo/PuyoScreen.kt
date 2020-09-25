@@ -93,7 +93,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 }
             }
         }
-        dropAllBlocks() // but also this.....
+        dropAllBlocks()
         return false
     }
 
@@ -120,7 +120,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         dropAllBlocks()
         while(hasChain()) continue
         if(puyo.bothDropped()){
-            printGrid()
+            //printGrid()
             spawnPuyo()
         }
     }
@@ -147,6 +147,30 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         puyo = Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
+    }
+
+    private fun dropAllBlocks(delay: Int){
+        for(j in 0 until grid.width) {
+            val fallingBlocks = mutableListOf<Block>()
+            for (i in grid.length-1 downTo 0) {
+                if(grid.array[j][i] != null && grid.array[j][i] != puyo.first && grid.array[j][i] != puyo.second){
+                    if(!isColliding(grid.array[j][i]!!.x, grid.array[j][i]!!.y + 1)){
+                        fallingBlocks.add(grid.array[j][i]!!)
+                    }
+                }
+            }
+            if(fallingBlocks.isNotEmpty()) Thread {
+                val time = currentTimeMillis()
+                while (currentTimeMillis() < time + 100) continue
+                Gdx.app.postRunnable {
+                    println("sup")
+                    for(block in fallingBlocks){
+                        dropBlock(block)
+                    }
+                    while(hasChain()) continue
+                }
+            }.start()
+        }
     }
 
     private fun dropAllBlocks(){
@@ -233,11 +257,21 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 val color = grid.array[i][j]!!.color
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
-                shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
+
+                val neighbours = countNeighbours(i, j, grid.array[i][j]?.color)
+                if(neighbours > 1){
+                    val puyos = grid.array.flatten().filterNotNull().filter { it.marked }
+                    for(block in puyos){
+                        shapeRenderer.rect(GRID_START_X+block.x*CELL_SIZE, GRID_START_Y-block.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                    }
+                } else {
+                    shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
+                }
                 //shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 shapeRenderer.end()
             }
         }
+        unmark()
     }
 
     private fun drawTitle(){
