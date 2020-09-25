@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
 
-class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
+class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private val grid = Grid(6, 12)
     private var lastDropTime = currentTimeMillis()
     private var lastInputTime = currentTimeMillis()
@@ -32,7 +32,7 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     }
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(255f, 189f/255f, 205f/255f, 1f)
+        Gdx.gl.glClearColor(255f, 189f / 255f, 205f / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         camera.update()
         game.batch.projectionMatrix = camera.combined
@@ -56,7 +56,6 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             dropPuyo()
             lastDropTime = currentTimeMillis();
         }
-
         updatePuyoState()
         drawBackground()
         drawBlocks()
@@ -76,36 +75,36 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             return
         }
         grid.array[i][j] = null
-        removeBlocks(i, j-1, color)
-        removeBlocks(i, j+1, color)
-        removeBlocks(i+1, j, color)
-        removeBlocks(i-1, j, color)
+        removeBlocks(i, j - 1, color)
+        removeBlocks(i, j + 1, color)
+        removeBlocks(i + 1, j, color)
+        removeBlocks(i - 1, j, color)
     }
 
     private fun hasChain(): Boolean{
         for(i in 0 until grid.width) {
             for (j in 0 until grid.length) {
                 val neighbours = countNeighbours(i, j, grid.array[i][j]?.color)
+                unmark()
                 if(neighbours > 3){
                     removeBlocks(i, j, grid.array[i][j]?.color!!)
-                    unmark()
-                    dropAllBlocks()
+                    dropAllBlocks() // this has to be slower!!
                     return true
                 }
             }
         }
-        unmark()
-        dropAllBlocks()
+        dropAllBlocks() // but also this.....
         return false
     }
 
     private fun countNeighbours(i: Int, j: Int, color: PuyoColors?) : Int{
         if(i >= grid.width || j >= grid.length || i < 0 || j < 0 ||
-                grid.array[i][j] == null || grid.array[i][j]?.color != color || grid.array[i][j]?.marked!!){
+                grid.array[i][j] == null || grid.array[i][j]?.color != color || grid.array[i][j]?.marked!! ||
+                grid.array[i][j] == puyo.first || grid.array[i][j] == puyo.second){
             return 0
         } else {
             grid.array[i][j]?.marked = true
-            return 1 + countNeighbours(i, j-1, color) + countNeighbours(i, j+1, color) + countNeighbours(i+1, j, color) + countNeighbours(i-1, j, color)
+            return 1 + countNeighbours(i, j - 1, color) + countNeighbours(i, j + 1, color) + countNeighbours(i + 1, j, color) + countNeighbours(i - 1, j, color)
         }
     }
 
@@ -118,18 +117,18 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     }
 
     private fun updatePuyoState(){
+        dropAllBlocks()
+        while(hasChain()) continue
         if(puyo.bothDropped()){
             printGrid()
-            while(hasChain()) continue
-            dropAllBlocks()
             spawnPuyo()
         }
     }
 
     private fun printGrid(){
-        for (i in 0 until grid.width) {
-            for(j in 0 until grid.length) {
-                if (grid.array[i][j] == null) {
+        for (i in grid.length-1 downTo 0) {
+            for(j in 0 until grid.width) {
+                if (grid.array[j][i] == null) {
                     print("-")
                 } else {
                     print("o")
@@ -138,8 +137,6 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
             println()
         }
         println()
-
-
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{
@@ -147,23 +144,23 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     }
 
     private fun spawnPuyo(){
-        puyo = Puyo(Block(grid.width/2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width/2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
+        puyo = Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
     }
 
     private fun dropAllBlocks(){
-        for(i in 0 until grid.width) {
-            for (j in grid.length-1 downTo 0) {
-                if(grid.array[i][j] != null && grid.array[i][j] != puyo.first && grid.array[i][j] != puyo.second){
-                    dropBlock(grid.array[i][j]!!)
+        for (i in grid.length-1 downTo 0) {
+            for(j in 0 until grid.width) {
+                if(grid.array[j][i] != null && grid.array[j][i] != puyo.first && grid.array[j][i] != puyo.second){
+                    dropBlock(grid.array[j][i]!!)
                 }
             }
         }
     }
 
     private fun dropBlock(block: Block){
-        block.falling = !isColliding(block.x, block.y+1)
+        block.falling = !isColliding(block.x, block.y + 1)
         if(block.falling){
             clearPrevPos(block)
             block.y++
@@ -215,7 +212,7 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
     }
 
     private fun movePuyo(direction: Int){
-        if(isColliding(puyo.first.x+direction, puyo.first.y) || isColliding(puyo.second.x+direction, puyo.second.y)){
+        if(isColliding(puyo.first.x + direction, puyo.first.y) || isColliding(puyo.second.x + direction, puyo.second.y)){
             return
         }
         if (puyo.first.x*direction < puyo.second.x*direction) {
@@ -236,7 +233,7 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
                 val color = grid.array[i][j]!!.color
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
-                shapeRenderer.circle(GRID_START_X+i*CELL_SIZE+CELL_SIZE/2, GRID_START_Y-j*CELL_SIZE+CELL_SIZE/2, CELL_SIZE/2);
+                shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
                 //shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 shapeRenderer.end()
             }
@@ -245,14 +242,14 @@ class PuyoScreen(val game : PuyoPuyoTetris) : Screen {
 
     private fun drawTitle(){
         game.batch.begin()
-        game.font.draw(game.batch, "Puyo Puyo Tetris", SCREEN_HEIGHT-100, SCREEN_WIDTH/2)
+        game.font.draw(game.batch, "Puyo Puyo Tetris", SCREEN_HEIGHT - 100, SCREEN_WIDTH / 2)
         game.batch.end()
     }
 
     private fun drawBackground(){
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.setColor(0.2f, 0.2f, 0.2f, 1f)
-        shapeRenderer.rect(GRID_START_X, SCREEN_HEIGHT*0.05f, grid.width*CELL_SIZE, grid.length*CELL_SIZE)
+        shapeRenderer.rect(GRID_START_X, SCREEN_HEIGHT * 0.05f, grid.width * CELL_SIZE, grid.length * CELL_SIZE)
         shapeRenderer.end()
 
     }
