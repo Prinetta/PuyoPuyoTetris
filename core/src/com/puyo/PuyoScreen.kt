@@ -5,26 +5,32 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
 
 class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
-    private val grid = Grid(6, 12)
+    private val grid = Grid(6, 13)
     private var lastDropTime = currentTimeMillis()
+    private var lastComboTime = currentTimeMillis()
     private var lastInputTime = currentTimeMillis()
     private val puyoColors = PuyoColors.values()
-    private var puyoPairs = mutableListOf<List<Block>>()
-    private var allowSpawn = true
+    private var puyoChain = mutableListOf<List<Block>>()
+    private var chainIndex = -1
 
     val SCREEN_WIDTH = 700f
     val SCREEN_HEIGHT = 800f
     val CELL_SIZE = 60f
-    val GRID_START_X = SCREEN_WIDTH/4
-    val GRID_START_Y = SCREEN_HEIGHT-SCREEN_HEIGHT*0.05f-CELL_SIZE
+    val GRID_START_X = SCREEN_WIDTH/4 // Middle of Screen
+    val GRID_START_Y = SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f + grid.length*CELL_SIZE
 
     var camera = OrthographicCamera()
     var shapeRenderer = ShapeRenderer()
+    val sprites = hashMapOf(PuyoColors.BLUE to Texture(Gdx.files.internal("blue.png")),
+                            PuyoColors.YELLOW to Texture(Gdx.files.internal("yellow.png")),
+                            PuyoColors.PURPLE to Texture(Gdx.files.internal("purple.png")),
+                            PuyoColors.PINK to Texture(Gdx.files.internal("pink.png")))
 
     private lateinit var puyo: Puyo
 
@@ -54,13 +60,37 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             puyo.speed = puyo.minSpeed
         }
 
-        if(currentTimeMillis() - lastDropTime > puyo.speed){
-            dropPuyo()
-            lastDropTime = currentTimeMillis();
+        if(chainIndex == -1){
+            findBigPuyoChain()
+            if(chainIndex == -1 && currentTimeMillis() - lastDropTime > puyo.speed){
+                dropPuyo()
+                updatePuyoState()
+                lastDropTime = currentTimeMillis();
+            }
+        } else {
+            if(currentTimeMillis() - lastComboTime > puyo.comboSpeed){
+                removePuyoChain()
+                lastComboTime = currentTimeMillis();
+            }
         }
         drawBackground()
-        updatePuyoState()
-        //drawBlocks()
+        drawBlocks()
+    }
+
+    private fun removePuyoChain(){
+        for(block in puyoChain[chainIndex]) {
+            grid.array[block.x][block.y] = null
+        }
+        for(block in puyoChain[chainIndex]){
+            val blockAbove: Block? = if(block.y > 0) grid.array[block.x][block.y - 1] else null
+            if(blockAbove != null && !puyoChain[chainIndex].contains(blockAbove)){
+                do {
+                    dropBlock(blockAbove)
+                } while(blockAbove.falling)
+            }
+        }
+        puyoChain.removeAt(chainIndex)
+        chainIndex = -1
     }
 
     private fun unmark(){
@@ -71,79 +101,50 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun removeBlocks(i: Int, j: Int, color: PuyoColors){
-        if(i >= grid.width || j >= grid.length || i < 0 || j < 0 ||
-                grid.array[i][j] == null || grid.array[i][j]?.color != color){
-            return
-        }
-        grid.array[i][j] = null
-        removeBlocks(i, j - 1, color)
-        removeBlocks(i, j + 1, color)
-        removeBlocks(i + 1, j, color)
-        removeBlocks(i - 1, j, color)
-    }
-
-    private fun hasChain(): Boolean{
-        drawBlocks()
-        puyoPairs = mutableListOf<List<Block>>()
+    private fun findBigPuyoChain(){
+        puyoChain = mutableListOf()
         for(i in 0 until grid.width) {
             for (j in 0 until grid.length) {
-                if(!puyoPairs.flatten().contains(grid.array[i][j])){
-                    val index = puyoPairs.size
-                    if(grid.array[i][j] == null || !findPairs(i, j, grid.array[i][j]?.color, index)){
+                if(!puyoChain.flatten().contains(grid.array[i][j])){
+                    val index = puyoChain.size
+                    if(grid.array[i][j] == null || !findChain(i, j, grid.array[i][j]?.color, index)){
                         continue
                     }
-                    if(puyoPairs[index].size > 3){
-                        val puyos = grid.array.flatten().filterNotNull().filter { puyoPairs[index].contains(it) }
-                        val time = currentTimeMillis()
-                        for(block in puyos) {
-                            grid.array[block.x][block.y] = null
-                        }
-                        drawBlocks()
-                        println("waiting...")
-                        while (currentTimeMillis() < time + 500) {
-                            continue
-                        }
-                        println("done waiting")
-                        for(block in puyos){
-                            val blockAbove: Block? = if(block.y > 0) grid.array[block.x][block.y - 1] else null
-                            if(blockAbove != null && !puyoPairs[index].contains(blockAbove)){
-                               do {
-                                   dropBlock(blockAbove)
-                                   drawBlocks()
-                               } while(blockAbove.falling)
-                            }
-                        }
-                        drawBlocks()
-                        puyoPairs.removeAt(index)
-                        allowSpawn = true;
-                        return true
+                    if(puyoChain[index].size > 3){
+                        chainIndex = index
+                        return
                     }
                 }
             }
         }
+        chainIndex = -1
         dropAllBlocks()
-        unmark()
-        return false
     }
 
-    private fun findPairs(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{
-        if(i >= grid.width || j >= grid.length || i < 0 || j < 0 ||
-                grid.array[i][j] == null || grid.array[i][j]?.color != color || grid.array[i][j]?.marked!! ||
-                grid.array[i][j] == puyo.first || grid.array[i][j] == puyo.second){
+    private fun isOutOfBounds(i: Int, j: Int) : Boolean {
+        return i >= grid.width || j >= grid.length || i < 0 || j < 0
+    }
+
+    private fun isMainPuyo(i: Int, j: Int) : Boolean {
+        return grid.array[i][j] == puyo.first || grid.array[i][j] == puyo.second
+    }
+
+    private fun findChain(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{
+        if(isOutOfBounds(i, j) || grid.array[i][j] == null || grid.array[i][j]?.color != color ||
+           grid.array[i][j]?.marked!! || isMainPuyo(i, j)){
             return false;
         } else {
-            if(index < puyoPairs.size){
-                puyoPairs[index] = puyoPairs[index] + grid.array[i][j]!!
+            if(index < puyoChain.size){
+                puyoChain[index] = puyoChain[index] + grid.array[i][j]!!
             } else {
-                puyoPairs.add(listOf(grid.array[i][j]!!))
+                puyoChain.add(listOf(grid.array[i][j]!!))
             }
             grid.array[i][j]?.marked = true
 
-            findPairs(i, j - 1, color, index)
-            findPairs(i, j + 1, color, index)
-            findPairs(i + 1, j, color, index)
-            findPairs(i - 1, j, color, index)
+            findChain(i, j - 1, color, index)
+            findChain(i, j + 1, color, index)
+            findChain(i + 1, j, color, index)
+            findChain(i - 1, j, color, index)
             return true;
         }
     }
@@ -158,9 +159,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun updatePuyoState(){
         dropAllBlocks()
-        while(hasChain()) continue
         if(puyo.bothDropped()){
-            //printGrid()
             spawnPuyo()
         }
     }
@@ -184,7 +183,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun spawnPuyo(){
-        if(!allowSpawn){
+        if(chainIndex >= 0){
             return
         }
         puyo = Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
@@ -210,7 +209,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                     for(block in fallingBlocks){
                         dropBlock(block)
                     }
-                    while(hasChain()) continue
                 }
             }.start()
         }
@@ -297,12 +295,15 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 if(grid.array[i][j] == null){
                     continue
                 }
-                val color = grid.array[i][j]!!.color
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+                //val color = grid.array[i][j]!!.color
+                game.batch.begin()
+                game.batch.end()
+                /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
-                shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
-                //shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
-                shapeRenderer.end()
+                if(j > 0){
+                    shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE - CELL_SIZE / 2, CELL_SIZE / 2);
+                }
+                shapeRenderer.end()*/
             }
         }
         unmark()
@@ -317,7 +318,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawBackground(){
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.setColor(0.2f, 0.2f, 0.2f, 1f)
-        shapeRenderer.rect(GRID_START_X, SCREEN_HEIGHT * 0.05f, grid.width * CELL_SIZE, grid.length * CELL_SIZE)
+        shapeRenderer.rect(GRID_START_X, SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f, grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
         shapeRenderer.end()
 
     }

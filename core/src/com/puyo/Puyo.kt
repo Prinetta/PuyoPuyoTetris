@@ -8,6 +8,7 @@ class Puyo(val first: Block, val second: Block){
     val minSpeed = 400
     val maxSpeed = 50
     var speed = minSpeed
+    val comboSpeed = 500
 
     fun addRotationCount(){
         rotateCount += if (rotateCount >= 4) -3 else 1 // loop after 4
