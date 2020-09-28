@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
@@ -27,10 +28,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     var camera = OrthographicCamera()
     var shapeRenderer = ShapeRenderer()
-    val sprites = hashMapOf(PuyoColors.BLUE to Texture(Gdx.files.internal("blue.png")),
-                            PuyoColors.YELLOW to Texture(Gdx.files.internal("yellow.png")),
-                            PuyoColors.PURPLE to Texture(Gdx.files.internal("purple.png")),
-                            PuyoColors.PINK to Texture(Gdx.files.internal("pink.png")))
 
     private lateinit var puyo: Puyo
 
@@ -75,6 +72,29 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         }
         drawBackground()
         drawBlocks()
+        connectPuyos()
+    }
+
+    private fun connectPuyos(){
+        for (chain in puyoChain){
+            if(chain.size <= 1){
+                continue
+            }
+            for(block in chain){
+                if(!isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])){
+                    // draw up sprite
+                }
+                if(!isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])){
+                    // draw left sprite
+                }
+                if(!isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])){
+                    // draw right sprite
+                }
+                if(!isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])){
+                    // draw down sprite
+                }
+            }
+        }
     }
 
     private fun removePuyoChain(){
@@ -273,7 +293,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                     continue
                 }
                 game.batch.begin()
-                game.batch.draw(sprites.get(grid.array[i][j]!!.color),
+                game.batch.draw(grid.array[i][j]!!.sprite.main,
                         GRID_START_X + i * CELL_SIZE,
                         GRID_START_Y - j * CELL_SIZE,
                         CELL_SIZE, CELL_SIZE)
