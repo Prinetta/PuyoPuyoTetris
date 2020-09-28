@@ -6,5 +6,6 @@ import com.badlogic.gdx.graphics.Texture
 class Block(var x: Int, var y: Int, val color: PuyoColors){
     var falling = true
     var marked = false
-    val sprite = PuyoSprites.valueOf(color.toString()).sprite
+    val sprites = PuyoSprites.valueOf(color.toString()).sprite
+    var currentSprite = sprites.main
 }

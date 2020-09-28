@@ -70,9 +70,9 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 lastComboTime = currentTimeMillis();
             }
         }
+        connectPuyos()
         drawBackground()
         drawBlocks()
-        connectPuyos()
     }
 
     private fun connectPuyos(){
@@ -80,18 +80,58 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             if(chain.size <= 1){
                 continue
             }
-            for(block in chain){
-                if(!isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])){
-                    // draw up sprite
-                }
-                if(!isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])){
-                    // draw left sprite
-                }
-                if(!isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])){
-                    // draw right sprite
-                }
-                if(!isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])){
-                    // draw down sprite
+            for(block in chain){ // 17 sprites means 17 conditions :(
+                val isRightOpen = !isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])
+                val isLeftOpen = !isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])
+                val isUpOpen = !isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])
+                val isDownOpen = !isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])
+
+                if(isUpOpen){
+                    if(isRightOpen){
+                        if(isDownOpen){
+                            if(isLeftOpen){
+                                grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.all
+                            } else {
+                                grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.urd
+                            }
+                        } else if(isLeftOpen){
+                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.url
+                        } else {
+                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.ur
+                        }
+                    } else if(isDownOpen){
+                        if(isLeftOpen){
+                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.udl
+                        } else {
+                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.vertical
+                        }
+                    } else if(isLeftOpen){
+                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.ul
+                    } else {
+                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.up
+                    }
+                } else if(isRightOpen){
+                    if(isDownOpen){
+                        if(isLeftOpen){
+                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.rdl
+                        } else {
+                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.rd
+                        }
+                    } else if(isLeftOpen){
+                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.horizontal
+                    } else {
+                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.right
+                    }
+                } else if(isDownOpen){
+                    if(isLeftOpen){
+                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.dl
+                    } else {
+                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.down
+                    }
+                } else if(isLeftOpen){
+                    grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.left
+                } else {
+                    grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.main
                 }
             }
         }
@@ -293,7 +333,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                     continue
                 }
                 game.batch.begin()
-                game.batch.draw(grid.array[i][j]!!.sprite.main,
+                game.batch.draw(grid.array[i][j]!!.currentSprite,
                         GRID_START_X + i * CELL_SIZE,
                         GRID_START_Y - j * CELL_SIZE,
                         CELL_SIZE, CELL_SIZE)
