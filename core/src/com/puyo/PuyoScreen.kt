@@ -23,7 +23,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     val SCREEN_HEIGHT = 800f
     val CELL_SIZE = 60f
     val GRID_START_X = SCREEN_WIDTH/4 // Middle of Screen
-    val GRID_START_Y = SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f + grid.length*CELL_SIZE
+    val GRID_START_Y = SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f + grid.length*CELL_SIZE-CELL_SIZE
 
     var camera = OrthographicCamera()
     var shapeRenderer = ShapeRenderer()
@@ -191,29 +191,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         updateMovingPos(puyo.second)
     }
 
-    private fun dropAllBlocks(delay: Int){
-        for(j in 0 until grid.width) {
-            val fallingBlocks = mutableListOf<Block>()
-            for (i in grid.length-1 downTo 0) {
-                if(grid.array[j][i] != null && grid.array[j][i] != puyo.first && grid.array[j][i] != puyo.second){
-                    if(!isColliding(grid.array[j][i]!!.x, grid.array[j][i]!!.y + 1)){
-                        fallingBlocks.add(grid.array[j][i]!!)
-                    }
-                }
-            }
-            if(fallingBlocks.isNotEmpty()) Thread {
-                val time = currentTimeMillis()
-                while (currentTimeMillis() < time + 100) continue
-                Gdx.app.postRunnable {
-                    println("sup")
-                    for(block in fallingBlocks){
-                        dropBlock(block)
-                    }
-                }
-            }.start()
-        }
-    }
-
     private fun dropAllBlocks(){
         for (i in grid.length-1 downTo 0) {
             for(j in 0 until grid.width) {
@@ -292,18 +269,15 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawBlocks(){
         for(i in 0 until grid.width){
             for(j in 0 until grid.length){
-                if(grid.array[i][j] == null){
+                if(grid.array[i][j] == null || j == 0){
                     continue
                 }
-                //val color = grid.array[i][j]!!.color
                 game.batch.begin()
+                game.batch.draw(sprites.get(grid.array[i][j]!!.color),
+                        GRID_START_X + i * CELL_SIZE,
+                        GRID_START_Y - j * CELL_SIZE,
+                        CELL_SIZE, CELL_SIZE)
                 game.batch.end()
-                /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-                shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
-                if(j > 0){
-                    shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE - CELL_SIZE / 2, CELL_SIZE / 2);
-                }
-                shapeRenderer.end()*/
             }
         }
         unmark()
