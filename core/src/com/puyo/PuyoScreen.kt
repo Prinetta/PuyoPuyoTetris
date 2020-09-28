@@ -14,6 +14,8 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private var lastDropTime = currentTimeMillis()
     private var lastInputTime = currentTimeMillis()
     private val puyoColors = PuyoColors.values()
+    private var puyoPairs = mutableListOf<List<Block>>()
+    private var allowSpawn = true
 
     val SCREEN_WIDTH = 700f
     val SCREEN_HEIGHT = 800f
@@ -56,9 +58,9 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             dropPuyo()
             lastDropTime = currentTimeMillis();
         }
-        updatePuyoState()
         drawBackground()
-        drawBlocks()
+        updatePuyoState()
+        //drawBlocks()
     }
 
     private fun unmark(){
@@ -82,29 +84,67 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun hasChain(): Boolean{
+        drawBlocks()
+        puyoPairs = mutableListOf<List<Block>>()
         for(i in 0 until grid.width) {
             for (j in 0 until grid.length) {
-                val neighbours = countNeighbours(i, j, grid.array[i][j]?.color)
-                unmark()
-                if(neighbours > 3){
-                    removeBlocks(i, j, grid.array[i][j]?.color!!)
-                    dropAllBlocks() // this has to be slower!!
-                    return true
+                if(!puyoPairs.flatten().contains(grid.array[i][j])){
+                    val index = puyoPairs.size
+                    if(grid.array[i][j] == null || !findPairs(i, j, grid.array[i][j]?.color, index)){
+                        continue
+                    }
+                    if(puyoPairs[index].size > 3){
+                        val puyos = grid.array.flatten().filterNotNull().filter { puyoPairs[index].contains(it) }
+                        val time = currentTimeMillis()
+                        for(block in puyos) {
+                            grid.array[block.x][block.y] = null
+                        }
+                        drawBlocks()
+                        println("waiting...")
+                        while (currentTimeMillis() < time + 500) {
+                            continue
+                        }
+                        println("done waiting")
+                        for(block in puyos){
+                            val blockAbove: Block? = if(block.y > 0) grid.array[block.x][block.y - 1] else null
+                            if(blockAbove != null && !puyoPairs[index].contains(blockAbove)){
+                               do {
+                                   dropBlock(blockAbove)
+                                   drawBlocks()
+                               } while(blockAbove.falling)
+                            }
+                        }
+                        drawBlocks()
+                        puyoPairs.removeAt(index)
+                        allowSpawn = true;
+                        return true
+                    }
                 }
             }
         }
         dropAllBlocks()
+        unmark()
         return false
     }
 
-    private fun countNeighbours(i: Int, j: Int, color: PuyoColors?) : Int{
+    private fun findPairs(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{
         if(i >= grid.width || j >= grid.length || i < 0 || j < 0 ||
                 grid.array[i][j] == null || grid.array[i][j]?.color != color || grid.array[i][j]?.marked!! ||
                 grid.array[i][j] == puyo.first || grid.array[i][j] == puyo.second){
-            return 0
+            return false;
         } else {
+            if(index < puyoPairs.size){
+                puyoPairs[index] = puyoPairs[index] + grid.array[i][j]!!
+            } else {
+                puyoPairs.add(listOf(grid.array[i][j]!!))
+            }
             grid.array[i][j]?.marked = true
-            return 1 + countNeighbours(i, j - 1, color) + countNeighbours(i, j + 1, color) + countNeighbours(i + 1, j, color) + countNeighbours(i - 1, j, color)
+
+            findPairs(i, j - 1, color, index)
+            findPairs(i, j + 1, color, index)
+            findPairs(i + 1, j, color, index)
+            findPairs(i - 1, j, color, index)
+            return true;
         }
     }
 
@@ -144,6 +184,9 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun spawnPuyo(){
+        if(!allowSpawn){
+            return
+        }
         puyo = Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
@@ -257,16 +300,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 val color = grid.array[i][j]!!.color
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 shapeRenderer.setColor(color.color.r, color.color.g, color.color.b, 1f)
-
-                val neighbours = countNeighbours(i, j, grid.array[i][j]?.color)
-                if(neighbours > 1){
-                    val puyos = grid.array.flatten().filterNotNull().filter { it.marked }
-                    for(block in puyos){
-                        shapeRenderer.rect(GRID_START_X+block.x*CELL_SIZE, GRID_START_Y-block.y*CELL_SIZE, CELL_SIZE, CELL_SIZE)
-                    }
-                } else {
-                    shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
-                }
+                shapeRenderer.circle(GRID_START_X + i * CELL_SIZE + CELL_SIZE / 2, GRID_START_Y - j * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
                 //shapeRenderer.rect(GRID_START_X+i*CELL_SIZE, GRID_START_Y-j*CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 shapeRenderer.end()
             }
