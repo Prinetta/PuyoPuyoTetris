@@ -5,8 +5,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
@@ -75,64 +73,53 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         drawBlocks()
     }
 
+    private fun connectFallingPuyos(){
+        if(puyo.first.color == puyo.second.color){
+            if(puyo.first.x == puyo.second.x){ // vertical
+                if(puyo.first.y < puyo.second.y){
+                    puyo.first.currentSprite = puyo.first.sprites.get("d")
+                    puyo.second.currentSprite = puyo.second.sprites.get("u")
+                } else {
+                    puyo.first.currentSprite = puyo.first.sprites.get("u")
+                    puyo.second.currentSprite = puyo.second.sprites.get("d")
+                }
+            } else if(puyo.first.y == puyo.second.y){ // horizontal
+                if(puyo.first.x < puyo.second.x){
+                    puyo.first.currentSprite = puyo.first.sprites.get("r")
+                    puyo.second.currentSprite = puyo.second.sprites.get("l")
+                } else {
+                    puyo.first.currentSprite = puyo.first.sprites.get("l")
+                    puyo.second.currentSprite = puyo.second.sprites.get("r")
+                }
+            } else {
+                puyo.first.currentSprite = puyo.first.sprites.get("main")
+                puyo.second.currentSprite = puyo.second.sprites.get("main")
+            }
+        }
+    }
+
     private fun connectPuyos(){
+        connectFallingPuyos()
         for (chain in puyoChain){
             if(chain.size <= 1){
                 continue
             }
-            for(block in chain){ // 17 sprites means 17 conditions :(
-                val isRightOpen = !isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])
-                val isLeftOpen = !isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])
-                val isUpOpen = !isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])
-                val isDownOpen = !isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])
-
-                if(isUpOpen){
-                    if(isRightOpen){
-                        if(isDownOpen){
-                            if(isLeftOpen){
-                                grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.all
-                            } else {
-                                grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.urd
-                            }
-                        } else if(isLeftOpen){
-                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.url
-                        } else {
-                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.ur
-                        }
-                    } else if(isDownOpen){
-                        if(isLeftOpen){
-                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.udl
-                        } else {
-                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.vertical
-                        }
-                    } else if(isLeftOpen){
-                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.ul
-                    } else {
-                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.up
-                    }
-                } else if(isRightOpen){
-                    if(isDownOpen){
-                        if(isLeftOpen){
-                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.rdl
-                        } else {
-                            grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.rd
-                        }
-                    } else if(isLeftOpen){
-                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.horizontal
-                    } else {
-                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.right
-                    }
-                } else if(isDownOpen){
-                    if(isLeftOpen){
-                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.dl
-                    } else {
-                        grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.down
-                    }
-                } else if(isLeftOpen){
-                    grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.left
-                } else {
-                    grid.array[block.x][block.y]!!.currentSprite = grid.array[block.x][block.y]!!.sprites.main
+            for(block in chain){
+                var s = ""
+                if(!isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])){
+                    s += "u"
                 }
+                if(!isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])){
+                    s += "r"
+                }
+                if(!isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])){
+                    s += "d"
+                }
+                if(!isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])){
+                    s += "l"
+                }
+                grid.array[block.x][block.y]!!.currentSprite = if(s.isEmpty()) grid.array[block.x][block.y]!!.sprites.hashMap["main"]
+                                                               else grid.array[block.x][block.y]!!.sprites.hashMap[s]
             }
         }
     }
