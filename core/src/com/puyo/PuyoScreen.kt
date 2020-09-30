@@ -70,7 +70,11 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 dropPuyo()
                 findBigPuyoChain() // looking for new chain as the newly dropped puyos might combo one
                 if(puyo.canSpawn()){
-                    spawnPuyo()
+                    if(!isColliding(grid.width / 2, 0)){
+                        spawnPuyo()
+                    } else {
+                        println("you lost lmaooo loser")
+                    }
                 }
                 puyo.dropTime = currentTimeMillis()
             }
@@ -179,7 +183,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun findChain(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{
         if(isOutOfBounds(i, j) || grid.array[i][j] == null || grid.array[i][j]?.color != color ||
-           grid.array[i][j]?.marked!!){
+           grid.array[i][j]?.marked!! || (grid.array[i][j] == puyo.first && puyo.first.falling) || (grid.array[i][j] == puyo.second && puyo.second.falling)){
             return false;
         } else {
             if(index < puyoChain.size){
@@ -241,7 +245,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         for (i in grid.length-1 downTo 0) {
             for(j in 0 until grid.width) {
                 val block = grid.array[j][i]
-                if(block != null && isMainPuyo(block)){
+                if(block != null && !isMainPuyo(block)){
                     dropBlock(block)
                     if(block.falling){
                         dropped = true
@@ -262,11 +266,17 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun dropPuyo(){
-        if(puyo.first.y < puyo.second.y){
-            dropBlock(puyo.second)
-        }
-        dropBlock(puyo.first)
-        if(puyo.first.y >= puyo.second.y){
+        if(grid.array[puyo.first.x][puyo.first.y] != null && grid.array[puyo.second.x][puyo.second.y] != null){
+            if(puyo.first.y < puyo.second.y){
+                dropBlock(puyo.second)
+            }
+            dropBlock(puyo.first)
+            if(puyo.first.y >= puyo.second.y){
+                dropBlock(puyo.second)
+            }
+        } else if(grid.array[puyo.first.x][puyo.first.y] != null){
+            dropBlock(puyo.first)
+        } else if(grid.array[puyo.second.x][puyo.second.y] != null){
             dropBlock(puyo.second)
         }
     }
