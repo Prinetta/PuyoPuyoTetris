@@ -17,7 +17,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private val puyoColors = PuyoColors.values()
     private var puyoChain = mutableListOf<List<Block>>()
     private var chainIndex = -1
-    private var letPuyoDrop = true
+    private var letPuyosDrop = true
 
     val SCREEN_WIDTH = 700f
     val SCREEN_HEIGHT = 800f
@@ -59,16 +59,16 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         if(chainIndex != -1) { // chain of four or more has been found
             if (currentTimeMillis() - lastChainTime > puyo.puyoChainSpeed) { // combo waits a bit before disappearing
                 removePuyoChain() // current chain gets removed
-                findBigPuyoChain() // looking for next chain as new dropped puyos might combo one
+                findBigPuyoChain() // looking for next chain bc multiple can happen at once
                 lastChainTime = currentTimeMillis();
             }
         } else {
-            if (currentTimeMillis() - lastDropTime > puyo.speed) { // blocks still need to be dropped
-                letPuyoDrop = !dropAllBlocks()
+            if (currentTimeMillis() - lastDropTime > puyo.speed) { // floating blocks still need to be dropped
+                letPuyosDrop = !dropAllBlocks()
                 lastDropTime = currentTimeMillis();
-            } else {
-                findBigPuyoChain()
-                if (currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1 && letPuyoDrop) {
+            } else if(letPuyosDrop){ // blocks finished dropping
+                findBigPuyoChain() // looking for new chain as the newly dropped puyos might combo one
+                if (currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1) { // no chain was found
                     dropPuyo()
                     if(puyo.canSpawn()){
                         spawnPuyo()
