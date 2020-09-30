@@ -68,7 +68,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 lastDropTime = currentTimeMillis();
             } else {
                 findBigPuyoChain()
-                if (currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1) {
+                if (currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1 && letPuyoDrop) {
                     dropPuyo()
                     if(puyo.canSpawn()){
                         spawnPuyo()
