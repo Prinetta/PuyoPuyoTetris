@@ -11,12 +11,13 @@ import kotlin.random.Random
 
 class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private val grid = Grid(6, 13)
-    private var lastDropTime = currentTimeMillis()
-    private var lastComboTime = currentTimeMillis()
     private var lastInputTime = currentTimeMillis()
+    private var lastChainTime = currentTimeMillis()
+    private var lastDropTime = currentTimeMillis()
     private val puyoColors = PuyoColors.values()
     private var puyoChain = mutableListOf<List<Block>>()
     private var chainIndex = -1
+    private var letPuyoDrop = true
 
     val SCREEN_WIDTH = 700f
     val SCREEN_HEIGHT = 800f
@@ -55,19 +56,29 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             puyo.speed = puyo.minSpeed
         }
 
-        if(chainIndex == -1){
-            findBigPuyoChain()
-            if(chainIndex == -1 && currentTimeMillis() - lastDropTime > puyo.speed){
-                dropPuyo()
-                updatePuyoState()
-                lastDropTime = currentTimeMillis();
+        if(chainIndex != -1) { // chain of four or more has been found
+            if (currentTimeMillis() - lastChainTime > puyo.puyoChainSpeed) { // combo waits a bit before disappearing
+                removePuyoChain() // current chain gets removed
+                findBigPuyoChain() // looking for next chain as new dropped puyos might combo one
+                lastChainTime = currentTimeMillis();
             }
         } else {
-            if(currentTimeMillis() - lastComboTime > puyo.comboSpeed){
-                removePuyoChain()
-                lastComboTime = currentTimeMillis();
+            if (currentTimeMillis() - lastDropTime > puyo.speed) { // blocks still need to be dropped
+                letPuyoDrop = !dropAllBlocks()
+                lastDropTime = currentTimeMillis();
+            } else {
+                findBigPuyoChain()
+                if (currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1) {
+                    dropPuyo()
+                    if(puyo.canSpawn()){
+                        spawnPuyo()
+                    }
+                    puyo.dropTime = currentTimeMillis()
+                }
             }
+            lastChainTime = currentTimeMillis();
         }
+
         connectPuyos()
         drawBackground()
         drawBlocks()
@@ -128,14 +139,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         for(block in puyoChain[chainIndex]) {
             grid.array[block.x][block.y] = null
         }
-        for(block in puyoChain[chainIndex]){
-            val blockAbove: Block? = if(block.y > 0) grid.array[block.x][block.y - 1] else null
-            if(blockAbove != null && !puyoChain[chainIndex].contains(blockAbove)){
-                do {
-                    dropBlock(blockAbove)
-                } while(blockAbove.falling)
-            }
-        }
         puyoChain.removeAt(chainIndex)
         chainIndex = -1
     }
@@ -165,7 +168,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             }
         }
         chainIndex = -1
-        dropAllBlocks()
     }
 
     private fun isOutOfBounds(i: Int, j: Int) : Boolean {
@@ -204,13 +206,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         grid.array[block.x][block.y] = block
     }
 
-    private fun updatePuyoState(){
-        dropAllBlocks()
-        if(puyo.bothDropped()){
-            spawnPuyo()
-        }
-    }
-
     private fun printGrid(){
         for (i in grid.length-1 downTo 0) {
             for(j in 0 until grid.width) {
@@ -225,8 +220,12 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         println()
     }
 
+    private fun canFall(block: Block) : Boolean {
+        return !isOutOfBounds(block.x, block.y+1) && grid.array[block.x][block.y+1] == null
+    }
+
     private fun isColliding(x: Int, y: Int) : Boolean{
-        return x >= grid.width || x < 0 || y >= grid.length || y < 0 || grid.array[x][y] != null && !grid.array[x][y]?.falling!!
+        return isOutOfBounds(x, y) || grid.array[x][y] != null && !grid.array[x][y]?.falling!!
     }
 
     private fun spawnPuyo(){
@@ -238,18 +237,24 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         updateMovingPos(puyo.second)
     }
 
-    private fun dropAllBlocks(){
+    private fun dropAllBlocks() : Boolean{
+        var dropped = false
         for (i in grid.length-1 downTo 0) {
             for(j in 0 until grid.width) {
-                if(grid.array[j][i] != null && grid.array[j][i] != puyo.first && grid.array[j][i] != puyo.second){
-                    dropBlock(grid.array[j][i]!!)
+                val block = grid.array[j][i]
+                if(block != null && block != puyo.first && block != puyo.second){
+                    dropBlock(block)
+                    if(block.falling){
+                        dropped = true
+                    }
                 }
             }
         }
+        return dropped
     }
 
     private fun dropBlock(block: Block){
-        block.falling = !isColliding(block.x, block.y + 1)
+        block.falling = canFall(block)
         if(block.falling){
             clearPrevPos(block)
             block.y++

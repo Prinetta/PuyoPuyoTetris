@@ -15,7 +15,4 @@ class PuyoPuyoTetris : Game() {
         screen = PuyoScreen(this)
     }
 
-    override fun render(){
-        super.render()
-    }
 }
