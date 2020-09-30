@@ -3,8 +3,8 @@ package com.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
@@ -17,7 +17,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private val puyoColors = PuyoColors.values()
     private var puyoChain = mutableListOf<List<Block>>()
     private var chainIndex = -1
-    private var noBlocksFloating = true
+    private var allBlocksStanding = true
 
     val SCREEN_WIDTH = 700f
     val SCREEN_HEIGHT = 800f
@@ -36,8 +36,12 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(255f, 189f / 255f, 205f / 255f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        game.batch.begin()
+        game.batch.draw(Texture(Gdx.files.internal("akech.jpg")),
+                0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+        game.batch.end()
+        //Gdx.gl.glClearColor(255f, 189f / 255f, 205f / 255f, 1f)
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         camera.update()
         game.batch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined;
@@ -68,13 +72,13 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             }
         } else {
             if (currentTimeMillis() - lastDropTime > puyo.speed) { // floating blocks still need to be dropped
-                noBlocksFloating = !dropAllBlocks()
+                allBlocksStanding = !dropAllBlocks()
                 lastDropTime = currentTimeMillis()
-            } else if(noBlocksFloating){
+            } else if(allBlocksStanding){
                 findBigPuyoChain()
                 if(currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1){
                     if(puyo.canSpawn()){
-                        if(!isColliding(grid.width / 2, 0)){
+                        if(!isColliding(grid.width / 2, 0)){ // needs open space at top
                             spawnPuyo()
                         } else {
                             println("you lost lmaooo loser")
@@ -120,23 +124,28 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         for (chain in puyoChain){
             if(chain.size <= 1){
                 continue
-            }
-            for(block in chain){
-                var s = ""
-                if(!isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])){
-                    s += "u"
+            } else if (chain.size >= 4){
+                for(block in chain){
+                    block.currentSprite = block.sprites.get("s")
+                    block.addFlicker()
                 }
-                if(!isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])){
-                    s += "r"
+            } else {
+                for(block in chain){
+                    var s = ""
+                    if(!isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])){
+                        s += "u"
+                    }
+                    if(!isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])){
+                        s += "r"
+                    }
+                    if(!isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])){
+                        s += "d"
+                    }
+                    if(!isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])){
+                        s += "l"
+                    }
+                    block.currentSprite = if(s.isEmpty()) block.sprites.hashMap["main"] else block.sprites.hashMap[s]
                 }
-                if(!isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])){
-                    s += "d"
-                }
-                if(!isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])){
-                    s += "l"
-                }
-                grid.array[block.x][block.y]!!.currentSprite = if(s.isEmpty()) grid.array[block.x][block.y]!!.sprites.hashMap["main"]
-                                                               else grid.array[block.x][block.y]!!.sprites.hashMap[s]
             }
         }
     }
@@ -336,19 +345,29 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawBlocks(){
+        game.batch.begin()
         for(i in 0 until grid.width){
             for(j in 0 until grid.length){
                 if(grid.array[i][j] == null || j == 0){
                     continue
                 }
-                game.batch.begin()
+                if(grid.array[i][j]!!.flicker > 0) {
+                    val c = game.batch.color
+                    if (grid.array[i][j]!!.flicker > 10) {
+                        game.batch.setColor(c.r, c.g, c.b, 1f)
+                    } else {
+                        game.batch.setColor(c.r, c.g, c.b, 0.2f)
+                    }
+                    grid.array[i][j]?.addFlicker()
+                }
+
                 game.batch.draw(grid.array[i][j]!!.currentSprite,
                         GRID_START_X + i * CELL_SIZE,
                         GRID_START_Y - j * CELL_SIZE,
                         CELL_SIZE, CELL_SIZE)
-                game.batch.end()
             }
         }
+        game.batch.end()
         unmark()
     }
 
@@ -363,7 +382,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         shapeRenderer.setColor(0.2f, 0.2f, 0.2f, 1f)
         shapeRenderer.rect(GRID_START_X, SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f, grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
         shapeRenderer.end()
-
     }
 
     override fun show() {
