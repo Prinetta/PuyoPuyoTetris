@@ -66,15 +66,13 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             if (currentTimeMillis() - lastDropTime > puyo.speed) { // floating blocks still need to be dropped
                 letPuyosDrop = !dropAllBlocks()
                 lastDropTime = currentTimeMillis();
-            } else if(letPuyosDrop){ // blocks finished dropping
+            } else if(letPuyosDrop && currentTimeMillis() - puyo.dropTime > puyo.speed) { // no chain was found
+                dropPuyo()
                 findBigPuyoChain() // looking for new chain as the newly dropped puyos might combo one
-                if (currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1) { // no chain was found
-                    dropPuyo()
-                    if(puyo.canSpawn()){
-                        spawnPuyo()
-                    }
-                    puyo.dropTime = currentTimeMillis()
+                if(puyo.canSpawn()){
+                    spawnPuyo()
                 }
+                puyo.dropTime = currentTimeMillis()
             }
             lastChainTime = currentTimeMillis();
         }
@@ -137,6 +135,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun removePuyoChain(){
         for(block in puyoChain[chainIndex]) {
+            block.falling = false
             grid.array[block.x][block.y] = null
         }
         puyoChain.removeAt(chainIndex)
@@ -174,13 +173,13 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         return i >= grid.width || j >= grid.length || i < 0 || j < 0
     }
 
-    private fun isMainPuyo(i: Int, j: Int) : Boolean {
-        return grid.array[i][j] == puyo.first || grid.array[i][j] == puyo.second
+    private fun isMainPuyo(block: Block) : Boolean {
+        return grid.array[block.x][block.y] == puyo.first || grid.array[block.x][block.y] == puyo.second
     }
 
     private fun findChain(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{
         if(isOutOfBounds(i, j) || grid.array[i][j] == null || grid.array[i][j]?.color != color ||
-           grid.array[i][j]?.marked!! || isMainPuyo(i, j)){
+           grid.array[i][j]?.marked!!){
             return false;
         } else {
             if(index < puyoChain.size){
@@ -242,7 +241,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         for (i in grid.length-1 downTo 0) {
             for(j in 0 until grid.width) {
                 val block = grid.array[j][i]
-                if(block != null && block != puyo.first && block != puyo.second){
+                if(block != null && isMainPuyo(block)){
                     dropBlock(block)
                     if(block.falling){
                         dropped = true
