@@ -23,13 +23,13 @@ class Puyo(val first: Block, val second: Block){
     }
 
     fun bothDropped(): Boolean{
-        if(!first.falling && !second.falling){
+        if(!first.isFalling && !second.isFalling){
             dropped = true
         }
         return dropped
     }
 
     fun startedDrop(): Boolean{
-        return !first.falling || !second.falling
+        return !first.isFalling || !second.isFalling
     }
 }

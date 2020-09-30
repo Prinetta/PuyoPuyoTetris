@@ -70,9 +70,9 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             if (currentTimeMillis() - lastDropTime > puyo.speed) { // floating blocks still need to be dropped
                 noBlocksFloating = !dropAllBlocks()
                 lastDropTime = currentTimeMillis()
-            } else if(noBlocksFloating && currentTimeMillis() - puyo.dropTime > puyo.speed) { // no chain was found
+            } else if(noBlocksFloating){
                 findBigPuyoChain()
-                if(chainIndex == -1){
+                if(currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1){
                     if(puyo.canSpawn()){
                         if(!isColliding(grid.width / 2, 0)){
                             spawnPuyo()
@@ -80,8 +80,8 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                             println("you lost lmaooo loser")
                         }
                     }
+                    puyo.dropTime = currentTimeMillis()
                 }
-                puyo.dropTime = currentTimeMillis()
             }
             lastChainTime = currentTimeMillis()
         }
@@ -143,7 +143,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun removePuyoChain(){
         for(block in puyoChain[chainIndex]) {
-            block.falling = false
             grid.array[block.x][block.y] = null
         }
         puyoChain.removeAt(chainIndex)
@@ -158,20 +157,24 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun findBigPuyoChain() : Int{
+    private fun updatePuyoChain(){
         puyoChain = mutableListOf()
         for(i in 0 until grid.width) {
             for (j in 0 until grid.length) {
                 if(!puyoChain.flatten().contains(grid.array[i][j])){
                     val index = puyoChain.size
-                    if(grid.array[i][j] == null || !chainExists(i, j, grid.array[i][j]?.color, index)){
-                        continue
-                    }
-                    if(puyoChain[index].size > 3){
-                        chainIndex = index
-                        return index
-                    }
+                    findChain(i, j, grid.array[i][j]?.color, index)
                 }
+            }
+        }
+    }
+
+    private fun findBigPuyoChain() : Int{
+        updatePuyoChain()
+        puyoChain.forEachIndexed { index, chain ->
+            if(chain.size > 3 && !(chain.contains(puyo.first) && puyo.first.isFalling) && !(chain.contains(puyo.second) && puyo.second.isFalling)){
+                chainIndex = index
+                return index
             }
         }
         chainIndex = -1
@@ -186,10 +189,10 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         return grid.array[block.x][block.y] == puyo.first || grid.array[block.x][block.y] == puyo.second
     }
 
-    private fun chainExists(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{
+    private fun findChain(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{ // sep into 2 methods
         if(isOutOfBounds(i, j) || grid.array[i][j] == null || grid.array[i][j]?.color != color ||
-           grid.array[i][j]?.marked!! || (grid.array[i][j] == puyo.first && puyo.first.falling) || (grid.array[i][j] == puyo.second && puyo.second.falling)){
-            return false;
+           grid.array[i][j]?.marked!!){
+            return false; // canFall doesnt work bc puyo first is usually above puyo second before the fall
         } else {
             if(index < puyoChain.size){
                 puyoChain[index] = puyoChain[index] + grid.array[i][j]!!
@@ -198,10 +201,10 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             }
             grid.array[i][j]?.marked = true
 
-            chainExists(i, j - 1, color, index)
-            chainExists(i, j + 1, color, index)
-            chainExists(i + 1, j, color, index)
-            chainExists(i - 1, j, color, index)
+            findChain(i, j - 1, color, index)
+            findChain(i, j + 1, color, index)
+            findChain(i + 1, j, color, index)
+            findChain(i - 1, j, color, index)
             return true;
         }
     }
@@ -233,7 +236,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{
-        return isOutOfBounds(x, y) || grid.array[x][y] != null && !grid.array[x][y]?.falling!!
+        return isOutOfBounds(x, y) || grid.array[x][y] != null && !grid.array[x][y]?.isFalling!!
     }
 
     private fun spawnPuyo(){
@@ -252,7 +255,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 val block = grid.array[j][i]
                 if(block != null){
                     dropBlock(block)
-                    if(block.falling){
+                    if(block.isFalling){
                         dropped = true
                     }
                 }
@@ -262,8 +265,8 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun dropBlock(block: Block){
-        block.falling = canFall(block)
-        if(block.falling){
+        block.isFalling = canFall(block)
+        if(block.isFalling){
             clearPrevPos(block)
             block.y++
             updateMovingPos(block)
