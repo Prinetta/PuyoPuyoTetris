@@ -351,14 +351,16 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 if(grid.array[i][j] == null || j == 0){
                     continue
                 }
+                val c = game.batch.color
                 if(grid.array[i][j]!!.flicker > 0) {
-                    val c = game.batch.color
                     if (grid.array[i][j]!!.flicker > 10) {
                         game.batch.setColor(c.r, c.g, c.b, 1f)
                     } else {
                         game.batch.setColor(c.r, c.g, c.b, 0.2f)
                     }
                     grid.array[i][j]?.addFlicker()
+                } else {
+                    game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
 
                 game.batch.draw(grid.array[i][j]!!.currentSprite,
