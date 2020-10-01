@@ -3,9 +3,11 @@ package com.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.utils.viewport.FitViewport
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
 
@@ -19,32 +21,37 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private var chainIndex = -1
     private var allBlocksStanding = true
 
-    val SCREEN_WIDTH = 700f
-    val SCREEN_HEIGHT = 800f
-    val CELL_SIZE = 60f
-    val GRID_START_X = SCREEN_WIDTH/4 // Middle of Screen
-    val GRID_START_Y = SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f + grid.length*CELL_SIZE-CELL_SIZE
+    val SCREEN_WIDTH = 1500f
+    val SCREEN_HEIGHT = 1040f
+    val CELL_SIZE = 65f
+    val GRID_START_X = SCREEN_WIDTH*0.1f
+    val GRID_START_Y = SCREEN_HEIGHT*0.13f + grid.length*CELL_SIZE-CELL_SIZE
 
-    var camera = OrthographicCamera()
+    var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     var shapeRenderer = ShapeRenderer()
+    var viewport : FitViewport
+    val titleFont = game.generateTitleFont(55)
+    val scoreFont = game.generateScoreFont(50)
 
     private lateinit var puyo: Puyo
 
     init {
-        camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT)
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f)
+        viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
+        viewport.setScreenPosition(0, 0)
         spawnPuyo()
     }
 
     override fun render(delta: Float) {
+        game.batch.projectionMatrix = camera.combined
+        shapeRenderer.projectionMatrix = camera.combined;
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
         game.batch.begin()
         game.batch.draw(Texture(Gdx.files.internal("akech.jpg")),
                 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
         game.batch.end()
-        //Gdx.gl.glClearColor(255f, 189f / 255f, 205f / 255f, 1f)
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        camera.update()
-        game.batch.projectionMatrix = camera.combined
-        shapeRenderer.projectionMatrix = camera.combined;
 
         if(currentTimeMillis() - lastInputTime > 50 && !puyo.startedDrop()){
             when {
@@ -59,6 +66,8 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         } else {
             puyo.speed = puyo.minSpeed
         }
+
+        println(Gdx.graphics.getFramesPerSecond())
 
         if(chainIndex != -1) { // chain of four or more has been found
             if (currentTimeMillis() - lastChainTime > puyo.puyoChainSpeed) { // combo waits a bit before disappearing
@@ -78,7 +87,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 findBigPuyoChain()
                 if(currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1){
                     if(puyo.canSpawn()){
-                        if(!isColliding(grid.width / 2, 0)){ // needs open space at top
+                        if(!isColliding(grid.width / 2, 1)){ // needs open space at top
                             spawnPuyo()
                         } else {
                             println("you lost lmaooo loser")
@@ -93,31 +102,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         connectPuyos()
         drawBackground()
         drawBlocks()
-    }
-
-    private fun connectFallingPuyos(){
-        if(puyo.first.color == puyo.second.color){
-            if(puyo.first.x == puyo.second.x){ // vertical
-                if(puyo.first.y < puyo.second.y){
-                    puyo.first.currentSprite = puyo.first.sprites.get("d")
-                    puyo.second.currentSprite = puyo.second.sprites.get("u")
-                } else {
-                    puyo.first.currentSprite = puyo.first.sprites.get("u")
-                    puyo.second.currentSprite = puyo.second.sprites.get("d")
-                }
-            } else if(puyo.first.y == puyo.second.y){ // horizontal
-                if(puyo.first.x < puyo.second.x){
-                    puyo.first.currentSprite = puyo.first.sprites.get("r")
-                    puyo.second.currentSprite = puyo.second.sprites.get("l")
-                } else {
-                    puyo.first.currentSprite = puyo.first.sprites.get("l")
-                    puyo.second.currentSprite = puyo.second.sprites.get("r")
-                }
-            } else {
-                puyo.first.currentSprite = puyo.first.sprites.get("main")
-                puyo.second.currentSprite = puyo.second.sprites.get("main")
-            }
-        }
     }
 
     private fun connectPuyos(){
@@ -192,10 +176,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun isOutOfBounds(i: Int, j: Int) : Boolean {
         return i >= grid.width || j >= grid.length || i < 0 || j < 0
-    }
-
-    private fun isMainPuyo(block: Block) : Boolean {
-        return grid.array[block.x][block.y] == puyo.first || grid.array[block.x][block.y] == puyo.second
     }
 
     private fun findChain(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{ // sep into 2 methods
@@ -282,22 +262,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun dropPuyo(){
-        if(grid.array[puyo.first.x][puyo.first.y] != null && grid.array[puyo.second.x][puyo.second.y] != null){
-            if(puyo.first.y < puyo.second.y){
-                dropBlock(puyo.second)
-            }
-            dropBlock(puyo.first)
-            if(puyo.first.y >= puyo.second.y){
-                dropBlock(puyo.second)
-            }
-        } else if(grid.array[puyo.first.x][puyo.first.y] != null){
-            dropBlock(puyo.first)
-        } else if(grid.array[puyo.second.x][puyo.second.y] != null){
-            dropBlock(puyo.second)
-        }
-    }
-
     private fun rotatePuyo(rotation: Int){
         val x: Int
         val y: Int
@@ -346,17 +310,17 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawBlocks(){
         game.batch.begin()
+        val c = game.batch.color
         for(i in 0 until grid.width){
             for(j in 0 until grid.length){
                 if(grid.array[i][j] == null || j == 0){
                     continue
                 }
-                val c = game.batch.color
                 if(grid.array[i][j]!!.flicker > 0) {
                     if (grid.array[i][j]!!.flicker > 10) {
                         game.batch.setColor(c.r, c.g, c.b, 1f)
                     } else {
-                        game.batch.setColor(c.r, c.g, c.b, 0.2f)
+                        game.batch.setColor(c.r, c.g, c.b, 0.6f)
                     }
                     grid.array[i][j]?.addFlicker()
                 } else {
@@ -369,43 +333,45 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                         CELL_SIZE, CELL_SIZE)
             }
         }
+        drawTitle()
+        drawScore()
         game.batch.end()
         unmark()
     }
 
     private fun drawTitle(){
-        game.batch.begin()
-        game.font.draw(game.batch, "Puyo Puyo Tetris", SCREEN_HEIGHT - 100, SCREEN_WIDTH / 2)
-        game.batch.end()
+        titleFont.draw(game.batch, "Puyo Puyo", GRID_START_X*1.27f, SCREEN_HEIGHT*0.94f)
+    }
+
+    private fun drawScore(){
+        scoreFont.draw(game.batch, "192039", GRID_START_X*1.6f, GRID_START_Y-GRID_START_Y*0.87f)
     }
 
     private fun drawBackground(){
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.setColor(0.2f, 0.2f, 0.2f, 1f)
-        shapeRenderer.rect(GRID_START_X, SCREEN_HEIGHT-SCREEN_HEIGHT*0.95f, grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.rect(GRID_START_X, GRID_START_Y-(grid.length*CELL_SIZE-CELL_SIZE), grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
         shapeRenderer.end()
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     override fun show() {
 
     }
-
     override fun resize(width: Int, height: Int) {
-
+        viewport.update(width, height);
     }
-
     override fun pause() {
 
     }
-
     override fun resume() {
 
     }
-
     override fun hide() {
 
     }
-
     override fun dispose() {
 
     }
