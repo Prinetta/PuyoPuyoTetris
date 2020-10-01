@@ -22,6 +22,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     private var chainIndex = -1
     private var allBlocksStanding = true
     private var nextPuyos = mutableListOf<Puyo>()
+    private var removedPuyos = mutableListOf<List<Block>>()
 
     val SCREEN_WIDTH = 1500f
     val SCREEN_HEIGHT = 1040f
@@ -36,6 +37,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     val scoreFont = game.generateScoreFont(50)
     val background = Texture(Gdx.files.internal("background.png"))
     val guiBatch = SpriteBatch()
+    val scoring = Scoring()
 
     private lateinit var puyo: Puyo
 
@@ -61,10 +63,10 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         Gdx.gl.glClearColor(27/255f, 18/255f, 64/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        guiBatch.begin()
-        guiBatch.draw(background,
+        game.batch.begin()
+        game.batch.draw(background,
                 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-        guiBatch.end()
+        game.batch.end()
 
         if(currentTimeMillis() - lastInputTime > 50 && !puyo.startedDrop()){
             when {
@@ -80,12 +82,9 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
             puyo.speed = puyo.minSpeed
         }
 
-        //println(Gdx.graphics.framesPerSecond)
-
         if(chainIndex != -1) { // chain of four or more has been found
             if (currentTimeMillis() - lastChainTime > puyo.puyoChainSpeed) { // combo waits a bit before disappearing
                 removePuyoChain() // current chain gets removed
-                println()
                 while (findBigPuyoChain() != -1){
                     removePuyoChain()  // another combo was found and is therefore simultaneous
                 }
@@ -99,15 +98,16 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
                 lastDropTime = currentTimeMillis()
             } else if(allBlocksStanding){
                 findBigPuyoChain()
-                if(currentTimeMillis() - puyo.dropTime > puyo.speed && chainIndex == -1){
-                    if(puyo.canSpawn()){
-                        if(!isColliding(grid.width / 2, 1)){ // needs open space at top
-                            spawnPuyo()
-                        } else {
-                            println("you lost lmaooo loser")
-                        }
+                if(chainIndex == -1){
+                    if(removedPuyos.isNotEmpty()){
+                        scoring.calculateScore(removedPuyos)
                     }
-                    puyo.dropTime = currentTimeMillis()
+                    if(currentTimeMillis() - puyo.dropTime > puyo.speed){
+                        if(puyo.canSpawn() && !isColliding(grid.width / 2, 1)){
+                            spawnPuyo()
+                        }
+                        puyo.dropTime = currentTimeMillis()
+                    }
                 }
             }
             lastChainTime = currentTimeMillis()
@@ -115,12 +115,16 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
 
         connectPuyos()
         drawBackground()
+
+        game.batch.begin()
         drawBlocks()
+        drawTitle()
+        drawScore()
         drawNextPuyos()
+        game.batch.end()
     }
 
     private fun drawNextPuyos(){ // (∩｀-´)⊃━☆ﾟ.*･｡ﾟ 　。。数。。
-        game.batch.begin()
         game.batch.draw(nextPuyos[0].first.currentSprite, GRID_START_X*1.2f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
                         GRID_START_Y*0.8f+CELL_SIZE*1.25f, CELL_SIZE, CELL_SIZE)
         game.batch.draw(nextPuyos[0].second.currentSprite, GRID_START_X*1.2f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
@@ -129,7 +133,6 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
                         GRID_START_Y*0.65f+CELL_SIZE, CELL_SIZE*0.75f, CELL_SIZE*0.75f)
         game.batch.draw(nextPuyos[1].second.currentSprite, GRID_START_X*1.3f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
                         GRID_START_Y*0.65f+CELL_SIZE*0.25f, CELL_SIZE*0.75f, CELL_SIZE*0.75f)
-        game.batch.end()
     }
 
     private fun drawBackground(){
@@ -140,9 +143,13 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         shapeRenderer.rect(GRID_START_X, GRID_START_Y-(grid.length*CELL_SIZE-CELL_SIZE), grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
         shapeRenderer.end()
 
+        drawNextPuyoBg()
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    private fun drawNextPuyoBg(){
         drawRoundedRect(GRID_START_X*1.2f+grid.width*CELL_SIZE, GRID_START_Y*0.8f, CELL_SIZE*1.5f, CELL_SIZE*2.6f, 10f)
         drawRoundedRect(GRID_START_X*1.3f+grid.width*CELL_SIZE, GRID_START_Y*0.65f, CELL_SIZE*1.25f, CELL_SIZE*2f, 10f)
-        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){
@@ -198,6 +205,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         for(block in puyoChain[chainIndex]) {
             grid.array[block.x][block.y] = null
         }
+        removedPuyos.add(puyoChain[chainIndex])
         puyoChain.removeAt(chainIndex)
         chainIndex = -1
     }
@@ -211,7 +219,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun updatePuyoChain(){
-        puyoChain = mutableListOf()
+        puyoChain.clear()
         for(i in 0 until grid.width) {
             for (j in 0 until grid.length) {
                 if(!puyoChain.flatten().contains(grid.array[i][j])){
@@ -289,6 +297,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun spawnPuyo(){
+        removedPuyos.clear()
         if(chainIndex >= 0){
             return
         }
@@ -371,7 +380,6 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawBlocks(){
-        game.batch.begin()
         val c = game.batch.color
         for(i in 0 until grid.width){
             for(j in 0 until grid.length){
@@ -395,9 +403,8 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
                         CELL_SIZE, CELL_SIZE)
             }
         }
-        drawTitle()
-        drawScore()
-        game.batch.end()
+
+        game.batch.setColor(c.r, c.g, c.b, 1f)
         unmark()
     }
 
@@ -406,7 +413,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawScore(){
-        scoreFont.draw(game.batch, "192039", GRID_START_X*1.6f, GRID_START_Y-GRID_START_Y*0.87f)
+        scoreFont.draw(game.batch, scoring.score.toString(), GRID_START_X*1.6f, GRID_START_Y-GRID_START_Y*0.87f)
     }
 
     override fun show() {
