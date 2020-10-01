@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import java.lang.System.currentTimeMillis
@@ -32,6 +33,8 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     var viewport : FitViewport
     val titleFont = game.generateTitleFont(55)
     val scoreFont = game.generateScoreFont(50)
+    val background = Texture(Gdx.files.internal("background.png"))
+    val guiBatch = SpriteBatch()
 
     private lateinit var puyo: Puyo
 
@@ -44,14 +47,15 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     override fun render(delta: Float) {
         game.batch.projectionMatrix = camera.combined
+        guiBatch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined;
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(27/255f, 18/255f, 64/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        game.batch.begin()
-        game.batch.draw(Texture(Gdx.files.internal("akech.jpg")),
+        guiBatch.begin()
+        guiBatch.draw(background,
                 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-        game.batch.end()
+        guiBatch.end()
 
         if(currentTimeMillis() - lastInputTime > 50 && !puyo.startedDrop()){
             when {
@@ -67,11 +71,12 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             puyo.speed = puyo.minSpeed
         }
 
-        println(Gdx.graphics.getFramesPerSecond())
+        //println(Gdx.graphics.framesPerSecond)
 
         if(chainIndex != -1) { // chain of four or more has been found
             if (currentTimeMillis() - lastChainTime > puyo.puyoChainSpeed) { // combo waits a bit before disappearing
                 removePuyoChain() // current chain gets removed
+                println()
                 while (findBigPuyoChain() != -1){
                     removePuyoChain()  // another combo was found and is therefore simultaneous
                 }
@@ -111,7 +116,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
             } else if (chain.size >= 4){
                 for(block in chain){
                     block.currentSprite = block.sprites.get("s")
-                    block.addFlicker()
+                    block.beingRemoved = true
                 }
             } else {
                 for(block in chain){
@@ -316,8 +321,8 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
                 if(grid.array[i][j] == null || j == 0){
                     continue
                 }
-                if(grid.array[i][j]!!.flicker > 0) {
-                    if (grid.array[i][j]!!.flicker > 10) {
+                if(grid.array[i][j]!!.flicker > 0 || grid.array[i][j]!!.beingRemoved) {
+                    if (grid.array[i][j]!!.flicker > 5) {
                         game.batch.setColor(c.r, c.g, c.b, 1f)
                     } else {
                         game.batch.setColor(c.r, c.g, c.b, 0.6f)

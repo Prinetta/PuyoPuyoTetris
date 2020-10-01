@@ -20,8 +20,8 @@ class PuyoPuyoTetris : Game() {
         val generator = FreeTypeFontGenerator(Gdx.files.internal("Bubblegum.ttf"))
         val param = FreeTypeFontGenerator.FreeTypeFontParameter()
         param.size = size
-        param.borderWidth = 3f
-        param.borderColor = Color.PINK
+        param.borderWidth = 4f
+        param.borderColor = Color(233/255f, 33/255f, 153/255f, 1f)
 
 
         val font = generator.generateFont(param)

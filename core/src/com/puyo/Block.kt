@@ -6,8 +6,9 @@ class Block(var x: Int, var y: Int, val color: PuyoColors){
     val sprites = PuyoSprites.valueOf(color.toString()).sprite
     var currentSprite = sprites.hashMap["main"]
     var flicker = 0
+    var beingRemoved = false
 
     fun addFlicker(){
-        flicker += if(flicker+1 > 20) -19 else 1
+        flicker += if(flicker+1 > 10) -9 else 1
     }
 }

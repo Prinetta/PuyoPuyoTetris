@@ -1,6 +1,5 @@
 package com.puyo.desktop
 
-import com.badlogic.gdx.Gdx
 import kotlin.jvm.JvmStatic
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
