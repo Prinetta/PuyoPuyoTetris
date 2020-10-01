@@ -13,7 +13,7 @@ class PuyoPuyoTetris : Game() {
 
     override fun create() {
         batch = SpriteBatch()
-        screen = PuyoScreen(this)
+        screen = Screen(this)
     }
 
     fun generateTitleFont(size: Int) : BitmapFont {

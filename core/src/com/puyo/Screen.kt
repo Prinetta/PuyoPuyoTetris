@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
 
-class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
+class Screen(val game: PuyoPuyoTetris) : Screen {
     private val grid = Grid(6, 13)
     private var lastInputTime = currentTimeMillis()
     private var lastChainTime = currentTimeMillis()
@@ -21,6 +21,7 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
     private var puyoChain = mutableListOf<List<Block>>()
     private var chainIndex = -1
     private var allBlocksStanding = true
+    private var nextPuyos = mutableListOf<Puyo>()
 
     val SCREEN_WIDTH = 1500f
     val SCREEN_HEIGHT = 1040f
@@ -42,7 +43,15 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f)
         viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
         viewport.setScreenPosition(0, 0)
+        generatePuyoList()
         spawnPuyo()
+    }
+
+    private fun generatePuyoList(){
+        nextPuyos.addAll(listOf(
+                Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)])),
+                Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
+        ))
     }
 
     override fun render(delta: Float) {
@@ -107,6 +116,52 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         connectPuyos()
         drawBackground()
         drawBlocks()
+        drawNextPuyos()
+    }
+
+    private fun drawNextPuyos(){ // (∩｀-´)⊃━☆ﾟ.*･｡ﾟ 　。。数。。
+        game.batch.begin()
+        game.batch.draw(nextPuyos[0].first.currentSprite, GRID_START_X*1.2f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
+                        GRID_START_Y*0.8f+CELL_SIZE*1.25f, CELL_SIZE, CELL_SIZE)
+        game.batch.draw(nextPuyos[0].second.currentSprite, GRID_START_X*1.2f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
+                        GRID_START_Y*0.8f+CELL_SIZE*1.25f-CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        game.batch.draw(nextPuyos[1].first.currentSprite, GRID_START_X*1.3f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
+                        GRID_START_Y*0.65f+CELL_SIZE, CELL_SIZE*0.75f, CELL_SIZE*0.75f)
+        game.batch.draw(nextPuyos[1].second.currentSprite, GRID_START_X*1.3f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
+                        GRID_START_Y*0.65f+CELL_SIZE*0.25f, CELL_SIZE*0.75f, CELL_SIZE*0.75f)
+        game.batch.end()
+    }
+
+    private fun drawBackground(){
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.rect(GRID_START_X, GRID_START_Y-(grid.length*CELL_SIZE-CELL_SIZE), grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
+        shapeRenderer.end()
+
+        drawRoundedRect(GRID_START_X*1.2f+grid.width*CELL_SIZE, GRID_START_Y*0.8f, CELL_SIZE*1.5f, CELL_SIZE*2.6f, 10f)
+        drawRoundedRect(GRID_START_X*1.3f+grid.width*CELL_SIZE, GRID_START_Y*0.65f, CELL_SIZE*1.25f, CELL_SIZE*2f, 10f)
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.rect(x + radius, y + radius, width - 2*radius, height - 2*radius);
+
+        // Four side rectangles, in clockwise order
+        shapeRenderer.rect(x + radius, y, width - 2*radius, radius);
+        shapeRenderer.rect(x + width - radius, y + radius, radius, height - 2*radius);
+        shapeRenderer.rect(x + radius, y + height - radius, width - 2*radius, radius);
+        shapeRenderer.rect(x, y + radius, radius, height - 2*radius);
+
+        // Four arches, clockwise too
+        shapeRenderer.arc(x + radius, y + radius, radius, 180f, 90f);
+        shapeRenderer.arc(x + width - radius, y + radius, radius, 270f, 90f);
+        shapeRenderer.arc(x + width - radius, y + height - radius, radius, 0f, 90f);
+        shapeRenderer.arc(x + radius, y + height - radius, radius, 90f, 90f);
+        shapeRenderer.end()
     }
 
     private fun connectPuyos(){
@@ -237,7 +292,9 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
         if(chainIndex >= 0){
             return
         }
-        puyo = Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
+        puyo = nextPuyos[0]
+        nextPuyos.removeAt(0)
+        nextPuyos.add(Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)])))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
     }
@@ -350,16 +407,6 @@ class PuyoScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawScore(){
         scoreFont.draw(game.batch, "192039", GRID_START_X*1.6f, GRID_START_Y-GRID_START_Y*0.87f)
-    }
-
-    private fun drawBackground(){
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        shapeRenderer.rect(GRID_START_X, GRID_START_Y-(grid.length*CELL_SIZE-CELL_SIZE), grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
-        shapeRenderer.end()
-        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     override fun show() {
