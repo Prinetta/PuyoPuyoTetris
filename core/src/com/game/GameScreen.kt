@@ -1,4 +1,4 @@
-package com.puyo
+package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -9,20 +9,24 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.game.puyo.Puyo
+import com.game.puyo.PuyoBlock
+import com.game.puyo.PuyoColor
+import com.game.puyo.PuyoScoring
 import java.lang.System.currentTimeMillis
 import kotlin.random.Random
 
-class Screen(val game: PuyoPuyoTetris) : Screen {
+class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private val grid = Grid(6, 13)
     private var lastInputTime = currentTimeMillis()
     private var lastChainTime = currentTimeMillis()
     private var lastDropTime = currentTimeMillis()
-    private val puyoColors = PuyoColors.values()
-    private var puyoChain = mutableListOf<List<Block>>()
+    private val puyoColors = PuyoColor.values()
+    private var puyoChain = mutableListOf<List<PuyoBlock>>()
     private var chainIndex = -1
     private var allBlocksStanding = true
     private var nextPuyos = mutableListOf<Puyo>()
-    private var removedPuyos = mutableListOf<List<Block>>()
+    private var removedPuyos = mutableListOf<List<PuyoBlock>>()
 
     val SCREEN_WIDTH = 1500f
     val SCREEN_HEIGHT = 1040f
@@ -37,7 +41,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     val scoreFont = game.generateScoreFont(50)
     val background = Texture(Gdx.files.internal("background.png"))
     val guiBatch = SpriteBatch()
-    val scoring = Scoring()
+    val scoring = PuyoScoring()
 
     private lateinit var puyo: Puyo
 
@@ -51,8 +55,8 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
 
     private fun generatePuyoList(){
         nextPuyos.addAll(listOf(
-                Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)])),
-                Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
+                Puyo(PuyoBlock(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), PuyoBlock(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)])),
+                Puyo(PuyoBlock(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), PuyoBlock(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)]))
         ))
     }
 
@@ -251,7 +255,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         return i >= grid.width || j >= grid.length || i < 0 || j < 0
     }
 
-    private fun findChain(i: Int, j: Int, color: PuyoColors?, index: Int): Boolean{ // sep into 2 methods
+    private fun findChain(i: Int, j: Int, color: PuyoColor?, index: Int): Boolean{ // sep into 2 methods
         if(isOutOfBounds(i, j) || grid.array[i][j] == null || grid.array[i][j]?.color != color ||
            grid.array[i][j]?.marked!!){
             return false; // canFall doesnt work bc puyo first is usually above puyo second before the fall
@@ -271,11 +275,11 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun clearPrevPos(block: Block){
+    private fun clearPrevPos(block: PuyoBlock){
         grid.array[block.x][block.y] = null
     }
 
-    private fun updateMovingPos(block: Block){
+    private fun updateMovingPos(block: PuyoBlock){
         grid.array[block.x][block.y] = block
     }
 
@@ -293,7 +297,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         println()
     }
 
-    private fun canFall(block: Block) : Boolean {
+    private fun canFall(block: PuyoBlock) : Boolean {
         return !isOutOfBounds(block.x, block.y + 1) && grid.array[block.x][block.y + 1] == null
     }
 
@@ -308,7 +312,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         }
         puyo = nextPuyos[0]
         nextPuyos.removeAt(0)
-        nextPuyos.add(Puyo(Block(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), Block(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)])))
+        nextPuyos.add(Puyo(PuyoBlock(grid.width / 2, 0, puyoColors[Random.nextInt(0, puyoColors.size)]), PuyoBlock(grid.width / 2, 1, puyoColors[Random.nextInt(0, puyoColors.size)])))
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
     }
@@ -329,7 +333,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         return dropped
     }
 
-    private fun dropBlock(block: Block){
+    private fun dropBlock(block: PuyoBlock){
         block.isFalling = canFall(block)
         if(block.isFalling){
             clearPrevPos(block)
@@ -365,7 +369,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         updateMovingPos(puyo.first)
     }
 
-    private fun moveBlock(block: Block, direction: Int){
+    private fun moveBlock(block: PuyoBlock, direction: Int){
         clearPrevPos(block)
         block.x += direction
         updateMovingPos(block)

@@ -1,4 +1,4 @@
-package com.puyo
+package com.game
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
@@ -13,7 +13,7 @@ class PuyoPuyoTetris : Game() {
 
     override fun create() {
         batch = SpriteBatch()
-        screen = Screen(this)
+        screen = GameScreen(this)
     }
 
     fun generateTitleFont(size: Int) : BitmapFont {

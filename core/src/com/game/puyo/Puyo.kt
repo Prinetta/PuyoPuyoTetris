@@ -1,6 +1,6 @@
-package com.puyo
+package com.game.puyo
 
-class Puyo(val first: Block, val second: Block){
+class Puyo(val first: PuyoBlock, val second: PuyoBlock){
     var rotateCount = 0
     var dropped = false
 

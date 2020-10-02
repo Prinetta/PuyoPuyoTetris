@@ -1,8 +1,8 @@
-package com.puyo
+package com.game.puyo
 
 private const val TARGET_POINTS = 70.0
 
-class Scoring(){
+class PuyoScoring(){
     private val colorBonuses = createColorBonuses()
     private val chainBonuses = createChainBonuses()
     private val puyoBonuses = createPuyoBonuses()
@@ -36,7 +36,7 @@ class Scoring(){
         println("with $leftover leftover")
     }
 
-    private fun calculateBonus(chains: List<List<Block>>) : Int{
+    private fun calculateBonus(chains: List<List<PuyoBlock>>) : Int{
         if(chains.isEmpty()){
             return 1
         }
@@ -46,7 +46,7 @@ class Scoring(){
         return if(colorBonus + chainPower + puyoBonus == 0) 1 else colorBonus + chainPower + puyoBonus
     }
 
-    fun calculate(chains: List<List<Block>>){
+    fun calculate(chains: List<List<PuyoBlock>>){
         val chainScore = 10 * chains.flatten().size * calculateBonus(chains) // (10 * PC) * (CP + CB + GB)
         score += chainScore
         calculateTrash(chainScore)

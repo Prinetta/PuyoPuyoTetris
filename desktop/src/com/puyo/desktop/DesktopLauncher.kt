@@ -3,7 +3,7 @@ package com.puyo.desktop
 import kotlin.jvm.JvmStatic
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
-import com.puyo.PuyoPuyoTetris
+import com.game.PuyoPuyoTetris
 
 object DesktopLauncher {
     @JvmStatic
