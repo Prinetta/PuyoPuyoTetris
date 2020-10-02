@@ -1,11 +1,15 @@
 package com.puyo
 
-class Scoring(){
-    var score = 0
+private const val TARGET_POINTS = 70.0
 
+class Scoring(){
     private val colorBonuses = createColorBonuses()
     private val chainBonuses = createChainBonuses()
     private val puyoBonuses = createPuyoBonuses()
+
+    private var leftover = 0.0
+    var score = 0
+    var trash = 0
 
     private fun createColorBonuses() : HashMap<Int, Int>{
         return hashMapOf(1 to 0, 2 to 3, 3 to 6, 4 to 12)
@@ -21,6 +25,17 @@ class Scoring(){
         return hashMapOf(4 to 0, 5 to 2, 6 to 3, 7 to 4, 8 to 5, 9 to 6, 10 to 7, 11 to 10)
     }
 
+    private fun calculateTrash(chainScore : Int){
+        val nuisancePoints : Double = chainScore / TARGET_POINTS + leftover
+        trash = nuisancePoints.toInt()
+        leftover = nuisancePoints - trash
+
+        println("the chain score was $chainScore")
+        println("so thats $nuisancePoints nuisancePoints")
+        println("and $trash trash")
+        println("with $leftover leftover")
+    }
+
     private fun calculateBonus(chains: List<List<Block>>) : Int{
         if(chains.isEmpty()){
             return 1
@@ -31,8 +46,10 @@ class Scoring(){
         return if(colorBonus + chainPower + puyoBonus == 0) 1 else colorBonus + chainPower + puyoBonus
     }
 
-    fun calculateScore(chains: List<List<Block>>){
-        score += 10 * chains.flatten().size * calculateBonus(chains) // (10 * PC) * (CP + CB + GB)
+    fun calculate(chains: List<List<Block>>){
+        val chainScore = 10 * chains.flatten().size * calculateBonus(chains) // (10 * PC) * (CP + CB + GB)
+        score += chainScore
+        calculateTrash(chainScore)
     }
 }
 

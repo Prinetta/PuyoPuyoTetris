@@ -60,7 +60,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         game.batch.projectionMatrix = camera.combined
         guiBatch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined;
-        Gdx.gl.glClearColor(27/255f, 18/255f, 64/255f, 1f)
+        Gdx.gl.glClearColor(27 / 255f, 18 / 255f, 64 / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         game.batch.begin()
@@ -100,7 +100,8 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
                 findBigPuyoChain()
                 if(chainIndex == -1){
                     if(removedPuyos.isNotEmpty()){
-                        scoring.calculateScore(removedPuyos)
+                        scoring.calculate(removedPuyos)
+                        sendTrash(scoring.trash)
                     }
                     if(currentTimeMillis() - puyo.dropTime > puyo.speed){
                         if(puyo.canSpawn() && !isColliding(grid.width / 2, 1)){
@@ -124,15 +125,19 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         game.batch.end()
     }
 
+    private fun sendTrash(trash: Int){
+
+    }
+
     private fun drawNextPuyos(){ // (∩｀-´)⊃━☆ﾟ.*･｡ﾟ 　。。数。。
-        game.batch.draw(nextPuyos[0].first.currentSprite, GRID_START_X*1.2f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
-                        GRID_START_Y*0.8f+CELL_SIZE*1.25f, CELL_SIZE, CELL_SIZE)
-        game.batch.draw(nextPuyos[0].second.currentSprite, GRID_START_X*1.2f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
-                        GRID_START_Y*0.8f+CELL_SIZE*1.25f-CELL_SIZE, CELL_SIZE, CELL_SIZE)
-        game.batch.draw(nextPuyos[1].first.currentSprite, GRID_START_X*1.3f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
-                        GRID_START_Y*0.65f+CELL_SIZE, CELL_SIZE*0.75f, CELL_SIZE*0.75f)
-        game.batch.draw(nextPuyos[1].second.currentSprite, GRID_START_X*1.3f+grid.width*CELL_SIZE+CELL_SIZE*0.25f,
-                        GRID_START_Y*0.65f+CELL_SIZE*0.25f, CELL_SIZE*0.75f, CELL_SIZE*0.75f)
+        game.batch.draw(nextPuyos[0].first.currentSprite, GRID_START_X * 1.2f + grid.width * CELL_SIZE + CELL_SIZE * 0.25f,
+                GRID_START_Y * 0.8f + CELL_SIZE * 1.25f, CELL_SIZE, CELL_SIZE)
+        game.batch.draw(nextPuyos[0].second.currentSprite, GRID_START_X * 1.2f + grid.width * CELL_SIZE + CELL_SIZE * 0.25f,
+                GRID_START_Y * 0.8f + CELL_SIZE * 1.25f - CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        game.batch.draw(nextPuyos[1].first.currentSprite, GRID_START_X * 1.3f + grid.width * CELL_SIZE + CELL_SIZE * 0.25f,
+                GRID_START_Y * 0.65f + CELL_SIZE, CELL_SIZE * 0.75f, CELL_SIZE * 0.75f)
+        game.batch.draw(nextPuyos[1].second.currentSprite, GRID_START_X * 1.3f + grid.width * CELL_SIZE + CELL_SIZE * 0.25f,
+                GRID_START_Y * 0.65f + CELL_SIZE * 0.25f, CELL_SIZE * 0.75f, CELL_SIZE * 0.75f)
     }
 
     private fun drawBackground(){
@@ -140,7 +145,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        shapeRenderer.rect(GRID_START_X, GRID_START_Y-(grid.length*CELL_SIZE-CELL_SIZE), grid.width * CELL_SIZE, (grid.length-1) * CELL_SIZE)
+        shapeRenderer.rect(GRID_START_X, GRID_START_Y - (grid.length * CELL_SIZE - CELL_SIZE), grid.width * CELL_SIZE, (grid.length - 1) * CELL_SIZE)
         shapeRenderer.end()
 
         drawNextPuyoBg()
@@ -148,20 +153,20 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawNextPuyoBg(){
-        drawRoundedRect(GRID_START_X*1.2f+grid.width*CELL_SIZE, GRID_START_Y*0.8f, CELL_SIZE*1.5f, CELL_SIZE*2.6f, 10f)
-        drawRoundedRect(GRID_START_X*1.3f+grid.width*CELL_SIZE, GRID_START_Y*0.65f, CELL_SIZE*1.25f, CELL_SIZE*2f, 10f)
+        drawRoundedRect(GRID_START_X * 1.2f + grid.width * CELL_SIZE, GRID_START_Y * 0.8f, CELL_SIZE * 1.5f, CELL_SIZE * 2.6f, 10f)
+        drawRoundedRect(GRID_START_X * 1.3f + grid.width * CELL_SIZE, GRID_START_Y * 0.65f, CELL_SIZE * 1.25f, CELL_SIZE * 2f, 10f)
     }
 
     private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        shapeRenderer.rect(x + radius, y + radius, width - 2*radius, height - 2*radius);
+        shapeRenderer.rect(x + radius, y + radius, width - 2 * radius, height - 2 * radius);
 
         // Four side rectangles, in clockwise order
-        shapeRenderer.rect(x + radius, y, width - 2*radius, radius);
-        shapeRenderer.rect(x + width - radius, y + radius, radius, height - 2*radius);
-        shapeRenderer.rect(x + radius, y + height - radius, width - 2*radius, radius);
-        shapeRenderer.rect(x, y + radius, radius, height - 2*radius);
+        shapeRenderer.rect(x + radius, y, width - 2 * radius, radius);
+        shapeRenderer.rect(x + width - radius, y + radius, radius, height - 2 * radius);
+        shapeRenderer.rect(x + radius, y + height - radius, width - 2 * radius, radius);
+        shapeRenderer.rect(x, y + radius, radius, height - 2 * radius);
 
         // Four arches, clockwise too
         shapeRenderer.arc(x + radius, y + radius, radius, 180f, 90f);
@@ -183,16 +188,16 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
             } else {
                 for(block in chain){
                     var s = ""
-                    if(!isOutOfBounds(block.x, block.y-1) && chain.contains(grid.array[block.x][block.y-1])){
+                    if(!isOutOfBounds(block.x, block.y - 1) && chain.contains(grid.array[block.x][block.y - 1])){
                         s += "u"
                     }
-                    if(!isOutOfBounds(block.x+1, block.y) && chain.contains(grid.array[block.x+1][block.y])){
+                    if(!isOutOfBounds(block.x + 1, block.y) && chain.contains(grid.array[block.x + 1][block.y])){
                         s += "r"
                     }
-                    if(!isOutOfBounds(block.x, block.y+1) && chain.contains(grid.array[block.x][block.y+1])){
+                    if(!isOutOfBounds(block.x, block.y + 1) && chain.contains(grid.array[block.x][block.y + 1])){
                         s += "d"
                     }
-                    if(!isOutOfBounds(block.x-1, block.y) && chain.contains(grid.array[block.x-1][block.y])){
+                    if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid.array[block.x - 1][block.y])){
                         s += "l"
                     }
                     block.currentSprite = if(s.isEmpty()) block.sprites.hashMap["main"] else block.sprites.hashMap[s]
@@ -289,7 +294,7 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun canFall(block: Block) : Boolean {
-        return !isOutOfBounds(block.x, block.y+1) && grid.array[block.x][block.y+1] == null
+        return !isOutOfBounds(block.x, block.y + 1) && grid.array[block.x][block.y + 1] == null
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{
@@ -409,11 +414,11 @@ class Screen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTitle(){
-        titleFont.draw(game.batch, "Puyo Puyo", GRID_START_X*1.27f, SCREEN_HEIGHT*0.94f)
+        titleFont.draw(game.batch, "Puyo Puyo", GRID_START_X * 1.27f, SCREEN_HEIGHT * 0.94f)
     }
 
     private fun drawScore(){
-        scoreFont.draw(game.batch, scoring.score.toString(), GRID_START_X*1.6f, GRID_START_Y-GRID_START_Y*0.87f)
+        scoreFont.draw(game.batch, scoring.score.toString(), GRID_START_X * 1.6f, GRID_START_Y - GRID_START_Y * 0.87f)
     }
 
     override fun show() {
