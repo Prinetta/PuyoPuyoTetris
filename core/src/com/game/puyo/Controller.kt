@@ -2,11 +2,12 @@ package com.game.puyo
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.game.Garbage
 import com.game.Timer
 
-class Controller(width: Int, length: Int, private val timer: Timer) {
+class Controller(private val timer: Timer, garbage: Garbage) {
 
-    private val puyoGame = PuyoGame(width, length)
+    private val puyoGame = PuyoGame() // and tetris
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
@@ -22,7 +23,9 @@ class Controller(width: Int, length: Int, private val timer: Timer) {
                 puyoGame.findBigPuyoChain()
                 if(!puyoGame.hasFoundChain()){
                     puyoGame.calculateChainScore()
-                    if(timer.hasPuyoDropTimePassed(puyoGame.puyo)){
+                    if(puyoGame.hasReceivedGarbage()){
+                        puyoGame.dropGarbage()
+                    } else if(timer.hasPuyoDropTimePassed(puyoGame.puyo)){
                         if(puyoGame.allowSpawn()){
                             puyoGame.spawnPuyo()
                         }

@@ -9,7 +9,7 @@ class PuyoScoring(){
 
     private var leftover = 0.0
     var score = 0
-    var trash = 0
+    var garbage = 0
 
     private fun createColorBonuses() : HashMap<Int, Int>{
         return hashMapOf(1 to 0, 2 to 3, 3 to 6, 4 to 12)
@@ -27,12 +27,12 @@ class PuyoScoring(){
 
     private fun calculateTrash(chainScore : Int){
         val nuisancePoints : Double = chainScore / TARGET_POINTS + leftover
-        trash = nuisancePoints.toInt()
-        leftover = nuisancePoints - trash
+        garbage = nuisancePoints.toInt()
+        leftover = nuisancePoints - garbage
 
         println("the chain score was $chainScore")
         println("so thats $nuisancePoints nuisancePoints")
-        println("and $trash trash")
+        println("and $garbage trash")
         println("with $leftover leftover")
     }
 

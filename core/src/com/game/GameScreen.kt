@@ -19,7 +19,7 @@ const val GRID_START_X = SCREEN_WIDTH*0.1f
 const val GRID_START_Y = SCREEN_HEIGHT*0.13f + GRID_LENGTH*CELL_SIZE-CELL_SIZE
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
-    private val controller = Controller(GRID_WIDTH, GRID_LENGTH, Timer())
+    private val controller = Controller(Timer(), Garbage()) // also add Tetris later
 
     private var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     private var shapeRenderer = ShapeRenderer()

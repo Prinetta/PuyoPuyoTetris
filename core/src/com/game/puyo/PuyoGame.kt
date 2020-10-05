@@ -1,16 +1,24 @@
 package com.game.puyo
 
+import com.game.GRID_LENGTH
+import com.game.GRID_WIDTH
+import com.game.Garbage
+import kotlin.math.abs
 import kotlin.random.Random
 
-class PuyoGame (val width: Int, val length: Int){
+class PuyoGame (){
     private var puyoChain = mutableListOf<List<PuyoBlock>>()
     private var removedPuyos = mutableListOf<List<PuyoBlock>>()
     var nextPuyos = mutableListOf<Puyo>()
 
+    private val width = GRID_WIDTH
+    private val length = GRID_LENGTH
     private var allBlocksStanding = true
-    var chainIndex = -1
+    private var chainIndex = -1
+    private var garbage = 0
     lateinit var puyo: Puyo
     val grid = Array(width) {Array<PuyoBlock?>(length) {null} }
+    var gameOver = false
 
     val scoring = PuyoScoring()
 
@@ -30,7 +38,7 @@ class PuyoGame (val width: Int, val length: Int){
     fun calculateChainScore(){
         if(removedPuyos.isNotEmpty()){
             scoring.calculate(removedPuyos)
-            //sendTrash(scoring.trash)
+            sendGarbage(scoring.garbage)
         }
     }
 
@@ -119,6 +127,41 @@ class PuyoGame (val width: Int, val length: Int){
                 grid[i][j]?.marked = false
             }
         }
+    }
+
+    fun placeGarbageBlock(){
+        for (i in 0 until width){
+            for (j in 0 until length){
+                if(!isColliding(i, j)){
+                    grid[i][j] = PuyoBlock(i, j, )
+                }
+            }
+        }
+    }
+
+    fun dropGarbage(){
+        val garbageBlocks = mutableListOf<PuyoBlock>()
+
+
+    }
+
+    fun hasReceivedGarbage() : Boolean{
+        return garbage > 0
+    }
+
+    fun sendGarbage(amount: Int){
+        if(amount == 0){
+            return
+        }
+        val garbage = Garbage.puyoToTetris.getOrElse(amount) {
+            Garbage.puyoToTetris[Garbage.puyoToTetris.keys.filter{ key -> key < amount }.lastIndex] // converts garbage to tetris
+        }!!
+        //tetris.receiveGarbage(amount)
+        receiveGarbage(garbage)
+    }
+
+    fun receiveGarbage(amount: Int){
+        garbage = amount
     }
 
     private fun clearPrevPos(block: PuyoBlock){
