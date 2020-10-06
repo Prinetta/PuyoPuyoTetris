@@ -103,7 +103,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawTetrisGrid(){
         Gdx.gl.glEnable(GL20.GL_BLEND)
-        shapeRenderer.color = Color(Color.rgba8888(0.71f, 0.71f, 0.71f, 0.2f))
+        shapeRenderer.setColor(78f/255, 65f/255, 83f/255, 1f)
         shapeRenderer.begin()
 
         for (i in 0..tetrisGame.rows - 1) { // invisible rows are nice
