@@ -47,4 +47,19 @@ class PuyoPuyoTetris : Game() {
         return font
     }
 
+    fun generateTetrisNextFont(size: Int): BitmapFont {
+        val generator = FreeTypeFontGenerator(Gdx.files.internal("Vera.ttf"))
+        val param = FreeTypeFontGenerator.FreeTypeFontParameter()
+        param.size = size
+        param.shadowColor = Color.BLACK;
+        param.shadowOffsetX = 3;
+        param.shadowOffsetY = 3;
+
+
+        val font = generator.generateFont(param)
+        generator.dispose()
+
+        return font
+    }
+
 }
