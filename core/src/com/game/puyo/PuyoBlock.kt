@@ -2,7 +2,7 @@ package com.game.puyo
 
 import com.game.Block
 
-class PuyoBlock(x: Int, y: Int, val color: PuyoColor) : Block(x, y){
+open class PuyoBlock(x: Int, y: Int, val color : PuyoColor) : Block(x, y){
     var marked = false
     val sprites = ColorSprite.valueOf(color.toString()).sprite
     override var currentSprite = sprites.get("main")

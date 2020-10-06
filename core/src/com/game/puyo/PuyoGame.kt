@@ -127,19 +127,26 @@ class PuyoGame (){
         }
     }
 
-    fun placeGarbageBlock(){
+    private fun placeGarbageBlocks(blocks: MutableList<GarbageBlock>){
         for (i in 0 until width){
             for (j in 0 until length){
-                if(!isColliding(i, j)){
-                    //grid[i][j] = PuyoBlock(i, j, )
+                if(!isColliding(i, j) && blocks.isNotEmpty()){
+                    val block = blocks.first()
+                    block.set(i, j)
+                    grid[i][j] = block
+                    blocks.remove(block)
                 }
             }
+        }
+        if(blocks.isNotEmpty()){
+            gameOver = true
+            println("you lost")
         }
     }
 
     fun dropGarbage(){
-        val garbageBlocks = mutableListOf<PuyoBlock>()
-
+        val garbageBlocks = MutableList(scoring.garbage) { GarbageBlock(0, 0) }
+        placeGarbageBlocks(garbageBlocks)
         scoring.garbage = 0
     }
 
