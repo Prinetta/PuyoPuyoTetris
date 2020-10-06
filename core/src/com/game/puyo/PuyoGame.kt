@@ -206,7 +206,7 @@ class PuyoGame (){
         }
         val block = grid[i][j]
         if(block == null || block.marked || block !is PuyoBlock || block.color != color){
-            return false;
+            return false
         }
         if(index < puyoChain.size){
             puyoChain[index] = puyoChain[index] + block

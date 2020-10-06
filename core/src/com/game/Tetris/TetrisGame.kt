@@ -35,7 +35,6 @@ class TetrisGame() {
     var cells: Array<com.badlogic.gdx.utils.Array<TetrisBlock>> = Array(columns) {com.badlogic.gdx.utils.Array<TetrisBlock>(rows)}
 
     init {
-
         for (row in cells) {
             for (i in 0 until rows) {
                 row.add(null)
@@ -95,14 +94,14 @@ class TetrisGame() {
     }
     fun spawnTetromino(){
         currentTetromino = nextTetrominos.pop()
-        var tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
+        val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
         nextTetrominos.insert(0, Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
         addTetromino(currentTetromino)
     }
 
     fun createNextTetrominos() {
         nextTetrominos.addAll(null, null, null, null, null)
-        var tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
+        val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
         for (i in 0 until nextTetrominos.size) {
             nextTetrominos[i] = Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite)
         }
@@ -186,7 +185,7 @@ class TetrisGame() {
     fun moveLeft(block: Tetromino) {
         if (block.isFalling && !leftIsBlocked(block)) {
             for (i in 0 until block.shape[0].size) {
-                for (j in 0 until block.shape.size) {
+                for (j in block.shape.indices) {
                     if(block.shape[i][j] != null) {
                         cells[block.shape[i][j].column - 1][block.shape[i][j].row] = block.shape[i][j]
                         cells[block.shape[i][j].column][block.shape[i][j].row] = null
@@ -234,11 +233,11 @@ class TetrisGame() {
     }
 
     fun wallKickDef(block: Tetromino, rotation: Char) {
-        var oldState: Char = block.rotationState
+        val oldState: Char = block.rotationState
         if (rotation == 'L') block.turnLeft()
         else if (rotation == 'R') block.turnRight()
 
-        var map: MutableMap<Char, Array<Pair<Int, Int>>>
+        val map: MutableMap<Char, Array<Pair<Int, Int>>>
         if (block.type != 'I') map = offsetsMap
         else map = iOffsetsMap
 
@@ -293,7 +292,7 @@ class TetrisGame() {
     }
 
     fun updateRows() {
-        var fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
+        val fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
         if (fullRows.size > 0) {
             for (row in fullRows) {
                 for (j in row downTo 1) {
@@ -301,8 +300,8 @@ class TetrisGame() {
                         cells[i][j] = cells[i][j - 1]
                     }
                 }
-                for (i in 0 until cells.size) {
-                    cells[i][0] = null
+                for (cell in cells) {
+                    cell[0] = null
                 }
             }
         }
@@ -311,10 +310,10 @@ class TetrisGame() {
     fun getFullRows(): com.badlogic.gdx.utils.Array<Int> {
         var rowIsFull: Boolean = true
         // LibGDX Array because apparently ArrayList takes memory space
-        var fullRows: com.badlogic.gdx.utils.Array<Int> = com.badlogic.gdx.utils.Array()
+        val fullRows: com.badlogic.gdx.utils.Array<Int> = com.badlogic.gdx.utils.Array()
         for (i in 0 until cells[0].size) {
-            for (j in 0 until cells.size) {
-                if (cells[j][i] == null) rowIsFull = false
+            for (cell in cells) {
+                if (cell[i] == null) rowIsFull = false
             }
             if (rowIsFull) {
                 fullRows.add(i)
