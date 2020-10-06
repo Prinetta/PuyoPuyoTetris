@@ -3,7 +3,6 @@ package com.game.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Block
-import com.game.Garbage
 import com.game.Timer
 
 class Controller(private val timer: Timer) {
@@ -37,6 +36,7 @@ class Controller(private val timer: Timer) {
             timer.resetChainTime()
         }
         puyoGame.connectPuyos()
+        puyoGame.updateSprites()
         puyoGame.unmark()
     }
 
