@@ -10,6 +10,7 @@ import kotlin.random.Random
 class TetrisGame() {
     var nextTetrominos: com.badlogic.gdx.utils.Array<Tetromino> = com.badlogic.gdx.utils.Array(5)
     lateinit var currentTetromino: Tetromino
+    var heldTetromino: Tetromino? = null
 
     // y-offsets have to be reversed from srs system
     var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
@@ -91,6 +92,10 @@ class TetrisGame() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
             if (currentTetromino.isFalling) turnRight(currentTetromino)
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            holdTetromino()
+        }
     }
     fun spawnTetromino(){
         currentTetromino = nextTetrominos.pop()
@@ -104,6 +109,17 @@ class TetrisGame() {
         val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
         for (i in 0 until nextTetrominos.size) {
             nextTetrominos[i] = Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite)
+        }
+    }
+
+    fun holdTetromino() {
+        if (heldTetromino != null) {
+            var temp: Tetromino = heldTetromino!!
+            heldTetromino = currentTetromino
+            currentTetromino = temp
+        } else {
+            heldTetromino = currentTetromino
+            spawnTetromino()
         }
     }
 
