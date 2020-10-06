@@ -2,10 +2,11 @@ package com.game.puyo
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.game.Block
 import com.game.Garbage
 import com.game.Timer
 
-class Controller(private val timer: Timer, garbage: Garbage) {
+class Controller(private val timer: Timer) {
 
     private val puyoGame = PuyoGame() // and tetris
 
@@ -55,7 +56,7 @@ class Controller(private val timer: Timer, garbage: Garbage) {
         }
     }
 
-    fun getPuyoBlockAt(i: Int, j: Int): PuyoBlock?{
+    fun getBlockAt(i: Int, j: Int): Block?{
         return puyoGame.grid[i][j]
     }
 

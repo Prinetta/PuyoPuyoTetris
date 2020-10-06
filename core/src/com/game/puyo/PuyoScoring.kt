@@ -25,7 +25,7 @@ class PuyoScoring(){
         return hashMapOf(4 to 0, 5 to 2, 6 to 3, 7 to 4, 8 to 5, 9 to 6, 10 to 7, 11 to 10)
     }
 
-    private fun calculateTrash(chainScore : Int){
+    private fun calculateGarbage(chainScore : Int){
         val nuisancePoints : Double = chainScore / TARGET_POINTS + leftover
         garbage = nuisancePoints.toInt()
         leftover = nuisancePoints - garbage
@@ -44,7 +44,7 @@ class PuyoScoring(){
     fun calculate(chains: List<List<PuyoBlock>>){
         val chainScore = 10 * chains.flatten().size * calculateBonus(chains) // (10 * PC) * (CP + CB + GB)
         score += chainScore
-        calculateTrash(chainScore)
+        calculateGarbage(chainScore)
     }
 }
 

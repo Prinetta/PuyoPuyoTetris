@@ -8,10 +8,6 @@ abstract class Sprite(pack: String) {
     abstract var hashMap : HashMap<String, TextureRegion>
 
     fun get(key: String) : TextureRegion{
-        return if(hashMap[key] == null){
-            hashMap["main"]!!
-        } else {
-            hashMap[key]!!
-        }
+        return hashMap.getOrDefault(key, hashMap["main"]!!)
     }
 }

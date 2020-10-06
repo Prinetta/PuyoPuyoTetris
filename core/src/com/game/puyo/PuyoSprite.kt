@@ -13,6 +13,6 @@ data class PuyoSprite (val color: PuyoColor) : Sprite("puyos.pack") {
         "rd" to atlas.findRegion("${colorLetter}rd"), "ur" to atlas.findRegion("${colorLetter}ur"), "dl" to atlas.findRegion("${colorLetter}dl"),
         "ul" to atlas.findRegion("${colorLetter}ul"), "udl" to atlas.findRegion("${colorLetter}udl"), "rdl" to atlas.findRegion("${colorLetter}rdl"),
         "url" to atlas.findRegion("${colorLetter}url"), "urd" to atlas.findRegion("${colorLetter}urd"), "s" to atlas.findRegion("${colorLetter}s"),
-        "g" to atlas.findRegion("garbage"))
+        "g" to atlas.findRegion("g"))
     }
 }

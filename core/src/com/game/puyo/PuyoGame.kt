@@ -1,14 +1,15 @@
 package com.game.puyo
 
+import com.game.Block
 import com.game.GRID_LENGTH
 import com.game.GRID_WIDTH
 import com.game.Garbage
-import kotlin.math.abs
 import kotlin.random.Random
 
 class PuyoGame (){
     private var puyoChain = mutableListOf<List<PuyoBlock>>()
-    private var removedPuyos = mutableListOf<List<PuyoBlock>>()
+    private var puyosToRemove = mutableListOf<List<PuyoBlock>>()
+    private var garbageToRemove = mutableListOf<GarbageBlock>()
     var nextPuyos = mutableListOf<Puyo>()
 
     private val width = GRID_WIDTH
@@ -16,7 +17,7 @@ class PuyoGame (){
     private var allBlocksStanding = true
     private var chainIndex = -1
     lateinit var puyo: Puyo
-    val grid = Array(width) {Array<PuyoBlock?>(length) {null} }
+    val grid = Array(width) {Array<Block?>(length) {null} }
     var gameOver = false
 
     val scoring = PuyoScoring()
@@ -35,10 +36,10 @@ class PuyoGame (){
     }
 
     fun calculateChainScore(){
-        if(removedPuyos.isNotEmpty()){
-            scoring.calculate(removedPuyos)
+        if(puyosToRemove.isNotEmpty()){
+            scoring.calculate(puyosToRemove)
             sendGarbage(scoring.garbage)
-            removedPuyos.clear()
+            puyosToRemove.clear()
         }
     }
 
@@ -112,6 +113,7 @@ class PuyoGame (){
         puyoChain.forEachIndexed { index, chain ->
             if(chain.size > 3 && !(chain.contains(puyo.first) && puyo.first.isFalling) && !(chain.contains(puyo.second) && puyo.second.isFalling)){
                 chainIndex = index
+                findAdjacentGarbage()
                 return index
             }
         }
@@ -128,12 +130,12 @@ class PuyoGame (){
     }
 
     private fun placeGarbageBlocks(blocks: MutableList<GarbageBlock>){
-        for (i in 0 until width){
-            for (j in 0 until length){
-                if(!isColliding(i, j) && blocks.isNotEmpty()){
+        for (i in 0 until length){
+            for (j in 0 until width){
+                if(!isColliding(j, i) && blocks.isNotEmpty()){
                     val block = blocks.first()
-                    block.set(i, j)
-                    grid[i][j] = block
+                    block.set(j, i)
+                    grid[j][i] = block
                     blocks.remove(block)
                 }
             }
@@ -147,6 +149,7 @@ class PuyoGame (){
     fun dropGarbage(){
         val garbageBlocks = MutableList(scoring.garbage) { GarbageBlock(0, 0) }
         placeGarbageBlocks(garbageBlocks)
+        dropRemainingBlocks()
         scoring.garbage = 0
     }
 
@@ -155,13 +158,13 @@ class PuyoGame (){
     }
 
     fun sendGarbage(amount: Int){
-        if(amount < 4){
+        if(amount == 0){
             return
         }
-        println()
         val garbage = Garbage.puyoToTetris.getOrElse(amount) {
-            Garbage.puyoToTetris[Garbage.puyoToTetris.keys.last { it < 21 }] // converts garbage to tetris
-        }!!
+            Garbage.puyoToTetris.getOrDefault(Garbage.puyoToTetris.keys.last { it < 21 }, 1) // converts garbage to tetris
+        }
+        println(garbage)
         //tetris.receiveGarbage(amount)
         receiveGarbage(garbage)
     }
@@ -170,11 +173,11 @@ class PuyoGame (){
         scoring.garbage = amount
     }
 
-    private fun clearPrevPos(block: PuyoBlock){
+    private fun clearPrevPos(block: Block){
         grid[block.x][block.y] = null
     }
 
-    private fun updateMovingPos(block: PuyoBlock){
+    private fun updateMovingPos(block: Block){
         grid[block.x][block.y] = block
     }
 
@@ -182,7 +185,7 @@ class PuyoGame (){
         return i !in 0 until width || j !in 0 until length
     }
 
-    private fun canFall(block: PuyoBlock) : Boolean {
+    private fun canFall(block: Block) : Boolean {
         return !isOutOfBounds(block.x, block.y + 1) && grid[block.x][block.y + 1] == null
     }
 
@@ -199,13 +202,17 @@ class PuyoGame (){
     }
 
     private fun findChain(i: Int, j: Int, color: PuyoColor?, index: Int): Boolean{
-        if(isOutOfBounds(i, j) || grid[i][j] == null || grid[i][j]?.color != color || grid[i][j]?.marked!!){
+        if(isOutOfBounds(i, j)){
+            return false
+        }
+        val block = grid[i][j]
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color){
             return false;
         }
         if(index < puyoChain.size){
-            puyoChain[index] = puyoChain[index] + grid[i][j]!!
+            puyoChain[index] = puyoChain[index] + block
         } else {
-            puyoChain.add(listOf(grid[i][j]!!))
+            puyoChain.add(listOf(block))
         }
         grid[i][j]?.marked = true
 
@@ -220,19 +227,44 @@ class PuyoGame (){
         puyoChain.clear()
         for(i in 0 until width) {
             for (j in 0 until length) {
-                if(!puyoChain.flatten().contains(grid[i][j])){
+                val block = grid[i][j]
+                if(block is PuyoBlock && !puyoChain.flatten().contains(block)){
                     val index = puyoChain.size
-                    findChain(i, j, grid[i][j]?.color, index)
+                    findChain(i, j, block.color, index)
                 }
             }
         }
     }
 
+    private fun findAdjacentGarbage(){
+        for (block in puyoChain[chainIndex]){
+            if(!isOutOfBounds(block.x, block.y-1)){
+                val garbage = grid[block.x][block.y-1]
+                if(garbage is GarbageBlock) garbageToRemove.add(garbage)
+            }
+            if(!isOutOfBounds(block.x, block.y+1)){
+                val garbage = grid[block.x][block.y+1]
+                if(garbage is GarbageBlock) garbageToRemove.add(garbage)
+            }
+            if(!isOutOfBounds(block.x-1, block.y)){
+                val garbage = grid[block.x-1][block.y]
+                if(garbage is GarbageBlock) garbageToRemove.add(garbage)
+            }
+            if(!isOutOfBounds(block.x-1, block.y)){
+                val garbage = grid[block.x-1][block.y]
+                if(garbage is GarbageBlock) garbageToRemove.add(garbage)
+            }
+        }
+
+        if(garbageToRemove.isNotEmpty()) garbageToRemove.forEach {it.isBeingRemoved = true}
+    }
+
     private fun removePuyoChain(){
         for(block in puyoChain[chainIndex]) {
             grid[block.x][block.y] = null
+            if(garbageToRemove.isNotEmpty()) garbageToRemove.forEach { grid[it.x][it.y] = null }
         }
-        removedPuyos.add(puyoChain[chainIndex])
+        puyosToRemove.add(puyoChain[chainIndex])
         puyoChain.removeAt(chainIndex)
         chainIndex = -1
     }
@@ -253,7 +285,7 @@ class PuyoGame (){
         return dropped
     }
 
-    private fun dropBlock(block: PuyoBlock){
+    private fun dropBlock(block: Block){
         block.isFalling = canFall(block)
         if(block.isFalling){
             clearPrevPos(block)
@@ -275,7 +307,7 @@ class PuyoGame (){
             } else if (chain.size >= 4){
                 for(block in chain){
                     block.currentSprite = block.sprites.get("s")
-                    block.beingRemoved = true
+                    block.isBeingRemoved = true
                 }
             } else {
                 for(block in chain){

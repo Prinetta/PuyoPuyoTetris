@@ -19,7 +19,7 @@ const val GRID_START_X = SCREEN_WIDTH*0.1f
 const val GRID_START_Y = SCREEN_HEIGHT*0.13f + GRID_LENGTH*CELL_SIZE-CELL_SIZE
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
-    private val controller = Controller(Timer(), Garbage()) // also add Tetris later
+    private val controller = Controller(Timer()) // also add Tetris later
 
     private var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     private var shapeRenderer = ShapeRenderer()
@@ -113,21 +113,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         val c = game.batch.color
         for(i in 0 until GRID_WIDTH){
             for(j in 0 until GRID_LENGTH){
-                val puyoBlock = controller.getPuyoBlockAt(i, j)
-                if(puyoBlock == null || j == 0){
+                val block = controller.getBlockAt(i, j)
+                if(block == null || j == 0){
                     continue
                 }
-                if(puyoBlock.flicker > 0 || puyoBlock.beingRemoved) {
-                    if (puyoBlock.flicker > 5) {
+                if(block.isBeingRemoved || (block is PuyoBlock && block.flicker > 0 )) {
+                    if (block.flicker > 5) {
                         game.batch.setColor(c.r, c.g, c.b, 1f)
                     } else {
                         game.batch.setColor(c.r, c.g, c.b, 0.6f)
                     }
-                    puyoBlock.addFlicker()
+                    block.addFlicker()
                 } else {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
-                game.batch.draw(puyoBlock.currentSprite,
+                game.batch.draw(block.currentSprite,
                         GRID_START_X + i * CELL_SIZE,
                         GRID_START_Y - j * CELL_SIZE,
                         CELL_SIZE, CELL_SIZE)
