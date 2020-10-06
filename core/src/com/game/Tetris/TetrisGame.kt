@@ -46,7 +46,7 @@ class TetrisGame() {
     }
 
     fun handleInputs(delta: Float) {
-        if (dropTetrominoTimer > 0.6f) {
+        if (dropTetrominoTimer > 0.4f) {
             if (currentTetromino.isFalling) {
                 dropTetromino(currentTetromino)
             } else if(!isFull()) {
@@ -57,39 +57,39 @@ class TetrisGame() {
         }
         else dropTetrominoTimer += delta
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
             moveLeft(currentTetromino)
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             moveRight(currentTetromino)
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
             if (!tetrominoLanded(currentTetromino)) dropTetromino(currentTetromino)
             if (currentTetromino.isFalling) dropTetrominoTimer = 0f
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.K)) {
             if (!tetrominoLanded(currentTetromino)) {
                 downKeyHeldTimer += delta + 0.02f
-                if (downKeyHeldTimer > 0.6f) dropTetrominoTimer += 0.2f
+                if (downKeyHeldTimer > 0.4f) dropTetrominoTimer += 0.2f
             }
         } else downKeyHeldTimer = 0f
 
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            if (currentTetromino.isFalling) dropTetrominoTimer = 0.5f
+        if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+            if (currentTetromino.isFalling) dropTetrominoTimer = 0.3f
             while (currentTetromino.isFalling) {
                 dropTetromino(currentTetromino)
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
             if (currentTetromino.isFalling) turnLeft(currentTetromino)
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
             if (currentTetromino.isFalling) turnRight(currentTetromino)
         }
     }
