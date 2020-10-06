@@ -7,7 +7,7 @@ import com.game.Tetris.TetrisSprite
 import kotlin.random.Random
 
 
-class TetrisControl() {
+class TetrisGame() {
     var nextTetrominos: com.badlogic.gdx.utils.Array<Tetromino> = com.badlogic.gdx.utils.Array(5)
     lateinit var currentTetromino: Tetromino
 
