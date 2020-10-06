@@ -45,8 +45,8 @@ class Controller(private val timer: Timer) {
             when {
                 Gdx.input.isKeyPressed(Input.Keys.A) -> movePuyo(-1)
                 Gdx.input.isKeyPressed(Input.Keys.D) -> movePuyo(1)
-                Gdx.input.isKeyPressed(Input.Keys.E) -> rotatePuyo(1)
-                Gdx.input.isKeyPressed(Input.Keys.Q) -> rotatePuyo(-1)
+                Gdx.input.isKeyPressed(Input.Keys.H) -> rotatePuyo(1)
+                Gdx.input.isKeyPressed(Input.Keys.G) -> rotatePuyo(-1)
             }
             timer.resetInputTime()
         } else if(Gdx.input.isKeyPressed(Input.Keys.S)){

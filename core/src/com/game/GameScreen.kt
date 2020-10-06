@@ -58,7 +58,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawPuyoBg()
         drawTetrisGridBackground()
         shapeRenderer.setAutoShapeType(true)
-        //drawNextBorders()
         drawTetrisGrid()
 
         game.batch.begin()
@@ -152,35 +151,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             drawRoundedRect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y-i*(TC.CELL_SIZE), TC.CELL_SIZE * 3.5f, TC.CELL_SIZE * 2.5f, 10f)
         }
         Gdx.gl.glDisable(GL20.GL_BLEND)
-    }
-
-    private fun drawNextBorders(){
-        shapeRenderer.setAutoShapeType(true)
-        shapeRenderer.begin()
-        Gdx.gl.glEnable(GL20.GL_BLEND) // allows changing opacity I guess
-        shapeRenderer.color = Color.LIGHT_GRAY
-
-        // main next block field
-        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4.5f),
-                TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 5f), TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4.5f), 1f)
-        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 5f), TC.NEXT_BLOCK_FIELD_Y, 1f)
-        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4.5f), 1f)
-        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 5f), TC.NEXT_BLOCK_FIELD_Y,
-                TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 5f), TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4.5f), 1f)
-
-        // secondary next blocks field
-        for (i in 0..9 step 3) {
-            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE),
-                    TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE), 1f)
-            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE),
-                    TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE), 1f)
-            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE),
-                    TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE), 1f)
-            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE),
-                    TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE), 1f)
-        }
-        Gdx.gl.glDisable(GL20.GL_BLEND)
-        shapeRenderer.end()
     }
 
     private fun sendTrash(trash: Int){
