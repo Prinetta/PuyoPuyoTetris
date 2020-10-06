@@ -15,7 +15,6 @@ class PuyoGame (){
     private val length = GRID_LENGTH
     private var allBlocksStanding = true
     private var chainIndex = -1
-    private var garbage = 0
     lateinit var puyo: Puyo
     val grid = Array(width) {Array<PuyoBlock?>(length) {null} }
     var gameOver = false
@@ -39,6 +38,7 @@ class PuyoGame (){
         if(removedPuyos.isNotEmpty()){
             scoring.calculate(removedPuyos)
             sendGarbage(scoring.garbage)
+            removedPuyos.clear()
         }
     }
 
@@ -98,8 +98,6 @@ class PuyoGame (){
     }
 
     fun spawnPuyo(){
-        removedPuyos.clear()
-
         val puyoColors = PuyoColor.values()
         puyo = nextPuyos[0]
         nextPuyos.removeAt(0)
@@ -133,7 +131,7 @@ class PuyoGame (){
         for (i in 0 until width){
             for (j in 0 until length){
                 if(!isColliding(i, j)){
-                    grid[i][j] = PuyoBlock(i, j, )
+                    //grid[i][j] = PuyoBlock(i, j, )
                 }
             }
         }
@@ -142,15 +140,15 @@ class PuyoGame (){
     fun dropGarbage(){
         val garbageBlocks = mutableListOf<PuyoBlock>()
 
-
+        scoring.garbage = 0
     }
 
     fun hasReceivedGarbage() : Boolean{
-        return garbage > 0
+        return scoring.garbage > 0
     }
 
     fun sendGarbage(amount: Int){
-        if(amount == 0){
+        if(amount < 4){
             return
         }
         val garbage = Garbage.puyoToTetris.getOrElse(amount) {
@@ -161,7 +159,7 @@ class PuyoGame (){
     }
 
     fun receiveGarbage(amount: Int){
-        garbage = amount
+        scoring.garbage = amount
     }
 
     private fun clearPrevPos(block: PuyoBlock){

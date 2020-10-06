@@ -29,11 +29,6 @@ class PuyoScoring(){
         val nuisancePoints : Double = chainScore / TARGET_POINTS + leftover
         garbage = nuisancePoints.toInt()
         leftover = nuisancePoints - garbage
-
-        println("the chain score was $chainScore")
-        println("so thats $nuisancePoints nuisancePoints")
-        println("and $garbage trash")
-        println("with $leftover leftover")
     }
 
     private fun calculateBonus(chains: List<List<PuyoBlock>>) : Int{

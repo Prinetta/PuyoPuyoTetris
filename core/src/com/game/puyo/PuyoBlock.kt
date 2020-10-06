@@ -1,6 +1,8 @@
 package com.game.puyo
 
-class PuyoBlock(var x: Int, var y: Int, val color: PuyoColor){
+import com.game.Block
+
+class PuyoBlock(x: Int, y: Int, val color: PuyoColor) : Block(x, y){
     var isFalling = true
     var marked = false
     val sprites = ColorSprite.valueOf(color.toString()).sprite
