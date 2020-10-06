@@ -3,10 +3,9 @@ package com.game.puyo
 import com.game.Block
 
 class PuyoBlock(x: Int, y: Int, val color: PuyoColor) : Block(x, y){
-    var isFalling = true
     var marked = false
     val sprites = ColorSprite.valueOf(color.toString()).sprite
-    var currentSprite = sprites.hashMap["main"]
+    override var currentSprite = sprites.get("main")
     var flicker = 0
     var beingRemoved = false
 

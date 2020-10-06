@@ -151,8 +151,9 @@ class PuyoGame (){
         if(amount < 4){
             return
         }
+        println()
         val garbage = Garbage.puyoToTetris.getOrElse(amount) {
-            Garbage.puyoToTetris[Garbage.puyoToTetris.keys.filter{ key -> key < amount }.lastIndex] // converts garbage to tetris
+            Garbage.puyoToTetris[Garbage.puyoToTetris.keys.last { it < 21 }] // converts garbage to tetris
         }!!
         //tetris.receiveGarbage(amount)
         receiveGarbage(garbage)
@@ -284,7 +285,7 @@ class PuyoGame (){
                     if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid[block.x - 1][block.y])){
                         s += "l"
                     }
-                    block.currentSprite = if(s.isEmpty()) block.sprites.hashMap["main"] else block.sprites.hashMap[s]
+                    block.currentSprite = if(s.isEmpty()) block.sprites.get("main") else block.sprites.get(s)
                 }
             }
         }

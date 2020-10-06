@@ -1,480 +1,486 @@
-
 puyos.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-yv
+g
   rotate: false
   xy: 2, 2
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+yv
+  rotate: false
+  xy: 2, 40
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yurl
   rotate: false
-  xy: 2, 36
+  xy: 2, 74
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yurd
   rotate: false
-  xy: 2, 70
+  xy: 40, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yur
   rotate: false
-  xy: 36, 2
+  xy: 40, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yul
   rotate: false
-  xy: 36, 36
+  xy: 40, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yudl
   rotate: false
-  xy: 36, 70
+  xy: 74, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yu
   rotate: false
-  xy: 70, 2
+  xy: 74, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ys
   rotate: false
-  xy: 70, 36
+  xy: 74, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yrdl
   rotate: false
-  xy: 70, 70
+  xy: 108, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yrd
   rotate: false
-  xy: 104, 2
+  xy: 108, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yr
   rotate: false
-  xy: 104, 36
+  xy: 108, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yl
   rotate: false
-  xy: 104, 70
+  xy: 142, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yh
   rotate: false
-  xy: 138, 2
+  xy: 142, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ydl
   rotate: false
-  xy: 138, 36
+  xy: 142, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 yd
   rotate: false
-  xy: 138, 70
+  xy: 176, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ya
   rotate: false
-  xy: 172, 2
+  xy: 176, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 y
   rotate: false
-  xy: 172, 36
+  xy: 176, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pv
   rotate: false
-  xy: 172, 70
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-p2
-  rotate: false
-  xy: 206, 2
+  xy: 210, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 purl
   rotate: false
-  xy: 206, 36
+  xy: 210, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 purd
   rotate: false
-  xy: 206, 70
+  xy: 210, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pur
   rotate: false
-  xy: 240, 2
+  xy: 244, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pul
   rotate: false
-  xy: 240, 36
+  xy: 244, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pudl
   rotate: false
-  xy: 240, 70
+  xy: 244, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pu
   rotate: false
-  xy: 274, 2
+  xy: 278, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ps
   rotate: false
-  xy: 274, 36
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-ph
-  rotate: false
-  xy: 274, 70
+  xy: 278, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 prdl
   rotate: false
-  xy: 308, 2
+  xy: 278, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 prd
   rotate: false
-  xy: 308, 36
+  xy: 312, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pr
   rotate: false
-  xy: 308, 70
+  xy: 312, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pl
   rotate: false
-  xy: 342, 2
+  xy: 312, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-p
+ph
   rotate: false
-  xy: 342, 36
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-p2h
-  rotate: false
-  xy: 342, 70
+  xy: 346, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pdl
   rotate: false
-  xy: 376, 2
+  xy: 346, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pd
   rotate: false
-  xy: 376, 36
+  xy: 346, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pa
   rotate: false
-  xy: 376, 70
+  xy: 380, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2v
   rotate: false
-  xy: 410, 2
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-p2urd
-  rotate: false
-  xy: 410, 36
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-p2ur
-  rotate: false
-  xy: 410, 70
+  xy: 380, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2url
   rotate: false
-  xy: 444, 2
+  xy: 380, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+p2urd
+  rotate: false
+  xy: 414, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+p2ur
+  rotate: false
+  xy: 414, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2ul
   rotate: false
-  xy: 444, 36
+  xy: 414, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2udl
   rotate: false
-  xy: 444, 70
+  xy: 448, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2u
   rotate: false
-  xy: 478, 2
+  xy: 448, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2s
   rotate: false
-  xy: 478, 36
+  xy: 448, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2rdl
   rotate: false
-  xy: 478, 70
+  xy: 482, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2rd
   rotate: false
-  xy: 512, 2
+  xy: 482, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2r
   rotate: false
-  xy: 512, 36
+  xy: 482, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2l
   rotate: false
-  xy: 512, 70
+  xy: 516, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+p2h
+  rotate: false
+  xy: 516, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2dl
   rotate: false
-  xy: 546, 2
+  xy: 516, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2d
   rotate: false
-  xy: 546, 36
+  xy: 550, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 p2a
   rotate: false
-  xy: 546, 70
+  xy: 550, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+p2
+  rotate: false
+  xy: 550, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+p
+  rotate: false
+  xy: 584, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bv
   rotate: false
-  xy: 580, 2
+  xy: 584, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 burl
   rotate: false
-  xy: 580, 36
+  xy: 584, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 burd
   rotate: false
-  xy: 580, 70
+  xy: 618, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bur
   rotate: false
-  xy: 614, 2
+  xy: 618, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bul
   rotate: false
-  xy: 614, 36
+  xy: 618, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 budl
   rotate: false
-  xy: 614, 70
+  xy: 652, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bu
   rotate: false
-  xy: 648, 2
+  xy: 652, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bs
   rotate: false
-  xy: 648, 36
+  xy: 652, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 brdl
   rotate: false
-  xy: 648, 70
+  xy: 686, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 brd
   rotate: false
-  xy: 682, 2
+  xy: 686, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 br
   rotate: false
-  xy: 682, 36
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-b
-  rotate: false
-  xy: 682, 70
+  xy: 686, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bl
   rotate: false
-  xy: 716, 2
+  xy: 720, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bh
   rotate: false
-  xy: 716, 36
+  xy: 720, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bdl
   rotate: false
-  xy: 716, 70
+  xy: 720, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bd
   rotate: false
-  xy: 750, 2
+  xy: 754, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ba
   rotate: false
-  xy: 750, 36
+  xy: 754, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+b
+  rotate: false
+  xy: 754, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
