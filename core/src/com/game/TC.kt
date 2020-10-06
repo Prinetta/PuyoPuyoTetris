@@ -1,7 +1,7 @@
 package com.game
 
 
-class TConstants {
+class TC {
 
     companion object Constants {
         const val COLUMNS: Int = 10

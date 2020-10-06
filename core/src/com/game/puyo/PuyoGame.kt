@@ -1,9 +1,6 @@
 package com.game.puyo
 
-import com.game.Block
-import com.game.GRID_LENGTH
-import com.game.GRID_WIDTH
-import com.game.Garbage
+import com.game.*
 import kotlin.random.Random
 
 class PuyoGame (){
@@ -12,8 +9,8 @@ class PuyoGame (){
     private var garbageToRemove = mutableListOf<GarbageBlock>()
     var nextPuyos = mutableListOf<Puyo>()
 
-    private val width = GRID_WIDTH
-    private val length = GRID_LENGTH
+    private val width = PC.GRID_WIDTH
+    private val length = PC.GRID_LENGTH
     private var allBlocksStanding = true
     private var chainIndex = -1
     lateinit var puyo: Puyo

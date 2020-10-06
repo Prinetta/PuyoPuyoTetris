@@ -1,6 +1,6 @@
 package com.game
 
-class PConstants {
+class PC {
     companion object Constants {
         const val GRID_WIDTH = 6
         const val GRID_LENGTH = 13

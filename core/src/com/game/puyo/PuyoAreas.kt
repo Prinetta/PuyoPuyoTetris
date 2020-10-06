@@ -3,7 +3,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.game.Sprite
 
 // u = up, r = right, d = down, l = left, a = all, s = shocked
-data class PuyoAreas (val color: PuyoColor) : Sprite("puyos.pack") {
+data class PuyoAreas (val color: PuyoColor) : Sprite("sprites.pack") {
     override lateinit var hashMap: HashMap<String, TextureRegion>
     init{
         val colorLetter = if(color == PuyoColor.PURPLE) "p2" else color.toString().toLowerCase()[0].toString()

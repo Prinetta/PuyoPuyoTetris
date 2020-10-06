@@ -2,18 +2,22 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
+import com.puyo.TetrisGame
+import com.puyo.Tetromino
 
 const val SCREEN_WIDTH = 1500f
 const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
-    private val puyoController = Controller(Timer()) // also add Tetris later
+    private val puyoController = Controller(Timer())
+    private var tetrisGame: TetrisGame = TetrisGame()
 
     private var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     private var shapeRenderer = ShapeRenderer()
@@ -38,16 +42,95 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
         game.batch.end()
 
+        /// Puyo
         puyoController.readInput()
         puyoController.mainLoop()
 
+        /// Tetris
+        tetrisGame.handleInputs(delta)
+
         drawGridBackground()
         game.batch.begin()
-        drawBlocks()
+        /// Puyo
+        drawPuyoBlocks()
         drawTitle()
         drawScore()
         drawNextPuyos()
+        /// Tetris
+        drawTetrisBlocks()
+        drawNextTetrominos()
+        drawNextBorders()
+        drawTetrisGrid()
         game.batch.end()
+    }
+
+    private fun drawNextTetrominos(){
+        titleFont.draw(game.batch, "NEXT", TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 0.2f), TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.2f))
+        var nextBlock: Tetromino = tetrisGame.nextTetrominos.peek()
+        for (i in nextBlock.shape.indices) { // beeg
+            for (j in 0 until nextBlock.shape[i].size) {
+                if (nextBlock.shape[i][j] != null) {
+                    game.batch.draw(nextBlock.shape[i][j].texture,
+                            TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 4.5f - (nextBlock.width * 0.9f)) / 2) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
+                            TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.9f) - ((TC.CELL_SIZE * 4f - (nextBlock.height * 0.9f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.9f),
+                            TC.CELL_SIZE * 0.9f, TC.CELL_SIZE * 0.9f)
+                }
+            }
+        }
+        for (field in 0..3) {
+            nextBlock = tetrisGame.nextTetrominos[3 - field]
+            for (i in nextBlock.shape.indices) {
+                for (j in 0 until nextBlock.shape[i].size) {
+                    if (nextBlock.shape[i][j] != null) {
+                        game.batch.draw(nextBlock.shape[i][j].texture,
+                                TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 3.5f - (nextBlock.width * 0.7f)) / 2) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.7f),
+                                TC.NEXT_BLOCK_FIELD2_TOP_Y - (((field * 3) + 0.7f) * TC.CELL_SIZE) - ((TC.CELL_SIZE * 2.5f - (nextBlock.height * 0.7f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.7f),
+                                TC.CELL_SIZE * 0.7f, TC.CELL_SIZE * 0.7f)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun drawTetrisGrid(){
+        shapeRenderer.color = Color(Color.rgba8888(0.71f, 0.71f, 0.71f, 0.2f))
+
+        for (i in 0..tetrisGame.rows) { // invisible rows are nice
+            shapeRenderer.rectLine(TC.GRID_LEFT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), TC.GRID_RIGHT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), 1f)
+        }
+
+        for (j in 0..tetrisGame.columns) {
+            shapeRenderer.rectLine(TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y, TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y - ((tetrisGame.rows - 1) * TC.CELL_SIZE), 1f)
+        }
+
+        shapeRenderer.end()
+    }
+
+    private fun drawNextBorders(){
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setAutoShapeType(true)
+        Gdx.gl.glEnable(GL20.GL_BLEND) // allows changing opacity I guess
+        shapeRenderer.color = Color.LIGHT_GRAY
+
+        // main next block field
+        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4f),
+                TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 4.5f), TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4f), 1f)
+        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 4.5f), TC.NEXT_BLOCK_FIELD_Y, 1f)
+        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4f), 1f)
+        shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 4.5f), TC.NEXT_BLOCK_FIELD_Y,
+                TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 4.5f), TC.NEXT_BLOCK_FIELD_Y + (TC.CELL_SIZE * 4f), 1f)
+
+        // secondary next blocks field
+        for (i in 0..9 step 3) {
+            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE),
+                    TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE), 1f)
+            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE),
+                    TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE), 1f)
+            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE),
+                    TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE), 1f)
+            shapeRenderer.rectLine(TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_TOP_Y - (i * TC.CELL_SIZE),
+                    TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 3.5f), TC.NEXT_BLOCK_FIELD2_Y - (i * TC.CELL_SIZE), 1f)
+        }
     }
 
     private fun sendTrash(trash: Int){
@@ -57,14 +140,14 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawNextPuyos(){ // (∩｀-´)⊃━☆ﾟ.*･｡ﾟ 　。。数。。
         val firstNextPuyo = puyoController.getNextPuyo(0)
         val secondNextPuyo = puyoController.getNextPuyo(1)
-        game.batch.draw(firstNextPuyo.first.currentSprite, PConstants.GRID_START_X * 1.2f + PConstants.GRID_WIDTH * PConstants.CELL_SIZE + PConstants.CELL_SIZE * 0.25f,
-                PConstants.GRID_START_Y * 0.8f + PConstants.CELL_SIZE * 1.25f, PConstants.CELL_SIZE, PConstants.CELL_SIZE)
-        game.batch.draw(firstNextPuyo.second.currentSprite, PConstants.GRID_START_X * 1.2f + PConstants.GRID_WIDTH * PConstants.CELL_SIZE + PConstants.CELL_SIZE * 0.25f,
-                PConstants.GRID_START_Y * 0.8f + PConstants.CELL_SIZE * 1.25f - PConstants.CELL_SIZE, PConstants.CELL_SIZE, PConstants.CELL_SIZE)
-        game.batch.draw(secondNextPuyo.first.currentSprite, PConstants.GRID_START_X * 1.3f + PConstants.GRID_WIDTH * PConstants.CELL_SIZE + PConstants.CELL_SIZE * 0.25f,
-                PConstants.GRID_START_Y * 0.65f + PConstants.CELL_SIZE, PConstants.CELL_SIZE * 0.75f, PConstants.CELL_SIZE * 0.75f)
-        game.batch.draw(secondNextPuyo.second.currentSprite, PConstants.GRID_START_X * 1.3f + PConstants.GRID_WIDTH * PConstants.CELL_SIZE + PConstants.CELL_SIZE * 0.25f,
-                PConstants.GRID_START_Y * 0.65f + PConstants.CELL_SIZE * 0.25f, PConstants.CELL_SIZE * 0.75f, PConstants.CELL_SIZE * 0.75f)
+        game.batch.draw(firstNextPuyo.first.currentSprite, PC.GRID_START_X * 1.2f + PC.GRID_WIDTH * PC.CELL_SIZE + PC.CELL_SIZE * 0.25f,
+                PC.GRID_START_Y * 0.8f + PC.CELL_SIZE * 1.25f, PC.CELL_SIZE, PC.CELL_SIZE)
+        game.batch.draw(firstNextPuyo.second.currentSprite, PC.GRID_START_X * 1.2f + PC.GRID_WIDTH * PC.CELL_SIZE + PC.CELL_SIZE * 0.25f,
+                PC.GRID_START_Y * 0.8f + PC.CELL_SIZE * 1.25f - PC.CELL_SIZE, PC.CELL_SIZE, PC.CELL_SIZE)
+        game.batch.draw(secondNextPuyo.first.currentSprite, PC.GRID_START_X * 1.3f + PC.GRID_WIDTH * PC.CELL_SIZE + PC.CELL_SIZE * 0.25f,
+                PC.GRID_START_Y * 0.65f + PC.CELL_SIZE, PC.CELL_SIZE * 0.75f, PC.CELL_SIZE * 0.75f)
+        game.batch.draw(secondNextPuyo.second.currentSprite, PC.GRID_START_X * 1.3f + PC.GRID_WIDTH * PC.CELL_SIZE + PC.CELL_SIZE * 0.25f,
+                PC.GRID_START_Y * 0.65f + PC.CELL_SIZE * 0.25f, PC.CELL_SIZE * 0.75f, PC.CELL_SIZE * 0.75f)
     }
 
     private fun drawGridBackground(){
@@ -72,7 +155,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        shapeRenderer.rect(PConstants.GRID_START_X, PConstants.GRID_START_Y - (PConstants.GRID_LENGTH * PConstants.CELL_SIZE - PConstants.CELL_SIZE), PConstants.GRID_WIDTH * PConstants.CELL_SIZE, (PConstants.GRID_LENGTH - 1) * PConstants.CELL_SIZE)
+        shapeRenderer.rect(PC.GRID_START_X, PC.GRID_START_Y - (PC.GRID_LENGTH * PC.CELL_SIZE - PC.CELL_SIZE), PC.GRID_WIDTH * PC.CELL_SIZE, (PC.GRID_LENGTH - 1) * PC.CELL_SIZE)
         shapeRenderer.end()
 
         drawNextPuyoBg()
@@ -80,8 +163,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawNextPuyoBg(){
-        drawRoundedRect(PConstants.GRID_START_X * 1.2f + PConstants.GRID_WIDTH * PConstants.CELL_SIZE, PConstants.GRID_START_Y * 0.8f, PConstants.CELL_SIZE * 1.5f, PConstants.CELL_SIZE * 2.6f, 10f)
-        drawRoundedRect(PConstants.GRID_START_X * 1.3f + PConstants.GRID_WIDTH * PConstants.CELL_SIZE, PConstants.GRID_START_Y * 0.65f, PConstants.CELL_SIZE * 1.25f, PConstants.CELL_SIZE * 2f, 10f)
+        drawRoundedRect(PC.GRID_START_X * 1.2f + PC.GRID_WIDTH * PC.CELL_SIZE, PC.GRID_START_Y * 0.8f, PC.CELL_SIZE * 1.5f, PC.CELL_SIZE * 2.6f, 10f)
+        drawRoundedRect(PC.GRID_START_X * 1.3f + PC.GRID_WIDTH * PC.CELL_SIZE, PC.GRID_START_Y * 0.65f, PC.CELL_SIZE * 1.25f, PC.CELL_SIZE * 2f, 10f)
     }
 
     private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){
@@ -103,10 +186,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         shapeRenderer.end()
     }
 
-    private fun drawBlocks(){
+    private fun drawTetrisBlocks(){
+        for (i in tetrisGame.cells.indices) { // invisible rows are nice
+            for (j in 1 until tetrisGame.cells[i].size) {
+                if (tetrisGame.cells[i][j] != null) {
+                    game.batch.draw(tetrisGame.cells[i][j].texture, i.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X, TC.GRID_TOP_Y - (j.toFloat() * TC.CELL_SIZE),
+                            TC.CELL_SIZE.toFloat(), TC.CELL_SIZE.toFloat())
+                }
+            }
+        }
+    }
+
+    private fun drawPuyoBlocks(){
         val c = game.batch.color
-        for(i in 0 until PConstants.GRID_WIDTH){
-            for(j in 0 until PConstants.GRID_LENGTH){
+        for(i in 0 until PC.GRID_WIDTH){
+            for(j in 0 until PC.GRID_LENGTH){
                 val block = puyoController.getBlockAt(i, j)
                 if(block == null || j == 0){
                     continue
@@ -122,20 +216,20 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
                 game.batch.draw(block.currentSprite,
-                        PConstants.GRID_START_X + i * PConstants.CELL_SIZE,
-                        PConstants.GRID_START_Y - j * PConstants.CELL_SIZE,
-                        PConstants.CELL_SIZE, PConstants.CELL_SIZE)
+                        PC.GRID_START_X + i * PC.CELL_SIZE,
+                        PC.GRID_START_Y - j * PC.CELL_SIZE,
+                        PC.CELL_SIZE, PC.CELL_SIZE)
             }
         }
         game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
     private fun drawTitle(){
-        titleFont.draw(game.batch, "Puyo Puyo", PConstants.GRID_START_X * 1.27f, SCREEN_HEIGHT * 0.94f)
+        titleFont.draw(game.batch, "Puyo Puyo", PC.GRID_START_X * 1.27f, SCREEN_HEIGHT * 0.94f)
     }
 
     private fun drawScore(){
-        scoreFont.draw(game.batch, puyoController.getCurrentScore(), PConstants.GRID_START_X * 1.6f, PConstants.GRID_START_Y - PConstants.GRID_START_Y * 0.87f)
+        scoreFont.draw(game.batch, puyoController.getCurrentScore(), PC.GRID_START_X * 1.6f, PC.GRID_START_Y - PC.GRID_START_Y * 0.87f)
     }
 
     override fun show() {
