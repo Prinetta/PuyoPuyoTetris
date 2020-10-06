@@ -42,27 +42,32 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
         game.batch.end()
 
-        /// Puyo
+        /// Puyo Controller
         puyoController.readInput()
         puyoController.mainLoop()
 
-        /// Tetris
+        /// Tetris Controller
         tetrisGame.handleInputs(delta)
 
-        drawGridBackground()
+        /// Shape Renderer
+        drawPuyoBg()
+        drawNextBorders()
+        drawTetrisGrid()
+
         game.batch.begin()
-        /// Puyo
-        drawPuyoBlocks()
+        /// Puyo Draw
+        drawPuyos()
         drawTitle()
         drawScore()
         drawNextPuyos()
-        /// Tetris
+
+        /// Tetris Draw
         drawTetrisBlocks()
         drawNextTetrominos()
-        drawNextBorders()
-        drawTetrisGrid()
         game.batch.end()
     }
+
+    /// Tetris Methods
 
     private fun drawNextTetrominos(){
         titleFont.draw(game.batch, "NEXT", TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 0.2f), TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.2f))
@@ -150,7 +155,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 PC.GRID_START_Y * 0.65f + PC.CELL_SIZE * 0.25f, PC.CELL_SIZE * 0.75f, PC.CELL_SIZE * 0.75f)
     }
 
-    private fun drawGridBackground(){
+    private fun drawPuyoBg(){
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
@@ -197,7 +202,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun drawPuyoBlocks(){
+    private fun drawPuyos(){
         val c = game.batch.color
         for(i in 0 until PC.GRID_WIDTH){
             for(j in 0 until PC.GRID_LENGTH){

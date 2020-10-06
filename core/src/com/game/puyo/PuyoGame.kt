@@ -53,6 +53,8 @@ class PuyoGame (){
         while (findBigPuyoChain() != -1){
             removePuyoChain()
         }
+        if(garbageToRemove.isNotEmpty()) garbageToRemove.forEach { grid[it.x][it.y] = null }
+        garbageToRemove.clear()
     }
 
     fun movePuyo(direction: Int){
@@ -106,8 +108,8 @@ class PuyoGame (){
     }
 
     fun findBigPuyoChain() : Int{
-        updatePuyoChain()
-        puyoChain.forEachIndexed { index, chain ->
+        findAllChains()
+        puyoChain.forEachIndexed { index, chain -> // found big puyo chain
             if(chain.size > 3 && !(chain.contains(puyo.first) && puyo.first.isFalling) && !(chain.contains(puyo.second) && puyo.second.isFalling)){
                 chainIndex = index
                 findAdjacentGarbage()
@@ -217,10 +219,10 @@ class PuyoGame (){
         findChain(i, j + 1, color, index)
         findChain(i + 1, j, color, index)
         findChain(i - 1, j, color, index)
-        return true;
+        return true
     }
 
-    private fun updatePuyoChain(){
+    private fun findAllChains(){
         puyoChain.clear()
         for(i in 0 until width) {
             for (j in 0 until length) {
@@ -259,7 +261,6 @@ class PuyoGame (){
     private fun removePuyoChain(){
         for(block in puyoChain[chainIndex]) {
             grid[block.x][block.y] = null
-            if(garbageToRemove.isNotEmpty()) garbageToRemove.forEach { grid[it.x][it.y] = null }
         }
         puyosToRemove.add(puyoChain[chainIndex])
         puyoChain.removeAt(chainIndex)
@@ -288,6 +289,9 @@ class PuyoGame (){
             clearPrevPos(block)
             block.y++
             updateMovingPos(block)
+            if(block is PuyoBlock){
+                block.currentSprite = block.sprites.get("main")
+            }
         }
     }
 
@@ -295,6 +299,18 @@ class PuyoGame (){
         clearPrevPos(block)
         block.x += direction
         updateMovingPos(block)
+    }
+
+    fun updateSprites(){
+        val chainedPuyos = puyoChain.flatten()
+        for (i in 0 until width){
+            for (j in 0 until length){
+                val block = grid[i][j]
+                if(block is PuyoBlock && !chainedPuyos.contains(block)){
+                    block.currentSprite = block.sprites.get("main")
+                }
+            }
+        }
     }
 
     fun connectPuyos(){

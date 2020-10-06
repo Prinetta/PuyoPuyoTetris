@@ -3,7 +3,6 @@ package com.game.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Block
-import com.game.Garbage
 import com.game.Timer
 
 class Controller(private val timer: Timer) {
@@ -37,19 +36,20 @@ class Controller(private val timer: Timer) {
             timer.resetChainTime()
         }
         puyoGame.connectPuyos()
+        puyoGame.updateSprites()
         puyoGame.unmark()
     }
 
     fun readInput(){
         if(allowInput()){
             when {
-                Gdx.input.isKeyPressed(Input.Keys.LEFT) -> movePuyo(-1)
-                Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> movePuyo(1)
+                Gdx.input.isKeyPressed(Input.Keys.A) -> movePuyo(-1)
+                Gdx.input.isKeyPressed(Input.Keys.D) -> movePuyo(1)
                 Gdx.input.isKeyPressed(Input.Keys.E) -> rotatePuyo(1)
                 Gdx.input.isKeyPressed(Input.Keys.Q) -> rotatePuyo(-1)
             }
             timer.resetInputTime()
-        } else if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+        } else if(Gdx.input.isKeyPressed(Input.Keys.S)){
             increaseSpeed()
         } else {
             decreaseSpeed()

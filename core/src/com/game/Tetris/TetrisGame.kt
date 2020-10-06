@@ -253,10 +253,6 @@ class TetrisGame() {
         if (wrongState(block)) {
             if (rotation == 'L') block.turnRight() else block.turnLeft()
         }
-        println(oldState)
-        println(block.rotationState)
-        println(map.get(oldState)!!.get(0).first - map.get(block.rotationState)!!.get(0).first)
-        println(map.get(oldState)!!.get(0).second - map.get(block.rotationState)!!.get(0).second)
     }
 
     fun turnRight(block: Tetromino){ // not compatible with I
