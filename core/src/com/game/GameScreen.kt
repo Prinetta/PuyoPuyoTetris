@@ -54,6 +54,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         /// Shape Renderer
         drawPuyoBg()
+        drawTetrisBg()
         drawNextBorders()
         drawTetrisGrid()
 
@@ -102,11 +103,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawTetrisGrid(){
         Gdx.gl.glEnable(GL20.GL_BLEND)
-        shapeRenderer.color = Color(Color.rgba8888(0.71f, 0.71f, 0.71f, 0.2f))
+        shapeRenderer.setColor(78f/255, 65f/255, 83f/255, 1f)
         shapeRenderer.begin()
 
-        for (i in 0..tetrisGame.rows - 1) { // invisible rows are nice
-            shapeRenderer.rectLine(TC.GRID_LEFT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), TC.GRID_RIGHT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), 1f)
+        for (i in 0 until tetrisGame.rows) { // invisible rows are nice
+            shapeRenderer.rectLine(TC.GRID_LEFT_X-1, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), TC.GRID_RIGHT_X-1, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), 1f)
         }
 
         for (j in 0..tetrisGame.columns) {
@@ -145,6 +146,28 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         shapeRenderer.end()
     }
 
+    private fun drawTetrisNextBg(){
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.rect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.CELL_SIZE * 5f, TC.CELL_SIZE * 4.5f)
+        for (i in 0..9 step 3) {
+            shapeRenderer.rect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y-i*(TC.CELL_SIZE), TC.CELL_SIZE * 3.5f, TC.CELL_SIZE * 2.5f)
+        }
+        shapeRenderer.end()
+        Gdx.gl.glDisable(GL20.GL_BLEND)
+    }
+
+    private fun drawTetrisBg() {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.rect(TC.GRID_LEFT_X, TC.GRID_TOP_Y - ((TC.ROWS - 1) * TC.CELL_SIZE), (TC.COLUMNS * TC.CELL_SIZE).toFloat(), ((TC.ROWS - 1) * TC.CELL_SIZE).toFloat())
+        shapeRenderer.end()
+        Gdx.gl.glDisable(GL20.GL_BLEND)
+        drawTetrisNextBg()
+    }
+
     private fun sendTrash(trash: Int){
 
     }
@@ -160,15 +183,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 PC.GRID_START_Y * 0.65f + PC.CELL_SIZE, PC.CELL_SIZE * 0.75f, PC.CELL_SIZE * 0.75f)
         game.batch.draw(secondNextPuyo.second.currentSprite, PC.GRID_START_X * 1.3f + PC.GRID_WIDTH * PC.CELL_SIZE + PC.CELL_SIZE * 0.25f,
                 PC.GRID_START_Y * 0.65f + PC.CELL_SIZE * 0.25f, PC.CELL_SIZE * 0.75f, PC.CELL_SIZE * 0.75f)
-    }
-  
-    private fun drawTetrisGridBackground() {
-        Gdx.gl.glEnable(GL20.GL_BLEND)
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        shapeRenderer.rect(TC.GRID_LEFT_X, TC.GRID_TOP_Y - ((TC.ROWS - 1) * TC.CELL_SIZE), (TC.COLUMNS * TC.CELL_SIZE).toFloat(), ((TC.ROWS - 1) * TC.CELL_SIZE).toFloat())
-        shapeRenderer.end()
-        Gdx.gl.glDisable(GL20.GL_BLEND)
     }
 
     private fun drawPuyoBg(){
