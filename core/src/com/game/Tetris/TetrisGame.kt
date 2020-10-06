@@ -46,7 +46,7 @@ class TetrisGame() {
     }
 
     fun handleInputs(delta: Float) {
-        if (dropTetrominoTimer > 0.4f) {
+        if (dropTetrominoTimer > 0.5f) {
             if (currentTetromino.isFalling) {
                 dropTetromino(currentTetromino)
             } else if(!isFull()) {
@@ -73,7 +73,7 @@ class TetrisGame() {
         if (Gdx.input.isKeyPressed(Input.Keys.K)) {
             if (!tetrominoLanded(currentTetromino)) {
                 downKeyHeldTimer += delta + 0.02f
-                if (downKeyHeldTimer > 0.4f) dropTetrominoTimer += 0.2f
+                if (downKeyHeldTimer > 0.5f) dropTetrominoTimer += 0.25f
             }
         } else downKeyHeldTimer = 0f
 
