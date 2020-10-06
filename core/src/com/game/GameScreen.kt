@@ -12,7 +12,7 @@ import com.game.puyo.*
 import com.puyo.TetrisGame
 import com.puyo.Tetromino
 
-const val SCREEN_WIDTH = 1500f
+const val SCREEN_WIDTH = 1600f
 const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
