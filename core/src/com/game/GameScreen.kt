@@ -118,6 +118,19 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         Gdx.gl.glDisable(GL20.GL_BLEND)
         shapeRenderer.end()
+        drawTetrisNextBg()
+    }
+
+    private fun drawTetrisNextBg(){
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.rect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.CELL_SIZE * 5f, TC.CELL_SIZE * 4.5f)
+        for (i in 0..9 step 3) {
+            shapeRenderer.rect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y-i*(TC.CELL_SIZE), TC.CELL_SIZE * 3.5f, TC.CELL_SIZE * 2.5f)
+        }
+        shapeRenderer.end()
+        Gdx.gl.glDisable(GL20.GL_BLEND)
     }
 
     private fun drawNextBorders(){
