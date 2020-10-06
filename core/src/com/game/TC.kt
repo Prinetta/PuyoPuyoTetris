@@ -7,7 +7,7 @@ class TC {
         const val COLUMNS: Int = 10
         const val ROWS: Int = 25
 
-        const val CELL_SIZE: Int = 33
+        const val CELL_SIZE: Float = 32.5f
         const val GRID_LEFT_X: Float = (SCREEN_WIDTH - (CELL_SIZE * COLUMNS)) / 1.33f
         const val GRID_TOP_Y: Float = SCREEN_HEIGHT - ((SCREEN_HEIGHT - (CELL_SIZE * (ROWS - 1))) / 2)
         const val GRID_RIGHT_X: Float = GRID_LEFT_X + CELL_SIZE * COLUMNS

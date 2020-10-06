@@ -54,6 +54,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         /// Shape Renderer
         drawPuyoBg()
+        drawTetrisGridBackground()
         drawNextBorders()
         drawTetrisGrid()
 
@@ -106,12 +107,15 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         shapeRenderer.begin()
 
         for (i in 0..tetrisGame.rows - 1) { // invisible rows are nice
-            shapeRenderer.rectLine(TC.GRID_LEFT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), TC.GRID_RIGHT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), 1f)
+            shapeRenderer.rectLine(TC.GRID_LEFT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE),
+                    TC.GRID_RIGHT_X, TC.GRID_TOP_Y - (i * TC.CELL_SIZE), 1f)
         }
 
         for (j in 0..tetrisGame.columns) {
-            shapeRenderer.rectLine(TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y, TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y - ((tetrisGame.rows - 1) * TC.CELL_SIZE), 1f)
+            shapeRenderer.rectLine(TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y,
+                    TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y - ((tetrisGame.rows - 1) * TC.CELL_SIZE), 1f)
         }
+
         Gdx.gl.glDisable(GL20.GL_BLEND)
         shapeRenderer.end()
     }
@@ -212,7 +216,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             for (j in 1 until tetrisGame.cells[i].size) {
                 if (tetrisGame.cells[i][j] != null) {
                     game.batch.draw(tetrisGame.cells[i][j].texture, i.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X, TC.GRID_TOP_Y - (j.toFloat() * TC.CELL_SIZE),
-                            TC.CELL_SIZE.toFloat(), TC.CELL_SIZE.toFloat())
+                            TC.CELL_SIZE, TC.CELL_SIZE)
                 }
             }
         }
