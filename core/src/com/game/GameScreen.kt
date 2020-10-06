@@ -12,7 +12,7 @@ import com.game.puyo.*
 import com.puyo.TetrisGame
 import com.puyo.Tetromino
 
-const val SCREEN_WIDTH = 1600f
+const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
@@ -102,7 +102,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             for (j in 0 until nextBlock.shape[i].size) {
                 if (nextBlock.shape[i][j] != null) {
                     game.batch.draw(nextBlock.shape[i][j].texture,
-                            TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 5f - (nextBlock.width * 0.9f)) / 2.25f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
+                            TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 5f - (nextBlock.width * 0.9f)) / 2f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
                             TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.9f) - ((TC.CELL_SIZE * 4.5f - (nextBlock.height * 0.9f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.9f),
                             TC.CELL_SIZE * 0.9f, TC.CELL_SIZE * 0.9f)
                 }
@@ -114,7 +114,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 for (j in 0 until nextBlock.shape[i].size) {
                     if (nextBlock.shape[i][j] != null) {
                         game.batch.draw(nextBlock.shape[i][j].texture,
-                                TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 3.5f - (nextBlock.width * 0.7f)) / 2.25f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.7f),
+                                TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 3.5f - (nextBlock.width * 0.7f)) / 2f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.7f),
                                 TC.NEXT_BLOCK_FIELD2_TOP_Y - (((field * 3) + 0.7f) * TC.CELL_SIZE) - ((TC.CELL_SIZE * 2.5f - (nextBlock.height * 0.7f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.7f),
                                 TC.CELL_SIZE * 0.7f, TC.CELL_SIZE * 0.7f)
                     }
