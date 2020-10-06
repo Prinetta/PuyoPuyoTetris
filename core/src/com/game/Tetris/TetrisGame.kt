@@ -35,7 +35,6 @@ class TetrisGame() {
     var cells: Array<com.badlogic.gdx.utils.Array<TetrisBlock>> = Array(columns) {com.badlogic.gdx.utils.Array<TetrisBlock>(rows)}
 
     init {
-
         for (row in cells) {
             for (i in 0 until rows) {
                 row.add(null)
