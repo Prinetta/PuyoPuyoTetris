@@ -15,5 +15,7 @@ class TC {
         const val NEXT_BLOCK_FIELD_Y: Float = GRID_TOP_Y - (CELL_SIZE * 4.5f)
         const val NEXT_BLOCK_FIELD2_Y: Float = NEXT_BLOCK_FIELD_Y - (CELL_SIZE * 3) // 2nd next block field
         const val NEXT_BLOCK_FIELD2_TOP_Y: Float = NEXT_BLOCK_FIELD2_Y + (2.5f * CELL_SIZE)
+        const val HOLD_FIELD_WIDTH: Float = 4.5f * CELL_SIZE
+        const val HOLD_FIELD_X: Float = GRID_LEFT_X - HOLD_FIELD_WIDTH - (CELL_SIZE * 0.5f)
     }
 }

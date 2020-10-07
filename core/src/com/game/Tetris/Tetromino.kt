@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.GridPoint2
 import com.badlogic.gdx.math.Rectangle
+import com.game.TC
 import kotlin.math.roundToInt
 
 
@@ -39,8 +40,8 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
         isFalling = true
         columns = blockColumns()
         rows = blockRows()
-        width = columns * 30f
-        height = rows * 30f
+        width = columns * TC.CELL_SIZE
+        height = rows * TC.CELL_SIZE
     }
 
     fun move(x: Int, y: Int) {
@@ -117,7 +118,7 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
 
                     newShape[(pivotX + newI)][(pivotY + newJ)] = shape[i][j]
                     // I do not know why I have to add for coordinates don't ask me it works
-                    newShape[(pivotX + newI).toInt()][(pivotY + newJ)].setPosition((column + newX), (row + newY))
+                    newShape[(pivotX + newI)][(pivotY + newJ)].setPosition((column + newX), (row + newY))
                 }
             }
         }
