@@ -55,6 +55,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         /// Shape Renderer
         drawPuyoBg()
         drawTetrisGridBackground()
+        drawHeldTetrominoBg()
+        shapeRenderer.setAutoShapeType(true)
         drawTetrisGrid()
 
         game.batch.begin()
@@ -66,6 +68,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawGarbageQueue()
         /// Tetris Draw
         drawTetrominos()
+        drawHeldTetromino()
         drawNextTetrominos()
       
         game.batch.end()
@@ -150,6 +153,30 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             drawRoundedRect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y-i*(TC.CELL_SIZE), TC.CELL_SIZE * 3.5f, TC.CELL_SIZE * 2.5f, 10f)
         }
         Gdx.gl.glDisable(GL20.GL_BLEND)
+    }
+
+    private fun drawHeldTetrominoBg() {
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        drawRoundedRect(TC.HOLD_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.HOLD_FIELD_WIDTH, TC.CELL_SIZE * 4.5f, 10f)
+        Gdx.gl.glDisable(GL20.GL_BLEND)
+    }
+
+    private fun drawHeldTetromino() {
+        nextFont.draw(game.batch, "HOLD", TC.HOLD_FIELD_X + (TC.CELL_SIZE * 0.2f), TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.15f))
+        if (tetrisGame.heldTetromino != null) {
+            var heldBlock: Tetromino = tetrisGame.heldTetromino!!
+            for (i in heldBlock.shape.indices) {
+                for (j in 0 until heldBlock.shape[i].size) {
+                    if (heldBlock.shape[i][j] != null) {
+                        game.batch.draw(heldBlock.shape[i][j].texture,
+                                TC.HOLD_FIELD_X + ((TC.HOLD_FIELD_WIDTH - (heldBlock.width * 0.9f)) / 2f) + ((i - heldBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
+                                TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.9f) - ((TC.CELL_SIZE * 4.5f - (heldBlock.height * 0.9f)) / 2) - ((j - heldBlock.firstRow()) * TC.CELL_SIZE * 0.9f),
+                                TC.CELL_SIZE * 0.9f, TC.CELL_SIZE * 0.9f)
+                    }
+                }
+            }
+        }
     }
 
     private fun sendTrash(trash: Int){
