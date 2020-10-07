@@ -12,6 +12,8 @@ class TetrisGame() {
     lateinit var currentTetromino: Tetromino
     var heldTetromino: Tetromino? = null
 
+    var enableHold: Boolean = true
+
     // y-offsets have to be reversed from srs system
     var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
     var offsetsL: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(-1, 0), Pair(-1, 1), Pair(0, -2), Pair(-1, -2))
@@ -52,6 +54,7 @@ class TetrisGame() {
             } else if(!isFull()) {
                 updateRows()
                 spawnTetromino()
+                enableHold = true
             }
             dropTetrominoTimer = 0f
         }
@@ -93,14 +96,15 @@ class TetrisGame() {
             if (currentTetromino.isFalling) turnRight(currentTetromino)
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && enableHold) {
             holdTetromino()
         }
     }
     fun spawnTetromino(){
         currentTetromino = nextTetrominos.pop()
         val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
-        nextTetrominos.insert(0, Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
+        nextTetrominos.insert(0, Tetromino(4, 1, tetrominos[Random.nextInt(6)],
+                TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
         addTetromino(currentTetromino)
     }
 
@@ -117,10 +121,14 @@ class TetrisGame() {
             var temp: Tetromino = heldTetromino!!
             heldTetromino = currentTetromino
             currentTetromino = temp
+            removeTetromino(heldTetromino!!) // has to be removed before setting current tetrominos' position
+            currentTetromino.setPosition(4, 1)
         } else {
             heldTetromino = currentTetromino
+            removeTetromino(heldTetromino!!)
             spawnTetromino()
         }
+        enableHold = false
     }
 
     fun addTetromino (block: Tetromino) {
@@ -148,6 +156,16 @@ class TetrisGame() {
             }
             block.move(0, 1)
         } else if (tetrominoLanded(block)) block.isFalling = false
+    }
+
+    fun removeTetromino(block: Tetromino) {
+        for (i in block.shape.indices) {
+            for (j in 0 until heldTetromino!!.shape[i].size) {
+                if (block.shape[i][j] != null && cells[block.shape[i][j].column][block.shape[i][j].row] == block.shape[i][j]) {
+                    cells[block.shape[i][j].column][block.shape[i][j].row] = null
+                }
+            }
+        }
     }
 
     fun tetrominoLanded (block: Tetromino): Boolean { // only gives back if can't move down
