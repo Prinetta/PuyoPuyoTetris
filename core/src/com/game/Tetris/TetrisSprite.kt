@@ -1,13 +1,14 @@
-package com.game.Tetris
+package com.game.tetris
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.game.SpriteArea
 
 enum class TetrisSprite(val sprite: TextureRegion) {
-    BLUE(TetrisArea.hashMap["blue"]!!),
-    DARKBLUE(TetrisArea.hashMap["dark-blue"]!!),
-    GREEN(TetrisArea.hashMap["green"]!!),
-    ORANGE(TetrisArea.hashMap["orange"]!!),
-    PURPLE(TetrisArea.hashMap["purple"]!!),
-    RED(TetrisArea.hashMap["red"]!!),
-    YELLOW(TetrisArea.hashMap["yellow"]!!)
+    BLUE(SpriteArea.tetrisSprites["blue"]!!),
+    DARKBLUE(SpriteArea.tetrisSprites["dark-blue"]!!),
+    GREEN(SpriteArea.tetrisSprites["green"]!!),
+    ORANGE(SpriteArea.tetrisSprites["orange"]!!),
+    PURPLE(SpriteArea.tetrisSprites["purple"]!!),
+    RED(SpriteArea.tetrisSprites["red"]!!),
+    YELLOW(SpriteArea.tetrisSprites["yellow"]!!)
 }

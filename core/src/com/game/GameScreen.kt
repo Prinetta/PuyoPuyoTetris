@@ -55,7 +55,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         /// Shape Renderer
         drawPuyoBg()
         drawTetrisGridBackground()
-        shapeRenderer.setAutoShapeType(true)
         drawTetrisGrid()
 
         game.batch.begin()
@@ -64,6 +63,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawTitle()
         drawScore()
         drawNextPuyos()
+        drawGarbageQueue()
         /// Tetris Draw
         drawTetrominos()
         drawNextTetrominos()
@@ -123,6 +123,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawTetrisGrid(){
         Gdx.gl.glEnable(GL20.GL_BLEND)
+        shapeRenderer.setAutoShapeType(true)
         shapeRenderer.setColor(78f/255, 65f/255, 83f/255, 1f)
         shapeRenderer.begin()
 
@@ -152,6 +153,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun sendTrash(trash: Int){
+
+    }
+
+    /// Puyo Puyo
+
+    private fun drawGarbageQueue(){
 
     }
 

@@ -1,8 +1,11 @@
 package com.game.puyo
 
-enum class PuyoSprite(val sprite: PuyoAreas) {
-    BLUE(PuyoAreas(PuyoColor.BLUE)),
-    YELLOW(PuyoAreas(PuyoColor.YELLOW)),
-    PURPLE(PuyoAreas(PuyoColor.PURPLE)),
-    PINK(PuyoAreas(PuyoColor.PINK)),
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.game.SpriteArea
+
+enum class PuyoSprite(val sprites: HashMap<String, TextureRegion>?) {
+    BLUE(SpriteArea.puyoSprites[PuyoColor.BLUE]!!),
+    YELLOW(SpriteArea.puyoSprites[PuyoColor.YELLOW]!!),
+    PURPLE(SpriteArea.puyoSprites[PuyoColor.PURPLE]!!),
+    PINK(SpriteArea.puyoSprites[PuyoColor.PINK]!!),
 }

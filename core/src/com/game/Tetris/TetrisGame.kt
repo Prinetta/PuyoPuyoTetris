@@ -2,8 +2,7 @@ package com.puyo
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Texture
-import com.game.Tetris.TetrisSprite
+import com.game.tetris.TetrisSprite
 import kotlin.random.Random
 
 

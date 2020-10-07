@@ -129,8 +129,9 @@ class PuyoGame (){
     }
 
     private fun placeGarbageBlocks(blocks: MutableList<GarbageBlock>){
+        val randomNumbers = (0 until width).toList().shuffled()
         for (i in 0 until length){
-            for (j in 0 until width){
+            for (j in randomNumbers){
                 if(!isColliding(j, i) && blocks.isNotEmpty()){
                     val block = blocks.first()
                     block.set(j, i)
@@ -290,7 +291,7 @@ class PuyoGame (){
             block.y++
             updateMovingPos(block)
             if(block is PuyoBlock){
-                block.currentSprite = block.sprites.get("main")
+                block.updateSprite("main")
             }
         }
     }
@@ -307,7 +308,7 @@ class PuyoGame (){
             for (j in 0 until length){
                 val block = grid[i][j]
                 if(block is PuyoBlock && !chainedPuyos.contains(block)){
-                    block.currentSprite = block.sprites.get("main")
+                    block.updateSprite("main")
                 }
             }
         }
@@ -319,7 +320,7 @@ class PuyoGame (){
                 continue
             } else if (chain.size >= 4){
                 for(block in chain){
-                    block.currentSprite = block.sprites.get("s")
+                    block.updateSprite("s")
                     block.isBeingRemoved = true
                 }
             } else {
@@ -337,7 +338,7 @@ class PuyoGame (){
                     if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid[block.x - 1][block.y])){
                         s += "l"
                     }
-                    block.currentSprite = if(s.isEmpty()) block.sprites.get("main") else block.sprites.get(s)
+                    block.updateSprite(s)
                 }
             }
         }
