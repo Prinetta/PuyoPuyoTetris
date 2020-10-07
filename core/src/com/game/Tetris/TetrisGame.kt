@@ -2,12 +2,11 @@ package com.game.Tetris
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-<<<<<<< Updated upstream
-=======
+
 import com.badlogic.gdx.graphics.Texture
 import com.game.Tetris.TetrisSprite
 import ktx.app.clearScreen
->>>>>>> Stashed changes
+
 import kotlin.random.Random
 
 class TetrisGame() {
@@ -38,6 +37,7 @@ class TetrisGame() {
 
     var dropTetrominoTimer: Float = 0f
     var downKeyHeldTimer: Float = 0f
+    var moveKeyHeldTimer: Float = 0f
 
     var columns: Int = 10
     var rows: Int = 25
@@ -67,19 +67,46 @@ class TetrisGame() {
         }
         else dropTetrominoTimer += delta
 
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
             moveLeft(currentTetromino)
+            moveKeyHeldTimer = -0.4f
         }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            if (!tetrominoLanded(currentTetromino)) {
+                moveKeyHeldTimer += delta + 0.02f
+                if (moveKeyHeldTimer > 0.1f) {
+                    moveLeft(currentTetromino)
+                    moveKeyHeldTimer = 0f
+                }
+            }
+        }
+
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             moveRight(currentTetromino)
+            moveKeyHeldTimer = -0.4f
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            if (!tetrominoLanded(currentTetromino)) {
+                moveKeyHeldTimer += delta + 0.02f
+                if (moveKeyHeldTimer > 0.1f) {
+                    moveRight(currentTetromino)
+                    moveKeyHeldTimer = 0f
+                }
+            }
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            moveKeyHeldTimer = 0f
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             if (!tetrominoLanded(currentTetromino)) dropTetromino(currentTetromino)
             if (currentTetromino.isFalling) dropTetrominoTimer = 0f
         }
-
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             if (!tetrominoLanded(currentTetromino)) {
                 downKeyHeldTimer += delta + 0.02f
