@@ -25,7 +25,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private val titleFont = game.generateTitleFont(55)
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("background.png"))
-    private val puyoPicture = Texture(Gdx.files.internal("gaypeople.png"))
 
     // Tetris
     private val nextFont = game.generateTetrisNextFont(25)
@@ -44,7 +43,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         game.batch.begin()
         game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-        drawPuyoPicture()
         game.batch.end()
 
         /// Puyo Controller
@@ -155,15 +153,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun sendTrash(trash: Int){
 
-    }
-
-
-    private fun drawPuyoPicture(){
-        val c = game.batch.color
-        game.batch.draw(puyoPicture,
-                PC.GRID_START_X, PC.GRID_START_Y - (PC.GRID_LENGTH * PC.CELL_SIZE - PC.CELL_SIZE),
-                PC.GRID_WIDTH * PC.CELL_SIZE, (PC.GRID_LENGTH - 1) * PC.CELL_SIZE)
-        game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
     private fun drawNextPuyos(){ // (∩｀-´)⊃━☆ﾟ.*･｡ﾟ 　。。数。。
