@@ -79,17 +79,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     /// Tetris Methods
 
-    private fun drawPuyoPreview(){ // PC.GRID_START_X + i * PC.CELL_SIZE,
-        if(puyoController.displayPreview()){
-            val puyo = puyoController.getCurrentPuyo()
-            val coords = puyoController.getPreviewCoords()
-            if(coords[0][1] >= 0) game.batch.draw(puyo.first.sprites["dot"],
-                    PC.GRID_START_X+PC.CELL_SIZE*coords[0][0], PC.GRID_START_Y-coords[0][1]*PC.CELL_SIZE, PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
-            if(coords[1][1] >= 0) game.batch.draw(puyo.second.sprites["dot"],
-                    PC.GRID_START_X+PC.CELL_SIZE*coords[1][0], PC.GRID_START_Y-PC.CELL_SIZE*coords[1][1], PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
-        }
-    }
-
     private fun drawTetrisGridBackground() {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
@@ -198,18 +187,35 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     /// Puyo Puyo
+
+    private fun drawPuyoPreview(){
+        if(puyoController.displayPreview()){
+            val c = game.batch.color
+            game.batch.setColor(c.r, c.g, c.b, 0.8f)
+
+            val puyo = puyoController.getCurrentPuyo()
+            val coords = puyoController.getPreviewCoords()
+            if(coords[0][1] >= 0) game.batch.draw(puyo.first.sprites["dot"],
+                    PC.GRID_START_X+PC.CELL_SIZE*coords[0][0]+PC.CELL_SIZE*0.1f, PC.GRID_START_Y-coords[0][1]*PC.CELL_SIZE, PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
+            if(coords[1][1] >= 0) game.batch.draw(puyo.second.sprites["dot"],
+                    PC.GRID_START_X+PC.CELL_SIZE*coords[1][0]+PC.CELL_SIZE*0.1f, PC.GRID_START_Y-PC.CELL_SIZE*coords[1][1], PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
+
+            game.batch.setColor(c.r, c.g, c.b, 1f)
+        }
+    }
+
     private fun drawGarbageQueue(){ // add comments back when tetris garbage works
         //if(!puyoController.displayGarbage()) return
         val garbageSprites = SpriteArea.gameSprites
 
-        var garbage = 10
+        var garbage = 66 // and delete this one
         //var garbage = puyoController.getGarbage()
 
         var count = 0
         do {
             val closest = GC.garbageSteps.last { it <= garbage }
             game.batch.draw(garbageSprites["garbage-queue$closest"],
-            PC.GRID_START_X+PC.CELL_SIZE*count, SCREEN_HEIGHT * 0.88f, PC.CELL_SIZE, PC.CELL_SIZE)
+            PC.GRID_START_X+PC.CELL_SIZE*count*0.75f, SCREEN_HEIGHT * 0.88f, PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
             garbage -= closest
             count++
         } while (garbage > 0 && count < PC.GRID_WIDTH)
