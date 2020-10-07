@@ -2,14 +2,23 @@ package com.game.Tetris
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+<<<<<<< Updated upstream
+=======
+import com.badlogic.gdx.graphics.Texture
+import com.game.Tetris.TetrisSprite
+import ktx.app.clearScreen
+>>>>>>> Stashed changes
 import kotlin.random.Random
 
 class TetrisGame() {
     var nextTetrominos: com.badlogic.gdx.utils.Array<Tetromino> = com.badlogic.gdx.utils.Array(5)
-    lateinit var currentTetromino: Tetromino
+    private lateinit var currentTetromino: Tetromino
     var heldTetromino: Tetromino? = null
 
     var enableHold: Boolean = true
+    var tSpinInput: Boolean = false
+
+    var scoring: TetrisScoring = TetrisScoring()
 
     // y-offsets have to be reversed from srs system
     var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
@@ -51,6 +60,7 @@ class TetrisGame() {
             } else if(!isFull()) {
                 updateRows()
                 spawnTetromino()
+                tSpinInput = false
                 enableHold = true
             }
             dropTetrominoTimer = 0f
@@ -87,10 +97,12 @@ class TetrisGame() {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
             if (currentTetromino.isFalling) turnLeft(currentTetromino)
+            if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
             if (currentTetromino.isFalling) turnRight(currentTetromino)
+            if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && enableHold) {
@@ -322,8 +334,14 @@ class TetrisGame() {
     }
 
     fun updateRows() {
+        var pointsAdded: Boolean = false
         val fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
+        if (tSpinInput) println("Nice T-Spin!!!!!")
         if (fullRows.size > 0) {
+            if (isTSpin()) {
+                scoring.score += scoring.tSpinClearBonus.get(fullRows.size)!!
+                pointsAdded = true
+            }
             for (row in fullRows) {
                 for (j in row downTo 1) {
                     for (i in cells.size - 1 downTo 0) {
@@ -334,7 +352,32 @@ class TetrisGame() {
                     cell[0] = null
                 }
             }
+            if (isPerfectClear()) scoring.score += scoring.perfectClearBonus
+            else if (!pointsAdded) scoring.score += scoring.clearBonus.get(fullRows.size)!!
+            println("Garbage: " + scoring.score)
         }
+    }
+
+    fun isTSpin(): Boolean {
+        if (currentTetromino.type == 'T') {
+            var onWall: Boolean = false
+            var blocks: Int = 0
+            for (i in currentTetromino.column - 1..currentTetromino.column + 1) {
+                for (j in currentTetromino.row - 1..currentTetromino.row + 1) {
+                    if (i >= columns || i < 0 || j >= rows) {
+                        if (!onWall) {
+                            blocks += 2
+                            onWall = true
+                        }
+                    }
+                    else if (cells[i][j] != null && !currentTetromino.contains(cells[i][j])) {
+                        blocks++
+                    }
+                }
+            }
+            if (tSpinInput && blocks >= 3) return true
+        }
+        return false
     }
 
     fun getFullRows(): com.badlogic.gdx.utils.Array<Int> {
@@ -361,4 +404,12 @@ class TetrisGame() {
         return false
     }
 
+    fun isPerfectClear(): Boolean {
+        for (i in cells.indices) {
+            for (j in 0 until cells[i].size) {
+                if (cells[i][j] != null) return false
+            }
+        }
+        return true
+    }
 }

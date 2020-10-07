@@ -64,6 +64,15 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
         this.row = y
     }
 
+    fun contains(block: TetrisBlock): Boolean {
+        for (i in shape.indices) {
+            for (j in 0 until shape[i].size) {
+                if (shape[i][j] == block) return true
+            }
+        }
+       return false
+    }
+
     fun turnLeft() {
         var newShape = Array(7) {com.badlogic.gdx.utils.Array<TetrisBlock>(7)}
         for (array in newShape) {
