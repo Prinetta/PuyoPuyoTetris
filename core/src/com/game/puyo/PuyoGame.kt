@@ -172,6 +172,17 @@ class PuyoGame (){
         scoring.garbage = amount
     }
 
+    fun getExpectedDrop(block: PuyoBlock): Array<Int>{
+        var y = block.y
+        while (!isColliding(block.x, y+1)){
+            y++
+        }
+        if(y == block.y){
+            y = -1
+        }
+        return arrayOf(block.x, y)
+    }
+
     private fun clearPrevPos(block: Block){
         grid[block.x][block.y] = null
     }
@@ -186,6 +197,10 @@ class PuyoGame (){
 
     private fun canFall(block: Block) : Boolean {
         return !isOutOfBounds(block.x, block.y + 1) && grid[block.x][block.y + 1] == null
+    }
+
+    private fun isMainPuyo(block: Block) : Boolean {
+        return block == puyo.first || block == puyo.second
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{

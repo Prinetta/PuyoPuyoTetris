@@ -35,7 +35,7 @@ class SpriteArea {
                     "rd" to atlas.findRegion("${colorLetter}rd"), "ur" to atlas.findRegion("${colorLetter}ur"), "dl" to atlas.findRegion("${colorLetter}dl"),
                     "ul" to atlas.findRegion("${colorLetter}ul"), "udl" to atlas.findRegion("${colorLetter}udl"), "rdl" to atlas.findRegion("${colorLetter}rdl"),
                     "url" to atlas.findRegion("${colorLetter}url"), "urd" to atlas.findRegion("${colorLetter}urd"), "s" to atlas.findRegion("${colorLetter}s"),
-                    "g" to atlas.findRegion("pg"))
+                    "dot" to atlas.findRegion("${colorLetter}dot"), "g" to atlas.findRegion("pg"))
         }
     }
 }

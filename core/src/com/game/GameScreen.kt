@@ -2,6 +2,7 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -60,6 +61,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         game.batch.begin()
         /// Puyo Draw
+        drawPuyoPreview()
         drawPuyos()
         drawTitle()
         drawScore()
@@ -71,9 +73,22 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawNextTetrominos()
         /// End Draw
         game.batch.end()
+
+
     }
 
     /// Tetris Methods
+
+    private fun drawPuyoPreview(){ // PC.GRID_START_X + i * PC.CELL_SIZE,
+        if(puyoController.displayPreview()){
+            val puyo = puyoController.getCurrentPuyo()
+            val coords = puyoController.getPreviewCoords()
+            if(coords[0][1] >= 0) game.batch.draw(puyo.first.sprites["dot"],
+                    PC.GRID_START_X+PC.CELL_SIZE*coords[0][0], PC.GRID_START_Y-coords[0][1]*PC.CELL_SIZE, PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
+            if(coords[1][1] >= 0) game.batch.draw(puyo.second.sprites["dot"],
+                    PC.GRID_START_X+PC.CELL_SIZE*coords[1][0], PC.GRID_START_Y-PC.CELL_SIZE*coords[1][1], PC.CELL_SIZE*0.75f, PC.CELL_SIZE*0.75f)
+        }
+    }
 
     private fun drawTetrisGridBackground() {
         Gdx.gl.glEnable(GL20.GL_BLEND)
