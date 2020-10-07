@@ -68,6 +68,14 @@ class Controller(private val timer: Timer) {
         return puyoGame.nextPuyos[index]
     }
 
+    fun displayGarbage(): Boolean {
+        return puyoGame.hasReceivedGarbage()
+    }
+
+    fun getGarbage(): Int {
+        return puyoGame.scoring.garbage
+    }
+
     private fun allowInput() : Boolean {
         return timer.hasInputTimePassed() && !puyoGame.puyo.startedDrop()
     }

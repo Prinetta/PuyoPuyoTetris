@@ -158,13 +158,12 @@ class PuyoGame (){
     }
 
     fun sendGarbage(amount: Int){
-        if(amount == 0){
+        if(amount < 4){
             return
         }
         val garbage = Garbage.puyoToTetris.getOrElse(amount) {
-            Garbage.puyoToTetris.getOrDefault(Garbage.puyoToTetris.keys.last { it < 21 }, 1) // converts garbage to tetris
-        }
-        println(garbage)
+            Garbage.puyoToTetris.getValue(Garbage.puyoToTetris.keys.last { it <= amount })
+        } // converts garbage to tetris
         //tetris.receiveGarbage(amount)
         receiveGarbage(garbage)
     }

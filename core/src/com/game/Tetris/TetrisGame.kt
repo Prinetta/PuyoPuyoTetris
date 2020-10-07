@@ -1,10 +1,8 @@
-package com.puyo
+package com.game.Tetris
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.game.tetris.TetrisSprite
 import kotlin.random.Random
-
 
 class TetrisGame() {
     var nextTetrominos: com.badlogic.gdx.utils.Array<Tetromino> = com.badlogic.gdx.utils.Array(5)
@@ -102,8 +100,7 @@ class TetrisGame() {
     fun spawnTetromino(){
         currentTetromino = nextTetrominos.pop()
         val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
-        nextTetrominos.insert(0, Tetromino(4, 1, tetrominos[Random.nextInt(6)],
-                TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
+        nextTetrominos.insert(0, Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
         addTetromino(currentTetromino)
     }
 

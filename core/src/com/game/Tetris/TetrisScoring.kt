@@ -1,4 +1,4 @@
-package com.puyo
+package com.game.Tetris
 
 class TetrisScoring() {
 

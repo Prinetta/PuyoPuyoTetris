@@ -2,15 +2,13 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
-import com.puyo.TetrisGame
-import com.puyo.Tetromino
+import com.game.Tetris.*
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
@@ -41,6 +39,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         Gdx.gl.glClearColor(27 / 255f, 18 / 255f, 64 / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
+        /// Background
         game.batch.begin()
         game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
         game.batch.end()
@@ -52,12 +51,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         /// Tetris Controller
         tetrisGame.handleInputs(delta)
 
-        /// Shape Renderer
+        /// Shape Renderer Begin
         drawPuyoBg()
         drawTetrisGridBackground()
         drawHeldTetrominoBg()
-        shapeRenderer.setAutoShapeType(true)
         drawTetrisGrid()
+        /// Shape Renderer End
 
         game.batch.begin()
         /// Puyo Draw
@@ -70,7 +69,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawTetrominos()
         drawHeldTetromino()
         drawNextTetrominos()
-      
+        /// End Draw
         game.batch.end()
     }
 
@@ -165,7 +164,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawHeldTetromino() {
         nextFont.draw(game.batch, "HOLD", TC.HOLD_FIELD_X + (TC.CELL_SIZE * 0.2f), TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.15f))
         if (tetrisGame.heldTetromino != null) {
-            var heldBlock: Tetromino = tetrisGame.heldTetromino!!
+            val heldBlock: Tetromino = tetrisGame.heldTetromino!!
             for (i in heldBlock.shape.indices) {
                 for (j in 0 until heldBlock.shape[i].size) {
                     if (heldBlock.shape[i][j] != null) {
@@ -184,9 +183,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     /// Puyo Puyo
+    private fun drawGarbageQueue(){ // add comments back when tetris garbage works
+        //if(!puyoController.displayGarbage()) return
+        val garbageSprites = SpriteArea.gameSprites
 
-    private fun drawGarbageQueue(){
+        var garbage = 10
+        //var garbage = puyoController.getGarbage()
 
+        var count = 0
+        do {
+            val closest = GC.garbageSteps.last { it <= garbage }
+            game.batch.draw(garbageSprites["garbage-queue$closest"],
+            PC.GRID_START_X+PC.CELL_SIZE*count, SCREEN_HEIGHT * 0.88f, PC.CELL_SIZE, PC.CELL_SIZE)
+            garbage -= closest
+            count++
+        } while (garbage > 0 && count < PC.GRID_WIDTH)
     }
 
     private fun drawNextPuyos(){ // (∩｀-´)⊃━☆ﾟ.*･｡ﾟ 　。。数。。
@@ -247,7 +258,9 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTitle(){
-        titleFont.draw(game.batch, "Puyo Puyo", PC.GRID_START_X * 1.27f, SCREEN_HEIGHT * 0.94f)
+        val y = TC.GRID_TOP_Y-(TC.CELL_SIZE*TC.ROWS)*0.85f
+        titleFont[0].draw(game.batch, "Puyo Puyo", (PC.GRID_START_X + TC.GRID_LEFT_X / 2)*0.93f, y*1.25f)
+        titleFont[1].draw(game.batch, "Tetris", (PC.GRID_START_X + TC.GRID_LEFT_X / 2), y)
     }
 
     private fun drawScore(){

@@ -1,12 +1,7 @@
-package com.puyo
+package com.game.Tetris
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.math.GridPoint2
-import com.badlogic.gdx.math.Rectangle
 import com.game.TC
-import kotlin.math.roundToInt
 
 
 class Tetromino(var column: Int, var row: Int, var type: Char, var texture: TextureRegion) {

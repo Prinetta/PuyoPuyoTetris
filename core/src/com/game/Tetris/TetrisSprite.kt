@@ -1,4 +1,4 @@
-package com.game.tetris
+package com.game.Tetris
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.game.SpriteArea
