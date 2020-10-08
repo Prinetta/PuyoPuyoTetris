@@ -2,11 +2,6 @@ package com.game.Tetris
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-
-import com.badlogic.gdx.graphics.Texture
-import com.game.Tetris.TetrisSprite
-import ktx.app.clearScreen
-
 import kotlin.random.Random
 
 class TetrisGame() {
@@ -14,10 +9,13 @@ class TetrisGame() {
     private lateinit var currentTetromino: Tetromino
     var heldTetromino: Tetromino? = null
 
-    var enableHold: Boolean = true
-    var tSpinInput: Boolean = false
+    private val tetrominoTypes: MutableList<Char> = mutableListOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
+    private lateinit var currentTypes: MutableList<Char>
 
-    var scoring: TetrisScoring = TetrisScoring()
+    private var enableHold: Boolean = true
+    private var tSpinInput: Boolean = false
+
+    private var scoring: TetrisScoring = TetrisScoring()
 
     // y-offsets have to be reversed from srs system
     var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
@@ -49,8 +47,9 @@ class TetrisGame() {
                 row.add(null)
             }
         }
-        createNextTetrominos()
+        createRandomOrder()
         spawnTetromino()
+        createNextTetrominos()
     }
 
     fun handleInputs(delta: Float) {
@@ -137,18 +136,28 @@ class TetrisGame() {
         }
     }
     fun spawnTetromino(){
-        currentTetromino = nextTetrominos.pop()
-        val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
-        nextTetrominos.insert(0, Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
+        if (currentTypes.isEmpty()) createRandomOrder()
+        if (nextTetrominos.size > 0) {
+            currentTetromino = nextTetrominos.pop()
+            nextTetrominos.insert(0, Tetromino(4, 1, currentTypes.removeAt(0),
+                    TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
+        }
+        else currentTetromino = Tetromino(4, 1, currentTypes.removeAt(0),
+                TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite)
         addTetromino(currentTetromino)
     }
 
     fun createNextTetrominos() {
-        nextTetrominos.addAll(null, null, null, null, null)
-        val tetrominos: CharArray = charArrayOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
-        for (i in 0 until nextTetrominos.size) {
-            nextTetrominos[i] = Tetromino(4, 1, tetrominos[Random.nextInt(6)], TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite)
+        for (i in 0 until 5) {
+            // gotta add stuff
+            nextTetrominos.add(Tetromino(4, 1, currentTypes.removeAt(0),
+                    TetrisSprite.values()[Random.nextInt(TetrisSprite.values().size-1)].sprite))
         }
+    }
+
+    fun createRandomOrder() {
+        currentTypes = tetrominoTypes.toMutableList()
+        currentTypes.shuffle()
     }
 
     fun holdTetromino() {
