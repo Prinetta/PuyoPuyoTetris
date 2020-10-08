@@ -12,10 +12,13 @@ class TetrisGame() {
     private val tetrominoTypes: MutableList<Char> = mutableListOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
     private lateinit var currentTypes: MutableList<Char>
 
+    private var gameIsOver: Boolean = false
     private var enableHold: Boolean = true
     private var tSpinInput: Boolean = false
 
     private var scoring: TetrisScoring = TetrisScoring()
+    private var comboCount: Int = 0
+    private var b2bBonus: Int = 0 // basically works as boolean here using 0 and 1
 
     // y-offsets have to be reversed from srs system
     var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
@@ -56,7 +59,7 @@ class TetrisGame() {
         if (dropTetrominoTimer > 0.5f) {
             if (currentTetromino.isFalling) {
                 dropTetromino(currentTetromino)
-            } else if(!isFull()) {
+            } else {
                 updateRows()
                 spawnTetromino()
                 tSpinInput = false
@@ -135,6 +138,7 @@ class TetrisGame() {
             holdTetromino()
         }
     }
+
     fun spawnTetromino(){
         if (currentTypes.isEmpty()) createRandomOrder()
         if (nextTetrominos.size > 0) {
@@ -161,30 +165,38 @@ class TetrisGame() {
     }
 
     fun holdTetromino() {
+        dropTetrominoTimer = 0f
         if (heldTetromino != null) {
             var temp: Tetromino = heldTetromino!!
             heldTetromino = currentTetromino
             currentTetromino = temp
+
             removeTetromino(heldTetromino!!) // has to be removed before setting current tetrominos' position
-            currentTetromino.setPosition(4, 1)
+            currentTetromino.setPosition(4, 1) // y calc for some reason necessary
+            addTetromino(currentTetromino)
         } else {
             heldTetromino = currentTetromino
             removeTetromino(heldTetromino!!)
             spawnTetromino()
         }
+        while (heldTetromino!!.rotationState != '0') {
+            heldTetromino!!.turnLeft()
+        }
         enableHold = false
     }
 
     fun addTetromino (block: Tetromino) {
-        for (i in block.shape.indices) {
-            for (cell in block.shape[i]) {
-                if (cell != null) {
-                    cells[cell.column][cell.row] = cell
+        if (wrongState(block)) gameOver()
+        else {
+            for (i in block.shape.indices) {
+                for (cell in block.shape[i]) {
+                    if (cell != null) {
+                        cells[cell.column][cell.row] = cell
+                    }
                 }
             }
+            if (tetrominoLanded(block)) block.isFalling = false
         }
-        if (tetrominoLanded(block)) block.isFalling = false
-
     }
 
     fun dropTetromino (block: Tetromino) {
@@ -196,7 +208,6 @@ class TetrisGame() {
                         cells[block.shape[j][i].column][block.shape[j][i].row] = null
                     }
                 }
-
             }
             block.move(0, 1)
         } else if (tetrominoLanded(block)) block.isFalling = false
@@ -372,11 +383,13 @@ class TetrisGame() {
     fun updateRows() {
         var pointsAdded: Boolean = false
         val fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
-        if (tSpinInput) println("Nice T-Spin!!!!!")
+        if (tSpinInput) println("T-Spin")
         if (fullRows.size > 0) {
             if (isTSpin()) {
-                scoring.score += scoring.tSpinClearBonus.get(fullRows.size)!!
+                if (b2bBonus == 1) println("Back-to-back")
+                scoring.puyoGarbage += scoring.tSpinClearBonus.get(fullRows.size)!! + b2bBonus
                 pointsAdded = true
+                b2bBonus = 1
             }
             for (row in fullRows) {
                 for (j in row downTo 1) {
@@ -388,9 +401,26 @@ class TetrisGame() {
                     cell[0] = null
                 }
             }
-            if (isPerfectClear()) scoring.score += scoring.perfectClearBonus
-            else if (!pointsAdded) scoring.score += scoring.clearBonus.get(fullRows.size)!!
-            println("Garbage: " + scoring.score)
+            if (isPerfectClear()) {
+                scoring.puyoGarbage += scoring.perfectClearBonus
+                b2bBonus = 0
+            }
+            else if (!pointsAdded) {
+                if (fullRows.size == 4) {
+                    println("Tetris")
+                    if (b2bBonus == 1) println("Back-to-back")
+                    scoring.puyoGarbage += scoring.clearBonus.get(fullRows.size)!! + b2bBonus
+                    b2bBonus = 1
+                } else {
+                    scoring.puyoGarbage += scoring.clearBonus.get(fullRows.size)!!
+                    b2bBonus = 0
+                }
+            }
+            comboCount++
+            println("Combo: $comboCount")
+        } else {
+            scoring.puyoGarbage += scoring.getComboBonus(comboCount)
+            comboCount = 0
         }
     }
 
@@ -432,7 +462,7 @@ class TetrisGame() {
     }
 
     fun isFull(): Boolean {
-        for (i in 2 until cells.size - 2) { // 1 instead of 0 because the first row is invisible
+        for (i in 0 until cells.size) { // 1 instead of 0 because the first row is invisible
             if (cells[i][1] != null) {
                 return true
             }
@@ -447,5 +477,24 @@ class TetrisGame() {
             }
         }
         return true
+    }
+
+    /*fun fillGarbage() {
+        for (i in 0..scoring.tetrisGarbage) {
+            if (!isFull())
+        }
+    }*/
+
+    fun gameOver() {
+        gameIsOver = true
+        println("Tetris lost")
+    }
+
+    fun sendGarbage() {
+        TODO()
+    }
+
+    fun receiveGarbage() {
+        TODO()
     }
 }
