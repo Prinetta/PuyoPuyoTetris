@@ -56,6 +56,26 @@ class Controller(private val timer: Timer) {
         }
     }
 
+    fun displayPreview() : Boolean {
+        return !puyoGame.puyo.bothDropped()
+    }
+
+    fun getPreviewCoords(): Array<Array<Int>> {
+        val coords = arrayOf(puyoGame.getExpectedDrop(puyoGame.puyo.first), puyoGame.getExpectedDrop(puyoGame.puyo.second))
+        if(coords[0][0] == coords[1][0] && coords[0][1] == coords[1][1]){
+            if(puyoGame.puyo.first.y > puyoGame.puyo.second.y){
+                coords[1][1]--
+            } else {
+                coords[0][1]--
+            }
+        }
+        return coords
+    }
+
+    fun getCurrentPuyo() : Puyo{
+        return puyoGame.puyo
+    }
+
     fun getBlockAt(i: Int, j: Int): Block?{
         return puyoGame.grid[i][j]
     }
