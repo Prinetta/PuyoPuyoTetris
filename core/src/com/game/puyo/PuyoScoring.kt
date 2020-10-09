@@ -30,7 +30,16 @@ class PuyoScoring(){
         val nuisancePoints : Double = chainScore / TARGET_POINTS + leftover
         val garbageRounded = nuisancePoints.toInt()
         leftover = nuisancePoints - garbageRounded
-        garbageToSend += garbageRounded
+
+        if(garbageToReceive > 0){
+            garbageToReceive -= garbageRounded
+            if(garbageToReceive < 0){
+                garbageToReceive = 0
+                garbageToSend += garbageRounded
+            }
+        } else {
+            garbageToSend += garbageRounded
+        }
     }
 
     private fun calculateBonus(chains: List<List<PuyoBlock>>) : Int{

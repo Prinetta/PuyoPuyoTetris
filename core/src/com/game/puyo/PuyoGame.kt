@@ -12,7 +12,7 @@ class PuyoGame (){
 
     private val width = PC.GRID_WIDTH
     private val length = PC.GRID_LENGTH
-    private var allBlocksStanding = true
+    private var allPuyosDropped = true
     private var allGarbageDropped = true
     private var chainIndex = -1
     private lateinit var tetris: TetrisGame;
@@ -48,7 +48,7 @@ class PuyoGame (){
     }
 
     fun isDoneDroppingPuyos(): Boolean {
-        return allBlocksStanding
+        return allPuyosDropped
     }
 
     fun isDoneDroppingGarbage(): Boolean {
@@ -56,7 +56,7 @@ class PuyoGame (){
     }
 
     fun dropRemainingPuyos(){
-        allBlocksStanding = !dropPuyos()
+        allPuyosDropped = !dropPuyos()
     }
 
     fun removeCombo(){
@@ -115,7 +115,7 @@ class PuyoGame (){
         val x: Int
         val y: Int
 
-        puyo.addRotationCount(rotation)
+        puyo.updateRotationCount(rotation)
         if(rotation > 0) {
             x = if (puyo.rotateCount == 1 || puyo.rotateCount == 4) 1 else -1
             y = if (puyo.rotateCount == 1 || puyo.rotateCount == 2) 1 else -1
@@ -129,7 +129,7 @@ class PuyoGame (){
         } else if(canFloorKick(puyo.first.x + x, puyo.first.y + y)){
             floorKick()
         } else if(isColliding(puyo.first.x + x, puyo.first.y + y)){
-            puyo.addRotationCount(-rotation)
+            puyo.updateRotationCount(-rotation)
             return
         } else {
             setBlockTo(puyo.first, puyo.first.x + x, puyo.first.y + y)
@@ -196,9 +196,11 @@ class PuyoGame (){
         allGarbageDropped = !dropAllGarbadge()
     }
 
-    fun dropGarbage(){
+    fun placeGarbage(){
+        println("i am placing the garbage on the garbage field with this garbage code")
         val garbageBlocks = MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0) }
         placeGarbageBlocks(garbageBlocks)
+        dropRemainingGarbage()
         scoring.garbageToReceive = 0
     }
 
@@ -353,9 +355,9 @@ class PuyoGame (){
         for (i in length-1 downTo 0) {
             for(j in 0 until width) {
                 val block = grid[j][i]
-                if(block != null){
+                if(block != null && block !is GarbageBlock){
                     dropBlock(block)
-                    if(block.isFalling && block !is GarbageBlock){
+                    if(block.isFalling){
                         dropped = true
                     }
                 }

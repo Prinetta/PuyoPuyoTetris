@@ -9,6 +9,11 @@ class Timer {
     private var lastBlockDropTime = currentTimeMillis()
     private var lastGarbageDropTime = currentTimeMillis()
     private var lastPuyoDropTime = currentTimeMillis()
+    private var delay = currentTimeMillis()
+
+    fun resetDelay(){
+        delay = currentTimeMillis()
+    }
 
     fun resetGarbageDropTime(){
         lastGarbageDropTime = currentTimeMillis()
@@ -30,8 +35,12 @@ class Timer {
         lastPuyoDropTime = currentTimeMillis();
     }
 
+    fun hasDelayPassed(): Boolean {
+        return currentTimeMillis() - delay > 500
+    }
+
     fun hasGarbageTimePassed(): Boolean {
-        return currentTimeMillis() - lastGarbageDropTime > 50
+        return currentTimeMillis() - lastGarbageDropTime > 70
     }
 
     fun hasInputTimePassed(): Boolean{

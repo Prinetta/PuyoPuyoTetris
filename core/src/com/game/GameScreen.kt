@@ -206,13 +206,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun drawGarbageQueue(){ // add comments back when tetris garbage works
-        //if(!puyoController.displayGarbage()) return
+    private fun drawGarbageQueue(){
+        if(!puyoController.displayGarbage()) return
+
         val garbageSprites = SpriteArea.gameSprites
-
-        var garbage = 66 // and delete this one
-        //var garbage = puyoController.getGarbage()
-
+        var garbage = puyoController.getGarbage()
         var count = 0
         do {
             val closest = GC.garbageSteps.last { it <= garbage }

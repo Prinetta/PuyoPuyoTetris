@@ -13,7 +13,7 @@ class Puyo(val first: PuyoBlock, val second: PuyoBlock){
         return bothDropped()
     }
 
-    fun addRotationCount(rotation: Int){
+    fun updateRotationCount(rotation: Int){
         if(rotation > 0){
             rotateCount += if (rotateCount >= 4) -3 else 1 // loop after 4
         } else {

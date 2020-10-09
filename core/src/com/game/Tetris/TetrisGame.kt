@@ -73,6 +73,7 @@ class TetrisGame() {
                 spawnTetromino()
                 tSpinInput = false
                 enableHold = true
+                sendGarbage(2) //TODO: delete this!!! this is debugging only nhh
             }
             dropTetrominoTimer = 0f
         }

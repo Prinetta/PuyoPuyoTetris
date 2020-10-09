@@ -8,7 +8,7 @@ import com.game.Timer
 
 class Controller(private val timer: Timer) {
 
-    val puyoGame = PuyoGame() // and tetris
+    val puyoGame = PuyoGame()
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
@@ -20,12 +20,16 @@ class Controller(private val timer: Timer) {
             if (timer.hasBlockDropTimePassed(puyoGame.puyo)) {
                 puyoGame.dropRemainingPuyos()
                 timer.resetBlockDropTime()
+                if(!puyoGame.isDoneDroppingPuyos()){
+                    timer.resetDelay()
+                }
             } else if(puyoGame.isDoneDroppingPuyos()){
                 puyoGame.findBigPuyoChain()
                 if(!puyoGame.hasFoundChain()){
                     if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){
-                        if(puyoGame.hasReceivedGarbage()){
-                            puyoGame.dropGarbage()
+                        if(puyoGame.hasReceivedGarbage() && timer.hasDelayPassed()){
+                            puyoGame.placeGarbage()
+                            timer.resetDelay()
                         } else if (timer.hasGarbageTimePassed()){
                             puyoGame.dropRemainingGarbage()
                             timer.resetGarbageDropTime()
@@ -105,7 +109,7 @@ class Controller(private val timer: Timer) {
     }
 
     fun getGarbage(): Int {
-        return puyoGame.scoring.garbageToSend
+        return puyoGame.scoring.garbageToReceive
     }
 
     private fun allowInput() : Boolean {
