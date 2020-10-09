@@ -2,6 +2,7 @@ package com.game.Tetris
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.game.Garbage
 import com.game.SpriteArea
 import com.game.puyo.Puyo
 import com.game.puyo.PuyoGame
@@ -427,7 +428,8 @@ class TetrisGame() {
         } else {
             scoring.puyoGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
-            if (scoring.tetrisGarbage > 0) fillGarbage()
+            sendGarbage(scoring.puyoGarbage)
+            fillGarbage()
         }
     }
 
@@ -487,21 +489,23 @@ class TetrisGame() {
     }
 
     fun fillGarbage() {
-        for (line in 1..scoring.tetrisGarbage) {
-            if (!isFull()) {
-                for (i in 0 until rows - 1) {
-                    for (j in 0 until columns) {
-                        cells[j][i] = cells[j][i + 1]
+        if (scoring.tetrisGarbage > 0) {
+            for (line in 1..scoring.tetrisGarbage) {
+                if (!isFull()) {
+                    for (i in 0 until rows - 1) {
+                        for (j in 0 until columns) {
+                            cells[j][i] = cells[j][i + 1]
+                        }
+                    }
+                    var freeColumn: Int = Random.nextInt(columns - 1)
+                    for (i in 0 until columns) {
+                        if (i != freeColumn) cells[i][rows - 1] = TetrisBlock(i, rows - 1, SpriteArea.tetrisSprites.get("garbage")!!)
+                        else cells[i][rows - 1] = null
                     }
                 }
-                var freeColumn: Int = Random.nextInt(columns - 1)
-                for (i in 0 until columns) {
-                    if (i != freeColumn) cells[i][rows - 1] = TetrisBlock(i, rows - 1, SpriteArea.tetrisSprites.get("garbage")!!)
-                    else cells[i][rows - 1] = null
-                }
             }
+            scoring.tetrisGarbage = 0
         }
-        scoring.tetrisGarbage = 0
     }
 
     fun gameOver() {
@@ -509,8 +513,10 @@ class TetrisGame() {
         println("Tetris lost")
     }
 
-    fun sendGarbage() {
-        TODO()
+    fun sendGarbage(amount: Int) {
+        if (amount in 1..30) puyo.receiveGarbage(Garbage.tetrisToPuyo[amount]!!)
+        else if (amount > 0) puyo.receiveGarbage(Garbage.tetrisToPuyo[30]!!) // sends highest amount because game should end anyway
+        scoring.puyoGarbage = 0
     }
 
     fun receiveGarbage(amount: Int) {
