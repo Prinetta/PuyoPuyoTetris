@@ -76,7 +76,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         /// End Draw
         game.batch.end()
 
-
+        //println(Gdx.graphics.framesPerSecond)
     }
 
     /// Tetris Methods

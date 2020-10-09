@@ -234,28 +234,28 @@ ph
   orig: 72, 72
   offset: 0, 0
   index: -1
-pg4
+pggg
   rotate: false
   xy: 668, 76
   size: 72, 72
   orig: 72, 72
   offset: 0, 0
   index: -1
-pg3
+pg4
   rotate: false
   xy: 742, 76
   size: 72, 72
   orig: 72, 72
   offset: 0, 0
   index: -1
-pg2
+pg3
   rotate: false
   xy: 816, 76
   size: 72, 72
   orig: 72, 72
   offset: 0, 0
   index: -1
-pg
+pg2
   rotate: false
   xy: 890, 76
   size: 72, 72
@@ -598,51 +598,72 @@ g1440
   orig: 64, 64
   offset: 0, 0
   index: -1
-tyellow
+garbage3
   rotate: false
   xy: 964, 2
-  size: 36, 36
-  orig: 36, 36
+  size: 52, 52
+  orig: 52, 52
   offset: 0, 0
   index: -1
-tred
+garbage2
   rotate: false
   xy: 2, 964
-  size: 36, 36
-  orig: 36, 36
+  size: 52, 52
+  orig: 52, 52
   offset: 0, 0
   index: -1
-tpurple
+garbage1
   rotate: false
   xy: 964, 76
-  size: 36, 36
-  orig: 36, 36
+  size: 40, 40
+  orig: 40, 40
   offset: 0, 0
   index: -1
-torange
+tyellow
   rotate: false
   xy: 76, 964
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
   index: -1
-tgreen
+tred
   rotate: false
   xy: 964, 150
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
   index: -1
-tdarkblue
+tpurple
   rotate: false
   xy: 150, 964
   size: 36, 36
   orig: 36, 36
   offset: 0, 0
   index: -1
-tblue
+torange
   rotate: false
   xy: 964, 224
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+tgreen
+  rotate: false
+  xy: 224, 734
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+tdarkblue
+  rotate: false
+  xy: 224, 772
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+tblue
+  rotate: false
+  xy: 224, 810
   size: 36, 36
   orig: 36, 36
   offset: 0, 0

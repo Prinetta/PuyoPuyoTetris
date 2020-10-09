@@ -9,43 +9,53 @@ import com.game.Timer
 class Controller(private val timer: Timer) {
 
     val puyoGame = PuyoGame()
+    var tapCount = 0
+
+    private var time = System.currentTimeMillis()
+    private var lastInput = Time(time, 50)
+    private var lastChain = Time(time, puyoGame.puyo.chainSpeed)
+    private var lastBlockDrop = Time(time, puyoGame.puyo.speed)
+    private var lastGarbageDrop = Time(time, 70)
+    private var lastPuyoDrop = Time(time, puyoGame.puyo.speed)
+    private var delay = Time(time, 500)
+    private var doubleTap = Time(time, 3000)
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
-            if (timer.hasChainTimePassed(puyoGame.puyo)) {
+            if (timer.hasPassed(lastChain)) {
                 puyoGame.removeCombo()
-                timer.resetChainTime()
+                timer.reset(lastChain)
             }
         } else {
-            if (timer.hasBlockDropTimePassed(puyoGame.puyo)) {
+            if (timer.hasPassed(lastBlockDrop)) {
                 puyoGame.dropRemainingPuyos()
-                timer.resetBlockDropTime()
+                timer.reset(lastBlockDrop)
                 if(!puyoGame.isDoneDroppingPuyos()){
-                    timer.resetDelay()
+                    timer.reset(delay)
                 }
             } else if(puyoGame.isDoneDroppingPuyos()){
                 puyoGame.findBigPuyoChain()
                 if(!puyoGame.hasFoundChain()){
                     if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){
-                        if(puyoGame.hasReceivedGarbage() && timer.hasDelayPassed()){
+                        if(puyoGame.hasReceivedGarbage() && timer.hasPassed(delay)){
                             puyoGame.placeGarbage()
-                            timer.resetDelay()
-                        } else if (timer.hasGarbageTimePassed()){
+                            timer.reset(delay)
+                        } else if (timer.hasPassed(lastGarbageDrop)){
                             puyoGame.dropRemainingGarbage()
-                            timer.resetGarbageDropTime()
+                            timer.reset(lastGarbageDrop)
                         }
                     } else {
                         puyoGame.calculateChainScore()
-                        if(timer.hasPuyoDropTimePassed(puyoGame.puyo)) {
+                        if(timer.hasPassed(lastPuyoDrop)) {
                             if (puyoGame.allowSpawn()) {
                                 puyoGame.spawnPuyo()
                             }
-                            timer.resetPuyoDropTime()
+                            timer.reset(lastPuyoDrop)
                         }
                     }
                 }
             }
-            timer.resetChainTime()
+            timer.reset(lastChain)
         }
         puyoGame.connectPuyos()
         puyoGame.updateSprites()
@@ -61,15 +71,31 @@ class Controller(private val timer: Timer) {
             when {
                 Gdx.input.isKeyPressed(Input.Keys.A) -> movePuyo(-1)
                 Gdx.input.isKeyPressed(Input.Keys.D) -> movePuyo(1)
-                Gdx.input.isKeyPressed(Input.Keys.H) -> rotatePuyo(1)
-                Gdx.input.isKeyPressed(Input.Keys.G) -> rotatePuyo(-1)
+                Gdx.input.isKeyPressed(Input.Keys.H) -> checkDoubleRotate(1)
+                Gdx.input.isKeyPressed(Input.Keys.G) -> checkDoubleRotate(-1)
             }
-            timer.resetInputTime()
+            timer.reset(lastInput)
         } else if(Gdx.input.isKeyPressed(Input.Keys.S)){
             increaseSpeed()
         } else {
             decreaseSpeed()
         }
+        lastBlockDrop.delay = puyoGame.puyo.speed
+    }
+
+    fun checkDoubleRotate(rotation: Int){ // only works for a bit?
+        tapCount++
+        if(!timer.hasPassed(doubleTap) && tapCount == 2 && puyoGame.canQuickTurn()){
+            puyoGame.quickTurn()
+            tapCount = 0
+        } else {
+            if(timer.hasPassed(doubleTap) && tapCount == 2){
+                tapCount = 0
+            }
+            rotatePuyo(rotation)
+        }
+
+        timer.reset(doubleTap)
     }
 
     fun displayPreview() : Boolean {
@@ -113,7 +139,7 @@ class Controller(private val timer: Timer) {
     }
 
     private fun allowInput() : Boolean {
-        return timer.hasInputTimePassed() && !puyoGame.puyo.startedDrop()
+        return timer.hasPassed(lastInput) && !puyoGame.puyo.startedDrop()
     }
 
     private fun movePuyo(direction: Int){

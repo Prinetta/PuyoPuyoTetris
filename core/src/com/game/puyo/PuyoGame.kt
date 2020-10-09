@@ -2,6 +2,7 @@ package com.game.puyo
 
 import com.game.*
 import com.game.Tetris.TetrisGame
+import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlin.random.Random
 
 class PuyoGame (){
@@ -57,6 +58,19 @@ class PuyoGame (){
 
     fun dropRemainingPuyos(){
         allPuyosDropped = !dropPuyos()
+    }
+
+    fun quickTurn(){
+        val tempY = puyo.first.y
+        puyo.first.y = puyo.second.y
+        puyo.second.y = tempY
+        updateMovingPos(puyo.first)
+        updateMovingPos(puyo.second)
+    }
+
+    fun canQuickTurn(): Boolean{
+        return isColliding(puyo.first.x-1, puyo.first.y) && isColliding(puyo.first.x+1, puyo.first.y) &&
+               isColliding(puyo.second.x-1, puyo.first.y) && isColliding(puyo.second.x+1, puyo.first.y)
     }
 
     fun removeCombo(){
@@ -197,7 +211,6 @@ class PuyoGame (){
     }
 
     fun placeGarbage(){
-        println("i am placing the garbage on the garbage field with this garbage code")
         val garbageBlocks = MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0) }
         placeGarbageBlocks(garbageBlocks)
         dropRemainingGarbage()
@@ -208,7 +221,7 @@ class PuyoGame (){
         return scoring.garbageToReceive > 0
     }
 
-    fun sendGarbage(amount: Int){
+    private fun sendGarbage(amount: Int){
         if(amount < 4){
             return
         }
