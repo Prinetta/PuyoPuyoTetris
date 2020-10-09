@@ -81,12 +81,21 @@ class PuyoGame (){
         }
     }
 
-    private fun collisionWithFloor(x: Int, y: Int): Boolean{
-        return y > length && x in 0..width
-    }
-
     private fun canWallKick(x: Int, y: Int): Boolean{
         return (x < 0  && !isColliding(puyo.second.x+1, puyo.second.y)) || (x >= width && !isColliding(puyo.second.x-1, puyo.second.y))
+    }
+
+    private fun canFloorKick(x: Int, y: Int): Boolean{
+        return y >= length && x in 0..width && !isColliding(puyo.second.x, puyo.second.y-1)
+    }
+
+    private fun floorKick(){
+        clearPrevPos(puyo.first)
+        puyo.first.x = puyo.second.x
+        puyo.first.y = puyo.second.y
+        puyo.second.y--
+        updateMovingPos(puyo.first)
+        updateMovingPos(puyo.second)
     }
 
     private fun wallkick(x: Int){
@@ -117,6 +126,8 @@ class PuyoGame (){
 
         if(canWallKick(puyo.first.x + x, puyo.first.y + y)){
             wallkick(puyo.first.x + x)
+        } else if(canFloorKick(puyo.first.x + x, puyo.first.y + y)){
+            floorKick()
         } else if(isColliding(puyo.first.x + x, puyo.first.y + y)){
             puyo.addRotationCount(-rotation)
             return
