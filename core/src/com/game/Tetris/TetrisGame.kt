@@ -2,6 +2,8 @@ package com.game.Tetris
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Texture
+import com.game.SpriteArea
 import kotlin.random.Random
 
 class TetrisGame() {
@@ -387,7 +389,7 @@ class TetrisGame() {
         if (fullRows.size > 0) {
             if (isTSpin()) {
                 if (b2bBonus == 1) println("Back-to-back")
-                scoring.puyoGarbage += scoring.tSpinClearBonus.get(fullRows.size)!! + b2bBonus
+                scoring.tetrisGarbage += scoring.tSpinClearBonus.get(fullRows.size)!! + b2bBonus
                 pointsAdded = true
                 b2bBonus = 1
             }
@@ -397,30 +399,29 @@ class TetrisGame() {
                         cells[i][j] = cells[i][j - 1]
                     }
                 }
-                for (cell in cells) {
-                    cell[0] = null
-                }
             }
             if (isPerfectClear()) {
-                scoring.puyoGarbage += scoring.perfectClearBonus
+                scoring.tetrisGarbage += scoring.perfectClearBonus
                 b2bBonus = 0
             }
             else if (!pointsAdded) {
                 if (fullRows.size == 4) {
                     println("Tetris")
                     if (b2bBonus == 1) println("Back-to-back")
-                    scoring.puyoGarbage += scoring.clearBonus.get(fullRows.size)!! + b2bBonus
+                    scoring.tetrisGarbage += scoring.clearBonus.get(fullRows.size)!! + b2bBonus
                     b2bBonus = 1
                 } else {
-                    scoring.puyoGarbage += scoring.clearBonus.get(fullRows.size)!!
+                    println(fullRows.size)
+                    scoring.tetrisGarbage += scoring.clearBonus.get(fullRows.size)!!
                     b2bBonus = 0
                 }
             }
             comboCount++
             println("Combo: $comboCount")
         } else {
-            scoring.puyoGarbage += scoring.getComboBonus(comboCount)
+            scoring.tetrisGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
+            if (scoring.tetrisGarbage > 0) fillGarbage()
         }
     }
 
@@ -462,8 +463,8 @@ class TetrisGame() {
     }
 
     fun isFull(): Boolean {
-        for (i in 0 until cells.size) { // 1 instead of 0 because the first row is invisible
-            if (cells[i][1] != null) {
+        for (i in 0 until cells.size) {
+            if (cells[i][0] != null) {
                 return true
             }
         }
@@ -479,11 +480,23 @@ class TetrisGame() {
         return true
     }
 
-    /*fun fillGarbage() {
-        for (i in 0..scoring.tetrisGarbage) {
-            if (!isFull())
+    fun fillGarbage() {
+        for (line in 1..scoring.tetrisGarbage) {
+            if (!isFull()) {
+                for (i in 0 until rows - 1) {
+                    for (j in 0 until columns) {
+                        cells[j][i] = cells[j][i + 1]
+                    }
+                }
+                var freeColumn: Int = Random.nextInt(columns - 1)
+                for (i in 0 until columns) {
+                    if (i != freeColumn) cells[i][rows - 1] = TetrisBlock(i, rows - 1, SpriteArea.tetrisSprites.get("garbage")!!)
+                    else cells[i][rows - 1] = null
+                }
+            }
         }
-    }*/
+        scoring.tetrisGarbage = 0
+    }
 
     fun gameOver() {
         gameIsOver = true
