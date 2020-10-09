@@ -130,13 +130,17 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTetrisShadow() {
+        val c = game.batch.color
+        game.batch.setColor(c.r, c.g, c.b, 0.4f)
+
         var shadowShape: MutableList<Pair<Int, Int>>? = tetrisGame.getShadowCoordinates()
         if (shadowShape != null) {
             for (pair in shadowShape) {
-                game.batch.draw(SpriteArea.tetrisSprites.get("garbage")!!, pair.first.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X,
+                game.batch.draw(tetrisGame.currentTetromino.texture, pair.first.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X,
                         TC.GRID_TOP_Y - (pair.second.toFloat() * TC.CELL_SIZE), TC.CELL_SIZE, TC.CELL_SIZE)
             }
         }
+        game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
     private fun drawTetrisGrid(){

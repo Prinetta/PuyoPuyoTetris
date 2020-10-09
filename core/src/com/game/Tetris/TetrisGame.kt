@@ -11,7 +11,7 @@ import kotlin.random.Random
 class TetrisGame() {
     private lateinit var puyo: PuyoGame
     var nextTetrominos: com.badlogic.gdx.utils.Array<Tetromino> = com.badlogic.gdx.utils.Array(5)
-    private lateinit var currentTetromino: Tetromino
+    lateinit var currentTetromino: Tetromino
     var heldTetromino: Tetromino? = null
 
     private val tetrominoTypes: MutableList<Char> = mutableListOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
@@ -73,7 +73,6 @@ class TetrisGame() {
                 spawnTetromino()
                 tSpinInput = false
                 enableHold = true
-                sendGarbage(2) //TODO: delete this!!! this is debugging only nhh
             }
             dropTetrominoTimer = 0f
         }
