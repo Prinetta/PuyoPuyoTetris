@@ -81,31 +81,55 @@ class PuyoGame (){
         }
     }
 
+    private fun collisionWithFloor(x: Int, y: Int): Boolean{
+        return y > length && x in 0..width
+    }
+
+    private fun canWallKick(x: Int, y: Int): Boolean{
+        return (x < 0  && !isColliding(puyo.second.x+1, puyo.second.y)) || (x >= width && !isColliding(puyo.second.x-1, puyo.second.y))
+    }
+
+    private fun wallkick(x: Int){
+        clearPrevPos(puyo.first)
+        puyo.first.x = puyo.second.x
+        puyo.first.y = puyo.second.y
+        if(x < 0){
+            puyo.second.x++
+        } else if (x >= width){
+            puyo.second.x--
+        }
+        updateMovingPos(puyo.first)
+        updateMovingPos(puyo.second)
+    }
+
     fun rotatePuyo(rotation: Int){
         val x: Int
         val y: Int
-        if(rotation > 0){
-            puyo.addRotationCount()
-            x = if(puyo.rotateCount == 1 || puyo.rotateCount == 4) 1 else -1
-            y = if(puyo.rotateCount == 1 || puyo.rotateCount == 2) 1 else -1
-            if(isColliding(puyo.first.x + x, puyo.first.y + y)){
-                puyo.removeRotationCount()
-                return
-            }
+
+        puyo.addRotationCount(rotation)
+        if(rotation > 0) {
+            x = if (puyo.rotateCount == 1 || puyo.rotateCount == 4) 1 else -1
+            y = if (puyo.rotateCount == 1 || puyo.rotateCount == 2) 1 else -1
         } else {
-            puyo.removeRotationCount()
             x = if(puyo.rotateCount == 1 || puyo.rotateCount == 2) 1 else -1
             y = if(puyo.rotateCount == 2 || puyo.rotateCount == 3) 1 else -1
-            if(isColliding(puyo.first.x + x, puyo.first.y + y)){
-                puyo.addRotationCount()
-                return
-            }
         }
 
-        clearPrevPos(puyo.first)
-        puyo.first.x += x
-        puyo.first.y += y
-        updateMovingPos(puyo.first)
+        if(canWallKick(puyo.first.x + x, puyo.first.y + y)){
+            wallkick(puyo.first.x + x)
+        } else if(isColliding(puyo.first.x + x, puyo.first.y + y)){
+            puyo.addRotationCount(-rotation)
+            return
+        } else {
+            setBlockTo(puyo.first, puyo.first.x + x, puyo.first.y + y)
+        }
+    }
+
+    private fun setBlockTo(block: Block, x: Int, y: Int){
+        clearPrevPos(block)
+        block.x = x
+        block.y = y
+        updateMovingPos(block)
     }
 
     fun spawnPuyo(){
