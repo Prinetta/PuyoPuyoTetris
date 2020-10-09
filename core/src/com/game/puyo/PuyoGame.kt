@@ -1,6 +1,7 @@
 package com.game.puyo
 
 import com.game.*
+import com.game.Tetris.TetrisGame
 import kotlin.random.Random
 
 class PuyoGame (){
@@ -12,7 +13,9 @@ class PuyoGame (){
     private val width = PC.GRID_WIDTH
     private val length = PC.GRID_LENGTH
     private var allBlocksStanding = true
+    private var allGarbageDropped = true
     private var chainIndex = -1
+    private lateinit var tetris: TetrisGame;
     lateinit var puyo: Puyo
     val grid = Array(width) {Array<Block?>(length) {null} }
     var gameOver = false
@@ -22,6 +25,10 @@ class PuyoGame (){
     init {
         generatePuyoList()
         spawnPuyo()
+    }
+
+    fun setTetris(tetris: TetrisGame){
+        this.tetris = tetris
     }
 
     fun hasFoundChain(): Boolean{
@@ -35,17 +42,21 @@ class PuyoGame (){
     fun calculateChainScore(){
         if(puyosToRemove.isNotEmpty()){
             scoring.calculate(puyosToRemove)
-            sendGarbage(scoring.garbage)
+            sendGarbage(scoring.garbageToSend)
             puyosToRemove.clear()
         }
     }
 
-    fun isDoneDroppingBlocks(): Boolean {
+    fun isDoneDroppingPuyos(): Boolean {
         return allBlocksStanding
     }
 
-    fun dropRemainingBlocks(){
-        allBlocksStanding = !dropAllBlocks()
+    fun isDoneDroppingGarbage(): Boolean {
+        return allGarbageDropped
+    }
+
+    fun dropRemainingPuyos(){
+        allBlocksStanding = !dropPuyos()
     }
 
     fun removeCombo(){
@@ -146,30 +157,34 @@ class PuyoGame (){
         }
     }
 
+    fun dropRemainingGarbage(){
+        allGarbageDropped = !dropAllGarbadge()
+    }
+
     fun dropGarbage(){
-        val garbageBlocks = MutableList(scoring.garbage) { GarbageBlock(0, 0) }
+        val garbageBlocks = MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0) }
         placeGarbageBlocks(garbageBlocks)
-        dropRemainingBlocks()
-        scoring.garbage = 0
+        scoring.garbageToReceive = 0
     }
 
     fun hasReceivedGarbage() : Boolean{
-        return scoring.garbage > 0
+        return scoring.garbageToReceive > 0
     }
 
     fun sendGarbage(amount: Int){
         if(amount < 4){
             return
         }
+        println("i have sent the garbage")
         val garbage = Garbage.puyoToTetris.getOrElse(amount) {
             Garbage.puyoToTetris.getValue(Garbage.puyoToTetris.keys.last { it <= amount })
-        } // converts garbage to tetris
-        //tetris.receiveGarbage(amount)
-        receiveGarbage(garbage)
+        }
+        tetris.receiveGarbage(garbage)
+        scoring.garbageToSend = 0
     }
 
     fun receiveGarbage(amount: Int){
-        scoring.garbage = amount
+        scoring.garbageToReceive += amount
     }
 
     fun getExpectedDrop(block: PuyoBlock): Array<Int>{
@@ -282,14 +297,30 @@ class PuyoGame (){
         chainIndex = -1
     }
 
-    private fun dropAllBlocks() : Boolean{
+    private fun dropAllGarbadge(): Boolean {
+        var dropped = false
+        for (i in length-1 downTo 0) {
+            for(j in 0 until width) {
+                val block = grid[j][i]
+                if(block != null && block is GarbageBlock){
+                    dropBlock(block)
+                    if(block.isFalling){
+                        dropped = true
+                    }
+                }
+            }
+        }
+        return dropped
+    }
+
+    private fun dropPuyos() : Boolean{
         var dropped = false
         for (i in length-1 downTo 0) {
             for(j in 0 until width) {
                 val block = grid[j][i]
                 if(block != null){
                     dropBlock(block)
-                    if(block.isFalling){
+                    if(block.isFalling && block !is GarbageBlock){
                         dropped = true
                     }
                 }

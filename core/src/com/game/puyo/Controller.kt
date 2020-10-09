@@ -3,11 +3,12 @@ package com.game.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Block
+import com.game.Tetris.TetrisGame
 import com.game.Timer
 
 class Controller(private val timer: Timer) {
 
-    private val puyoGame = PuyoGame() // and tetris
+    val puyoGame = PuyoGame() // and tetris
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
@@ -17,19 +18,26 @@ class Controller(private val timer: Timer) {
             }
         } else {
             if (timer.hasBlockDropTimePassed(puyoGame.puyo)) {
-                puyoGame.dropRemainingBlocks()
+                puyoGame.dropRemainingPuyos()
                 timer.resetBlockDropTime()
-            } else if(puyoGame.isDoneDroppingBlocks()){
+            } else if(puyoGame.isDoneDroppingPuyos()){
                 puyoGame.findBigPuyoChain()
                 if(!puyoGame.hasFoundChain()){
-                    puyoGame.calculateChainScore()
-                    if(puyoGame.hasReceivedGarbage()){
-                        puyoGame.dropGarbage()
-                    } else if(timer.hasPuyoDropTimePassed(puyoGame.puyo)){
-                        if(puyoGame.allowSpawn()){
-                            puyoGame.spawnPuyo()
+                    if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){
+                        if(puyoGame.hasReceivedGarbage()){
+                            puyoGame.dropGarbage()
+                        } else if (timer.hasGarbageTimePassed()){
+                            puyoGame.dropRemainingGarbage()
+                            timer.resetGarbageDropTime()
                         }
-                        timer.resetPuyoDropTime()
+                    } else {
+                        puyoGame.calculateChainScore()
+                        if(timer.hasPuyoDropTimePassed(puyoGame.puyo)) {
+                            if (puyoGame.allowSpawn()) {
+                                puyoGame.spawnPuyo()
+                            }
+                            timer.resetPuyoDropTime()
+                        }
                     }
                 }
             }
@@ -38,6 +46,10 @@ class Controller(private val timer: Timer) {
         puyoGame.connectPuyos()
         puyoGame.updateSprites()
         puyoGame.unmark()
+    }
+
+    fun setTetris(tetris: TetrisGame){
+        puyoGame.setTetris(tetris)
     }
 
     fun readInput(){
@@ -93,7 +105,7 @@ class Controller(private val timer: Timer) {
     }
 
     fun getGarbage(): Int {
-        return puyoGame.scoring.garbage
+        return puyoGame.scoring.garbageToSend
     }
 
     private fun allowInput() : Boolean {

@@ -2,8 +2,8 @@ package com.game.Tetris
 
 class TetrisScoring() {
 
-    var tetrisGarbage: Int = 0
     var puyoGarbage: Int = 0
+    var tetrisGarbage: Int = 0
 
     val perfectClearBonus = 6
     val clearBonus: HashMap<Int, Int> = createClearBonus()

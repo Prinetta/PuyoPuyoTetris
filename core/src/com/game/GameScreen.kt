@@ -15,8 +15,8 @@ const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
-    private val puyoController = Controller(Timer())
     private var tetrisGame: TetrisGame = TetrisGame()
+    private val puyoController = Controller(Timer())
 
     private var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     private var shapeRenderer = ShapeRenderer()
@@ -32,6 +32,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f)
         viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
         viewport.setScreenPosition(0, 0)
+        puyoController.setTetris(tetrisGame)
+        tetrisGame.setPuyo(puyoController.puyoGame)
     }
 
     override fun render(delta: Float) {

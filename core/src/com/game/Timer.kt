@@ -7,7 +7,12 @@ class Timer {
     private var lastInputTime = currentTimeMillis()
     private var lastChainTime = currentTimeMillis()
     private var lastBlockDropTime = currentTimeMillis()
+    private var lastGarbageDropTime = currentTimeMillis()
     private var lastPuyoDropTime = currentTimeMillis()
+
+    fun resetGarbageDropTime(){
+        lastGarbageDropTime = currentTimeMillis()
+    }
 
     fun resetInputTime(){
         lastInputTime = currentTimeMillis();
@@ -23,6 +28,10 @@ class Timer {
 
     fun resetPuyoDropTime(){
         lastPuyoDropTime = currentTimeMillis();
+    }
+
+    fun hasGarbageTimePassed(): Boolean {
+        return currentTimeMillis() - lastGarbageDropTime > 50
     }
 
     fun hasInputTimePassed(): Boolean{
