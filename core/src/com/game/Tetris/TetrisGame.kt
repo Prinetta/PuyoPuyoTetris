@@ -225,7 +225,7 @@ class TetrisGame() {
 
     fun removeTetromino(block: Tetromino) {
         for (i in block.shape.indices) {
-            for (j in 0 until heldTetromino!!.shape[i].size) {
+            for (j in 0 until block.shape[i].size) {
                 if (block.shape[i][j] != null && cells[block.shape[i][j].column][block.shape[i][j].row] == block.shape[i][j]) {
                     cells[block.shape[i][j].column][block.shape[i][j].row] = null
                 }
@@ -419,7 +419,6 @@ class TetrisGame() {
                     scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!! + b2bBonus
                     b2bBonus = 1
                 } else {
-                    println(fullRows.size)
                     scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!!
                     b2bBonus = 0
                 }
@@ -509,14 +508,44 @@ class TetrisGame() {
         }
     }
 
+    fun getShadowCoordinates(): MutableList<Pair<Int, Int>>? {
+        if (currentTetromino != null && !tetrominoLanded(currentTetromino)) {
+            var coordinates: MutableList<Pair<Int, Int>> = mutableListOf()
+            var dropsTillLand: Int = Int.MAX_VALUE
+            var currentDrops: Int = 0
+            for (i in currentTetromino.shape.indices) {
+                for (j in 0 until currentTetromino.shape[i].size) {
+                    if (currentTetromino.shape[i][j] != null) {
+                        var block: TetrisBlock = currentTetromino.shape[i][j]
+                        coordinates.add(Pair(block.column, block.row))
+                        while (block.row + currentDrops < rows && (cells[block.column][block.row + currentDrops] == null
+                                || currentTetromino.contains(cells[block.column][block.row + currentDrops]))) {
+                            currentDrops++
+                        }
+                        if (currentDrops <= dropsTillLand) dropsTillLand = currentDrops - 1
+                        currentDrops = 0
+                    }
+                }
+            }
+            for (i in coordinates.indices) {
+                coordinates[i] = Pair(coordinates[i].first, coordinates[i].second + dropsTillLand)
+            }
+            return coordinates
+        }
+        return null
+    }
+
     fun gameOver() {
         gameIsOver = true
         println("Tetris lost")
     }
 
     fun sendGarbage(amount: Int) {
-        if (amount in 1..30) puyo.receiveGarbage(Garbage.tetrisToPuyo[amount]!!)
-        else if (amount > 0) puyo.receiveGarbage(Garbage.tetrisToPuyo[30]!!) // sends highest amount because game should end anyway
+        if (amount > scoring.tetrisGarbage) {
+            if (amount in 1..30) puyo.receiveGarbage(Garbage.tetrisToPuyo[amount - scoring.tetrisGarbage]!!)
+            // sends 30 amount because game should end anyway
+            else if (amount > 0) puyo.receiveGarbage(Garbage.tetrisToPuyo[30 - scoring.tetrisGarbage]!!)
+        }
         scoring.puyoGarbage = 0
     }
 

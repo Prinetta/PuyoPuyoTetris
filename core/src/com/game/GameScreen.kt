@@ -2,7 +2,6 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -73,6 +72,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawTetrominos()
         drawHeldTetromino()
         drawNextTetrominos()
+        drawTetrisShadow()
         /// End Draw
         game.batch.end()
 
@@ -125,6 +125,16 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                                 TC.CELL_SIZE * 0.7f, TC.CELL_SIZE * 0.7f)
                     }
                 }
+            }
+        }
+    }
+
+    private fun drawTetrisShadow() {
+        var shadowShape: MutableList<Pair<Int, Int>>? = tetrisGame.getShadowCoordinates()
+        if (shadowShape != null) {
+            for (pair in shadowShape) {
+                game.batch.draw(SpriteArea.tetrisSprites.get("garbage")!!, pair.first.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X,
+                        TC.GRID_TOP_Y - (pair.second.toFloat() * TC.CELL_SIZE), TC.CELL_SIZE, TC.CELL_SIZE)
             }
         }
     }
