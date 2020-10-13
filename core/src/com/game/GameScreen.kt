@@ -157,7 +157,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTetrisScore() {
-        scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + (0.5f * TC.CELL_SIZE),
+        scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + TC.CELL_SIZE * 0.6f,
                 TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)
     }
 

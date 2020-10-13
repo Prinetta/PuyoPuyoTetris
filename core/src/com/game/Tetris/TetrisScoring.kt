@@ -46,6 +46,11 @@ class TetrisScoring() {
     }
 
     fun getScoreString(): String {
-        return tetrisScore.toString()
+        var score: String = ""
+        for (i in 1..8 - tetrisScore.toString().length) {
+            score += "0"
+        }
+        score += tetrisScore.toString()
+        return score
     }
 }
