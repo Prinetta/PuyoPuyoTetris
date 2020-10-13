@@ -145,8 +145,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
-<<<<<<< Updated upstream
-=======
     private fun drawTetrisGarbageQueue() {
         var garbage = tetrisGame.scoring.tetrisGarbage
         var count = 0
@@ -168,7 +166,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
->>>>>>> Stashed changes
     private fun drawTetrisScore() {
         scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + TC.CELL_SIZE * 0.6f,
                 TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)

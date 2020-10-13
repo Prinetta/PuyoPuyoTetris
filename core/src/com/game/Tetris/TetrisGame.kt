@@ -503,10 +503,6 @@ class TetrisGame() {
         return true
     }
 
-    fun createGarbageQueue() {
-
-    }
-
     fun fillGarbage() {
         if (scoring.tetrisGarbage > 0) {
             for (line in 1..scoring.tetrisGarbage) {
