@@ -299,7 +299,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawScore(){
-        scoreFont.draw(game.batch, puyoController.getCurrentScore(), PC.GRID_START_X * 1.6f, PC.GRID_START_Y - PC.GRID_START_Y * 0.87f)
+        scoreFont.draw(game.batch, puyoController.getCurrentScore(), PC.GRID_START_X*1.3f, PC.GRID_START_Y - PC.GRID_START_Y * 0.87f)
+        //scoreFont.draw(game.batch, tetrisGame.scoring.score, TC.GRID_LEFT_X+50, TC.GRID_TOP_Y*1.025f-TC.CELL_SIZE*TC.ROWS)
     }
 
     private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){
