@@ -37,6 +37,7 @@ class Controller(private val timer: Timer) {
             } else if(puyoGame.isDoneDroppingPuyos()){
                 puyoGame.findBigPuyoChain()
                 if(!puyoGame.hasFoundChain()){
+                    puyoGame.calculateChainScore()
                     if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){
                         if(puyoGame.hasReceivedGarbage() && timer.hasPassed(delay)){
                             puyoGame.placeGarbage()
@@ -46,11 +47,9 @@ class Controller(private val timer: Timer) {
                             timer.reset(lastGarbageDrop)
                         }
                     } else {
-                        puyoGame.calculateChainScore()
-                            if (puyoGame.allowSpawn()) {
-                                puyoGame.spawnPuyo()
-                            }
-
+                        if (puyoGame.allowSpawn()) {
+                            puyoGame.spawnPuyo()
+                        }
                     }
                 }
             }

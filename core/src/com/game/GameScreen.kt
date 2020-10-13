@@ -145,34 +145,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
-    private fun drawTetrisGarbageQueue() {
-        if (tetrisGame.scoring.tetrisGarbage > 0) {
-            var garbage: Int = tetrisGame.scoring.tetrisGarbage
-            var thirties: Int = garbage / 30
-            garbage -= thirties * 30
-            var fives: Int = garbage / 5
-            garbage -= fives * 5
-            var ones: Int = garbage
-            for (i in 0 until thirties) {
-                game.batch.draw(SpriteArea.gameSprites["tgarbage-queue3"],
-                        TC.GRID_LEFT_X + (TC.CELL_SIZE / 2) + i.toFloat() * (TC.CELL_SIZE * 1.75f),
-                        TC.GRID_TOP_Y + TC.CELL_SIZE, TC.CELL_SIZE, TC.CELL_SIZE)
-            }
-            for (i in 0 until fives) {
-                game.batch.draw(SpriteArea.gameSprites["tgarbage-queue2"],
-                        TC.GRID_LEFT_X + (TC.CELL_SIZE / 2) + i.toFloat() * (TC.CELL_SIZE * 1.75f)
-                                + thirties * (TC.CELL_SIZE * 1.75f),
-                        TC.GRID_TOP_Y + TC.CELL_SIZE, TC.CELL_SIZE, TC.CELL_SIZE)
-            }
-            for (i in 0 until ones) {
-                game.batch.draw(SpriteArea.gameSprites["tgarbage-queue1"],
-                        TC.GRID_LEFT_X + (TC.CELL_SIZE / 2) + i.toFloat() * (TC.CELL_SIZE * 1.75f)
-                                + thirties * (TC.CELL_SIZE * 1.75f) + fives * (TC.CELL_SIZE * 1.75f),
-                        TC.GRID_TOP_Y + TC.CELL_SIZE, TC.CELL_SIZE * 0.8f, TC.CELL_SIZE * 0.8f)
-            }
-        }
-    }
-
     private fun drawTetrisScore() {
         scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + TC.CELL_SIZE * 0.6f,
                 TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)

@@ -389,7 +389,7 @@ class TetrisGame() {
     }
 
     fun updateRows() {
-        var pointsAdded: Boolean = false
+        var pointsAdded = false
         val fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
         if (tSpinInput) println("T-Spin")
         if (fullRows.size > 0) {
@@ -433,7 +433,17 @@ class TetrisGame() {
             if (isTSpin()) scoring.tetrisScore += scoring.scoreTSpinZeroBonus
             scoring.puyoGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
-            sendGarbage(scoring.puyoGarbage)
+
+            if(scoring.tetrisGarbage > 0){
+                scoring.tetrisGarbage -= scoring.puyoGarbage
+                if(scoring.tetrisGarbage < 0){
+                    scoring.puyoGarbage = -scoring.tetrisGarbage
+                    scoring.tetrisGarbage = 0
+                    sendGarbage(scoring.puyoGarbage)
+                }
+            } else {
+                sendGarbage(scoring.puyoGarbage)
+            }
             fillGarbage()
         }
     }
@@ -546,16 +556,14 @@ class TetrisGame() {
 
     fun gameOver() {
         gameIsOver = true
-        println("Tetris lost")
+        //println("Tetris lost")
     }
 
     fun sendGarbage(amount: Int) {
-        if (amount > scoring.tetrisGarbage) {
-            if (amount in 1..30) puyo.receiveGarbage(Garbage.tetrisToPuyo[amount - scoring.tetrisGarbage]!!)
-            // sends 30 amount because game should end anyway
-            else if (amount > 0) puyo.receiveGarbage(Garbage.tetrisToPuyo[30 - scoring.tetrisGarbage]!!)
+        if(scoring.puyoGarbage > 0){
+            puyo.receiveGarbage(Garbage.tetrisToPuyo[scoring.puyoGarbage]!!)
+            scoring.puyoGarbage = 0
         }
-        scoring.puyoGarbage = 0
     }
 
     fun receiveGarbage(amount: Int) {

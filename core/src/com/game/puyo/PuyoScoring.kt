@@ -27,15 +27,16 @@ class PuyoScoring(){
     }
 
     private fun calculateGarbage(chainScore : Int){
-        val nuisancePoints : Double = chainScore / TARGET_POINTS + leftover
-        val garbageRounded = nuisancePoints.toInt()
+        val nuisancePoints = chainScore / TARGET_POINTS + leftover
+        var garbageRounded = nuisancePoints.toInt()
         leftover = nuisancePoints - garbageRounded
 
+        println(garbageRounded)
         if(garbageToReceive > 0){
             garbageToReceive -= garbageRounded
             if(garbageToReceive < 0){
+                garbageToSend = -garbageToReceive
                 garbageToReceive = 0
-                garbageToSend += garbageRounded
             }
         } else {
             garbageToSend += garbageRounded

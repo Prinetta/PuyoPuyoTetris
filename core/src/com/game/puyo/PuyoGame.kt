@@ -211,6 +211,7 @@ class PuyoGame (){
 
     fun placeGarbage(){
         val garbageBlocks = MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0) }
+        println("i am receiving ${scoring.garbageToReceive} garbage")
         placeGarbageBlocks(garbageBlocks)
         dropRemainingGarbage()
         scoring.garbageToReceive = 0
