@@ -7,14 +7,16 @@ abstract class Block(var x: Int, var y: Int) {
     var marked = false
     var isFalling = true
     var isBeingRemoved = false
-    var flicker = 0
+    var removeFrames = 0
+    var flickerCount = 0
 
     fun set(x: Int, y: Int){
         this.x = x
         this.y = y
     }
 
-    fun addFlicker(){
-        flicker += if(flicker+1 > 10) -9 else 1
+    fun addFrameCount(){
+        removeFrames++
+        flickerCount += if(flickerCount+1 > 10) -9 else 1
     }
 }

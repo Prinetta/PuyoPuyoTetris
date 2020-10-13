@@ -8,8 +8,8 @@ import com.game.Timer
 
 class Controller(private val timer: Timer) {
 
+    private var tapCount = 0
     val puyoGame = PuyoGame()
-    var tapCount = 0
 
     private var time = System.currentTimeMillis()
     private var lastInput = Time(time, 80)
@@ -47,19 +47,17 @@ class Controller(private val timer: Timer) {
                         }
                     } else {
                         puyoGame.calculateChainScore()
-                        if(timer.hasPassed(lastPuyoDrop)) {
                             if (puyoGame.allowSpawn()) {
                                 puyoGame.spawnPuyo()
                             }
-                            timer.reset(lastPuyoDrop)
-                        }
+
                     }
                 }
             }
             timer.reset(lastChain)
         }
         puyoGame.connectPuyos()
-        puyoGame.updateSprites()
+        //puyoGame.updateSprites() // might delete that one
         puyoGame.unmark()
     }
 

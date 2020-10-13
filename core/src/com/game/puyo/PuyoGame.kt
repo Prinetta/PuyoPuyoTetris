@@ -170,7 +170,7 @@ class PuyoGame (){
     fun findBigPuyoChain() : Int{
         findAllChains()
         puyoChain.forEachIndexed { index, chain -> // found big puyo chain
-            if(chain.size > 3 && !(chain.contains(puyo.first) && puyo.first.isFalling) && !(chain.contains(puyo.second) && puyo.second.isFalling)){
+            if(chain.size > 3 && !chain.any { it.isFalling }){
                 chainIndex = index
                 findAdjacentGarbage()
                 return index
@@ -284,7 +284,9 @@ class PuyoGame (){
             return false
         }
         val block = grid[i][j]
-        if(block == null || block.marked || block !is PuyoBlock || block.color != color){
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color ||
+           (block == puyo.first && getExpectedDrop(block)[1] != -1) ||
+            block == puyo.second && getExpectedDrop(block)[1] != -1){
             return false
         }
         if(index < puyoChain.size){
@@ -312,6 +314,7 @@ class PuyoGame (){
                 }
             }
         }
+        if(puyo.first.color == puyo.second.color && !puyoChain.flatten().any{it == puyo.first || it == puyo.second}) puyoChain.add(mutableListOf(puyo.first, puyo.second))
     }
 
     private fun findAdjacentGarbage(){
@@ -410,13 +413,8 @@ class PuyoGame (){
 
     fun connectPuyos(){
         for (chain in puyoChain){
-            if(chain.size <= 1){
+            if(chain.isEmpty()){
                 continue
-            } else if (chain.size >= 4){
-                for(block in chain){
-                    block.updateSprite("s")
-                    block.isBeingRemoved = true
-                }
             } else {
                 for(block in chain){
                     var s = ""
@@ -433,6 +431,12 @@ class PuyoGame (){
                         s += "l"
                     }
                     block.updateSprite(s)
+                    if(chain.size >= 4){
+                        block.isBeingRemoved = true
+                        if(block.removeFrames > 20){
+                            block.updateSprite("s")
+                        }
+                    }
                 }
             }
         }

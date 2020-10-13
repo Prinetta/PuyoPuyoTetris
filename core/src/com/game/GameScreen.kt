@@ -273,13 +273,13 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 if(block == null || j == 0){
                     continue
                 }
-                if(block.isBeingRemoved || (block is PuyoBlock && block.flicker > 0 )) {
-                    if (block.flicker > 5) {
-                        game.batch.setColor(c.r, c.g, c.b, 1f)
-                    } else {
+                if(block.isBeingRemoved) {
+                    if (block.removeFrames > 20 && block.flickerCount > 5) {
                         game.batch.setColor(c.r, c.g, c.b, 0.6f)
+                    } else {
+                        game.batch.setColor(c.r, c.g, c.b, 1f)
                     }
-                    block.addFlicker()
+                    block.addFrameCount()
                 } else {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
