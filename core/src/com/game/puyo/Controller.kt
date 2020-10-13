@@ -83,13 +83,13 @@ class Controller(private val timer: Timer) {
         lastBlockDrop.delay = puyoGame.puyo.speed
     }
 
-    fun checkDoubleRotate(rotation: Int){ // only works for a bit?
+    fun checkDoubleRotate(rotation: Int){
         tapCount++
-        if(!timer.hasPassed(doubleTap) && tapCount == 2 && puyoGame.canQuickTurn()){
+        if(!timer.hasPassed(doubleTap) && tapCount > 1 && puyoGame.canQuickTurn()){
             puyoGame.quickTurn()
             tapCount = 0
         } else {
-            if(timer.hasPassed(doubleTap) && tapCount == 2){
+            if(timer.hasPassed(doubleTap) && tapCount > 1){
                 tapCount = 0
             }
             rotatePuyo(rotation)
