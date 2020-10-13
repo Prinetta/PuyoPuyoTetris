@@ -145,6 +145,30 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
+<<<<<<< Updated upstream
+=======
+    private fun drawTetrisGarbageQueue() {
+        var garbage = tetrisGame.scoring.tetrisGarbage
+        var count = 0
+        var factor = 0f
+        while (garbage > 0 && count < PC.GRID_WIDTH) {
+            val closest = GC.garbageSteps.last { it <= garbage }
+            if (closest == 1) {
+                factor = 0.75f
+                game.batch.draw(SpriteArea.gameSprites["tgarbage-queue$closest"],
+                        TC.GRID_LEFT_X + (count * (TC.CELL_SIZE * 1.75f)), SCREEN_HEIGHT * 0.88f,
+                        TC.CELL_SIZE * factor, TC.CELL_SIZE * factor)
+                break
+            } else factor = 1f
+            game.batch.draw(SpriteArea.gameSprites["tgarbage-queue$closest"],
+                    TC.GRID_LEFT_X + (count * (TC.CELL_SIZE * 1.75f)), SCREEN_HEIGHT * 0.88f,
+                    TC.CELL_SIZE * factor, TC.CELL_SIZE * factor)
+            garbage -= closest
+            count++
+        }
+    }
+
+>>>>>>> Stashed changes
     private fun drawTetrisScore() {
         scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + TC.CELL_SIZE * 0.6f,
                 TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)

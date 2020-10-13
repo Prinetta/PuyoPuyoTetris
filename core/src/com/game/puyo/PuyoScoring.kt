@@ -17,7 +17,7 @@ class PuyoScoring(){
     }
 
     private fun createChainBonuses() : HashMap<Int, Int>{
-        return hashMapOf(1 to 0, 2 to 8, 3 to 16, 4 to 32, 5 to 64, 6 to 96, 7 to 128, 8 to 160, 9 to 192, 10 to 224, 11 to 256,
+        return hashMapOf(1 to 200, 2 to 8, 3 to 16, 4 to 32, 5 to 64, 6 to 96, 7 to 128, 8 to 160, 9 to 192, 10 to 224, 11 to 256,
         12 to 288, 13 to 320, 14 to 352, 15 to 384, 16 to 416, 17 to 448, 18 to 480, 19 to 512, 20 to 544, 21 to 576, 22 to 608,
         23 to 640, 24 to 672)
     }
