@@ -73,6 +73,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawHeldTetromino()
         drawNextTetrominos()
         drawTetrisShadow()
+        drawGarbageQueue()
+        drawTetrisScore()
         /// End Draw
         game.batch.end()
 
@@ -143,6 +145,22 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
+    private fun drawTetrisGarbageQueue() {
+        if (tetrisGame.scoring.tetrisGarbage > 0) {
+            var fives: Int = tetrisGame.scoring.tetrisGarbage / 5
+            var ones: Int = tetrisGame.scoring.tetrisGarbage % 5
+            for (i in 0..tetrisGame.scoring.tetrisGarbage) {
+                game.batch.draw(SpriteArea.gameSprites["tgarbage1"], TC.GRID_LEFT_X + (TC.CELL_SIZE / 2) + i.toFloat() * (TC.CELL_SIZE * 1.75f),
+                        TC.GRID_TOP_Y + TC.CELL_SIZE, TC.CELL_SIZE, TC.CELL_SIZE)
+            }
+        }
+    }
+
+    private fun drawTetrisScore() {
+        scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + (0.5f * TC.CELL_SIZE),
+                TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)
+    }
+
     private fun drawTetrisGrid(){
         Gdx.gl.glEnable(GL20.GL_BLEND)
         shapeRenderer.setAutoShapeType(true)
@@ -156,7 +174,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         for (j in 0..tetrisGame.columns) {
             shapeRenderer.rectLine(TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y,
-                    TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_TOP_Y - ((tetrisGame.rows - 1) * TC.CELL_SIZE), 1f)
+                    TC.GRID_LEFT_X + (j * TC.CELL_SIZE), TC.GRID_BOTTOM_Y, 1f)
         }
 
         Gdx.gl.glDisable(GL20.GL_BLEND)

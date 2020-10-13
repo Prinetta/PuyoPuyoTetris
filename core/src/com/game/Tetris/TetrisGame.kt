@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Garbage
 import com.game.SpriteArea
-import com.game.puyo.Puyo
 import com.game.puyo.PuyoGame
 import kotlin.random.Random
 
@@ -21,7 +20,7 @@ class TetrisGame() {
     private var enableHold: Boolean = true
     private var tSpinInput: Boolean = false
 
-    private var scoring: TetrisScoring = TetrisScoring()
+    var scoring: TetrisScoring = TetrisScoring()
     private var comboCount: Int = 0
     private var b2bBonus: Int = 0 // basically works as boolean here using 0 and 1
 
@@ -319,7 +318,7 @@ class TetrisGame() {
                     }
                 }
             }
-            wallKickDef(block, 'L')
+            wallKick(block, 'L')
             for (i in block.shape.indices) {
                 for (j in 0 until block.shape[i].size) {
                     if (block.shape[i][j] != null) {
@@ -330,7 +329,7 @@ class TetrisGame() {
         }
     }
 
-    fun wallKickDef(block: Tetromino, rotation: Char) {
+    fun wallKick(block: Tetromino, rotation: Char) {
         val oldState: Char = block.rotationState
         if (rotation == 'L') block.turnLeft()
         else if (rotation == 'R') block.turnRight()
@@ -362,7 +361,7 @@ class TetrisGame() {
                     }
                 }
             }
-            wallKickDef(block, 'R')
+            wallKick(block, 'R')
             for (i in block.shape.indices) {
                 for (j in 0 until block.shape[i].size) {
                     if (block.shape[i][j] != null) {
@@ -397,6 +396,7 @@ class TetrisGame() {
             if (isTSpin()) {
                 if (b2bBonus == 1) println("Back-to-back")
                 scoring.puyoGarbage += scoring.tSpinClearBonus[fullRows.size]!! + b2bBonus
+                scoring.tetrisScore += (scoring.scoreTSpinClearBonus[fullRows.size]!! * (1 + (b2bBonus * 0.5f))).toInt()
                 pointsAdded = true
                 b2bBonus = 1
             }
@@ -409,6 +409,7 @@ class TetrisGame() {
             }
             if (isPerfectClear()) {
                 scoring.puyoGarbage += scoring.perfectClearBonus
+                scoring.tetrisScore += scoring.scorePerfectClearBonus[fullRows.size]!!
                 b2bBonus = 0
             }
             else if (!pointsAdded) {
@@ -416,15 +417,20 @@ class TetrisGame() {
                     println("Tetris")
                     if (b2bBonus == 1) println("Back-to-back")
                     scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!! + b2bBonus
+                    scoring.tetrisScore += (scoring.scoreClearBonus[fullRows.size]!! * (1 + (b2bBonus * 0.5f))).toInt()
                     b2bBonus = 1
                 } else {
                     scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!!
+                    scoring.tetrisScore += scoring.scoreClearBonus[fullRows.size]!!
                     b2bBonus = 0
                 }
             }
             comboCount++
+            if (comboCount >= 20) scoring.tetrisScore += 1000
+            else scoring.tetrisScore += comboCount * scoring.scoreComboBonus
             println("Combo: $comboCount")
         } else {
+            if (isTSpin()) scoring.tetrisScore += scoring.scoreTSpinZeroBonus
             scoring.puyoGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
             sendGarbage(scoring.puyoGarbage)
@@ -485,6 +491,10 @@ class TetrisGame() {
             }
         }
         return true
+    }
+
+    fun createGarbageQueue() {
+
     }
 
     fun fillGarbage() {

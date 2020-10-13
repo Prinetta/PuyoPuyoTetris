@@ -2,7 +2,6 @@ package com.game.puyo
 
 import com.game.*
 import com.game.Tetris.TetrisGame
-import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlin.random.Random
 
 class PuyoGame (){
