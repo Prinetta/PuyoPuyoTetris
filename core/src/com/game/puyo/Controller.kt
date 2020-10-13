@@ -12,7 +12,7 @@ class Controller(private val timer: Timer) {
     var tapCount = 0
 
     private var time = System.currentTimeMillis()
-    private var lastInput = Time(time, 50)
+    private var lastInput = Time(time, 80)
     private var lastChain = Time(time, puyoGame.puyo.chainSpeed)
     private var lastBlockDrop = Time(time, puyoGame.puyo.speed)
     private var lastGarbageDrop = Time(time, 70)
@@ -25,6 +25,7 @@ class Controller(private val timer: Timer) {
             if (timer.hasPassed(lastChain)) {
                 puyoGame.removeCombo()
                 timer.reset(lastChain)
+                puyoGame.allPuyosDropped = false
             }
         } else {
             if (timer.hasPassed(lastBlockDrop)) {

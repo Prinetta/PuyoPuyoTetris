@@ -13,7 +13,7 @@ class PuyoGame (){
 
     private val width = PC.GRID_WIDTH
     private val length = PC.GRID_LENGTH
-    private var allPuyosDropped = true
+    var allPuyosDropped = true
     private var allGarbageDropped = true
     private var chainIndex = -1
     private lateinit var tetris: TetrisGame;
@@ -225,7 +225,6 @@ class PuyoGame (){
         if(amount < 4){
             return
         }
-        println("i have sent the garbage")
         val garbage = Garbage.puyoToTetris.getOrElse(amount) {
             Garbage.puyoToTetris.getValue(Garbage.puyoToTetris.keys.last { it <= amount })
         }
