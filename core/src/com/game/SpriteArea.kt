@@ -17,8 +17,8 @@ class SpriteArea {
         val gameSprites = hashMapOf("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
                 "garbage-queue30" to atlas.findRegion("g30"), "garbage-queue180" to atlas.findRegion("g180"),"garbage-queue360" to atlas.findRegion("g360"),
                 "garbage-queue720" to atlas.findRegion("g720"), "garbage-queue1440" to atlas.findRegion("g1440"),
-                "tgarbage-queue1" to atlas.findRegion("garbage1"), "tgarbage-queue2" to atlas.findRegion("garbage2"),
-                "tgarbage-queue3" to atlas.findRegion("garbage3"))
+                "tgarbage-queue1" to atlas.findRegion("garbage1"), "tgarbage-queue6" to atlas.findRegion("garbage2"),
+                "tgarbage-queue30" to atlas.findRegion("garbage3"))
 
         private fun createPuyoSprites() : MutableMap<PuyoColor, HashMap<String, TextureRegion>> {
             val hashMap = mutableMapOf<PuyoColor, HashMap<String, TextureRegion>>()
