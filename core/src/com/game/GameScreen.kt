@@ -74,6 +74,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawNextTetrominos()
         drawTetrisShadow()
         drawTetrisScore()
+        drawTetrisGarbageQueue()
         /// End Draw
         game.batch.end()
 
