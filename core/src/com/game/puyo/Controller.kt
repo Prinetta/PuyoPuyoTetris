@@ -28,21 +28,21 @@ class Controller(private val timer: Timer) {
                 puyoGame.allPuyosDropped = false
             }
         } else {
-            if(timer.hasPassed(lastPuyoDrop)) {
-                puyoGame.dropMainPuyos()
-                timer.reset(lastPuyoDrop)
-            }
-            if (timer.hasPassed(lastBlockDrop)) {
-                puyoGame.dropRemainingPuyos()
-                timer.reset(lastBlockDrop)
-                if(!puyoGame.isDoneDroppingPuyos()){
-                    timer.reset(delay)
+            if(puyoGame.canDropMainPuyos()){
+                if(timer.hasPassed(lastPuyoDrop)) {
+                    puyoGame.dropMainPuyos()
+                    timer.reset(lastPuyoDrop)
                 }
-            } else if(puyoGame.isDoneDroppingPuyos()){
+            } else if (puyoGame.canDropPuyos()){
+                if(timer.hasPassed(lastBlockDrop)) {
+                    puyoGame.dropRemainingPuyos()
+                    timer.reset(lastBlockDrop)
+                }
+            } else {
                 puyoGame.findBigPuyoChain()
                 if(!puyoGame.hasFoundChain()){
                     puyoGame.calculateChainScore()
-                    if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){
+                    if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){ // still need to test garbage placement more
                         if(puyoGame.hasReceivedGarbage() && timer.hasPassed(delay)){
                             puyoGame.placeGarbage()
                             timer.reset(delay)
