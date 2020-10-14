@@ -47,6 +47,7 @@ class Controller(private val timer: Timer) {
                 if (puyoGame.canDropPuyos()){
                     if(timer.hasPassed(lastBlockDrop)) {
                         puyoGame.dropRemainingPuyos()
+                        puyoGame.dropRemainingGarbage()
                         timer.reset(lastBlockDrop)
                     }
                 } else {
