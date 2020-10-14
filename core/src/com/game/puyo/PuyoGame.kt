@@ -264,7 +264,7 @@ class PuyoGame (){
         return !isOutOfBounds(block.x, block.y + 1) && grid[block.x][block.y + 1] == null
     }
 
-    private fun isMainPuyo(block: Block) : Boolean {
+    fun isMainPuyo(block: Block) : Boolean {
         return block == puyo.first || block == puyo.second
     }
 
@@ -364,7 +364,7 @@ class PuyoGame (){
     }
 
     fun canDropMainPuyos(): Boolean{
-        return puyo.first.isFalling || puyo.second.isFalling
+        return (puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))
     }
 
     fun dropMainPuyos(){

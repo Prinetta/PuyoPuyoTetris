@@ -292,12 +292,31 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawRoundedRect(PC.GRID_START_X * 1.3f + PC.GRID_WIDTH * PC.CELL_SIZE, PC.GRID_START_Y * 0.65f, PC.CELL_SIZE * 1.25f, PC.CELL_SIZE * 2f, 10f)
     }
 
+    private fun drawMainPuyos(){
+        val puyos = puyoController.puyoGame.puyo
+        if(puyos.first.isFalling){
+            game.batch.draw(puyos.first.currentSprite,
+                    PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
+                    PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
+                    PC.CELL_SIZE, PC.CELL_SIZE)
+        }
+        if(puyos.second.isFalling){
+            game.batch.draw(puyos.second.currentSprite,
+                    PC.GRID_START_X + puyos.second.x * PC.CELL_SIZE,
+                    PC.GRID_START_Y - puyos.second.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
+                    PC.CELL_SIZE, PC.CELL_SIZE)
+        }
+    }
+
     private fun drawPuyos(){
+        drawMainPuyos()
         val c = game.batch.color
         for(i in 0 until PC.GRID_WIDTH){
             for(j in 0 until PC.GRID_LENGTH){
                 val block = puyoController.getBlockAt(i, j)
-                if(block == null || j == 0){
+                if(block == null || j == 0 ||
+                  (block == puyoController.puyoGame.puyo.first && block.isFalling) ||
+                  (block == puyoController.puyoGame.puyo.second && block.isFalling)){
                     continue
                 }
                 if(block.isBeingRemoved) {
