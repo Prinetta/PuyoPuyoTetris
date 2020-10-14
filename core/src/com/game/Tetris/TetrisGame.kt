@@ -439,10 +439,10 @@ class TetrisGame() {
                 if(scoring.tetrisGarbage < 0){
                     scoring.puyoGarbage = -scoring.tetrisGarbage
                     scoring.tetrisGarbage = 0
-                    sendGarbage(scoring.puyoGarbage)
+                    sendGarbage()
                 }
             } else {
-                sendGarbage(scoring.puyoGarbage)
+                sendGarbage()
             }
             fillGarbage()
         }
@@ -555,7 +555,7 @@ class TetrisGame() {
         //println("Tetris lost")
     }
 
-    fun sendGarbage(amount: Int) {
+    fun sendGarbage() {
         if(scoring.puyoGarbage > 0){
             puyo.receiveGarbage(Garbage.tetrisToPuyo[scoring.puyoGarbage]!!)
             scoring.puyoGarbage = 0
