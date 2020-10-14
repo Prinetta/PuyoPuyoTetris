@@ -35,6 +35,11 @@ class PuyoGame (){
         return chainIndex != -1
     }
 
+    fun updateHorizontalPuyoState(){
+        puyo.first.isFalling = canFall(puyo.first)
+        puyo.second.isFalling = canFall(puyo.second)
+    }
+
     fun updatePuyoState(){
         puyo.first.isLocked = true
         puyo.second.isLocked = true
@@ -267,7 +272,7 @@ class PuyoGame (){
         return i !in 0 until width || j !in 0 until length
     }
 
-    private fun canFall(block: Block) : Boolean {
+     fun canFall(block: Block) : Boolean {
         return !isOutOfBounds(block.x, block.y + 1) && grid[block.x][block.y + 1] == null
     }
 
@@ -463,6 +468,11 @@ class PuyoGame (){
                 }
                 if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid[block.x - 1][block.y])){
                     s += "l"
+                }
+                if(chain.contains(puyo.first) && chain.contains(puyo.second) && puyo.first.y == puyo.second.y && puyo.gap == 0.5f &&
+                   ((puyo.first.isFalling && !puyo.second.isFalling) || (!puyo.first.isFalling && puyo.second.isFalling))){
+                    println("uh oh")
+                    s = ""
                 }
                 block.updateSprite(s)
                 if(chain.size >= 4){

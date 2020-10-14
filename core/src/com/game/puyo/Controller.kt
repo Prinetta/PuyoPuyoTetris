@@ -29,6 +29,9 @@ class Controller(private val timer: Timer) {
                 puyoGame.allPuyosDropped = false
             }
         } else {
+            if(puyoGame.puyo.rotateCount % 2 != 0){
+                puyoGame.updateHorizontalPuyoState()
+            }
             if(puyoGame.canDropMainPuyos()){
                 if(timer.hasPassed(lastPuyoStep)){
                     if(puyoGame.puyo.gap == 0f){
