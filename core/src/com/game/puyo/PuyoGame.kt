@@ -48,7 +48,7 @@ class PuyoGame (){
     }
 
     fun isDoneDroppingPuyos(): Boolean {
-        return allPuyosDropped
+        return allPuyosDropped && puyo.bothDropped()
     }
 
     fun isDoneDroppingGarbage(): Boolean {
@@ -365,12 +365,23 @@ class PuyoGame (){
         return dropped
     }
 
+    fun dropMainPuyos(){
+        for (i in length-1 downTo 0) {
+            for (j in 0 until width) {
+                val block = grid[j][i]
+                if (block != null && isMainPuyo(block) && block.isFalling) {
+                    dropBlock(block)
+                }
+            }
+        }
+    }
+
     private fun dropPuyos() : Boolean{
         var dropped = false
         for (i in length-1 downTo 0) {
             for(j in 0 until width) {
                 val block = grid[j][i]
-                if(block != null && block !is GarbageBlock){
+                if(block != null && block !is GarbageBlock && !(block == puyo.first && puyo.first.isFalling) && !(block == puyo.second && puyo.second.isFalling)){
                     dropBlock(block)
                     if(block.isFalling){
                         dropped = true

@@ -65,7 +65,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawPuyoPreview()
         drawPuyos()
         drawTitle()
-        drawScore()
         drawNextPuyos()
         drawGarbageQueue()
         /// Tetris Draw
@@ -73,7 +72,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawHeldTetromino()
         drawNextTetrominos()
         drawTetrisShadow()
-        drawTetrisGarbageQueue()
         drawTetrisScore()
         /// End Draw
         game.batch.end()
@@ -146,6 +144,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTetrisScore() {
+        scoreFont.draw(game.batch, "${"0".repeat(8-puyoController.getCurrentScore().length)}${puyoController.getCurrentScore()}", PC.GRID_START_X*1.3f, PC.GRID_START_Y - PC.GRID_START_Y * 0.87f)
         scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + TC.CELL_SIZE * 0.6f,
                 TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)
     }
@@ -303,11 +302,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         val y = TC.GRID_TOP_Y-(TC.CELL_SIZE*TC.ROWS)*0.85f
         titleFont[0].draw(game.batch, "Puyo Puyo", (PC.GRID_START_X + TC.GRID_LEFT_X / 2)*0.93f, y*1.25f)
         titleFont[1].draw(game.batch, "Tetris", (PC.GRID_START_X + TC.GRID_LEFT_X / 2), y)
-    }
-
-    private fun drawScore(){
-        scoreFont.draw(game.batch, "${"0".repeat(8-puyoController.getCurrentScore().length)}${puyoController.getCurrentScore()}", PC.GRID_START_X*1.3f, PC.GRID_START_Y - PC.GRID_START_Y * 0.87f)
-        //scoreFont.draw(game.batch, tetrisGame.scoring.score, TC.GRID_LEFT_X+50, TC.GRID_TOP_Y*1.025f-TC.CELL_SIZE*TC.ROWS)
     }
 
     private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){

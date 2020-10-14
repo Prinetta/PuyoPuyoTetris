@@ -14,7 +14,7 @@ class Controller(private val timer: Timer) {
     private var time = System.currentTimeMillis()
     private var lastInput = Time(time, 80)
     private var lastChain = Time(time, puyoGame.puyo.chainSpeed)
-    private var lastBlockDrop = Time(time, puyoGame.puyo.speed)
+    private var lastBlockDrop = Time(time, puyoGame.puyo.speed/2)
     private var lastGarbageDrop = Time(time, 70)
     private var lastPuyoDrop = Time(time, puyoGame.puyo.speed)
     private var delay = Time(time, 500)
@@ -28,6 +28,10 @@ class Controller(private val timer: Timer) {
                 puyoGame.allPuyosDropped = false
             }
         } else {
+            if(timer.hasPassed(lastPuyoDrop)) {
+                puyoGame.dropMainPuyos()
+                timer.reset(lastPuyoDrop)
+            }
             if (timer.hasPassed(lastBlockDrop)) {
                 puyoGame.dropRemainingPuyos()
                 timer.reset(lastBlockDrop)
@@ -78,7 +82,7 @@ class Controller(private val timer: Timer) {
         } else {
             decreaseSpeed()
         }
-        lastBlockDrop.delay = puyoGame.puyo.speed
+        lastPuyoDrop.delay = puyoGame.puyo.speed
     }
 
     fun checkDoubleRotate(rotation: Int){
