@@ -35,6 +35,13 @@ class PuyoGame (){
         return chainIndex != -1
     }
 
+    fun updatePuyoState(){
+        puyo.first.isLocked = true
+        puyo.second.isLocked = true
+        puyo.first.isFalling = false
+        puyo.second.isFalling = false
+    }
+
     fun allowSpawn(): Boolean {
         return puyo.canSpawn() && !isColliding(width / 2, 1)
     }
@@ -364,14 +371,15 @@ class PuyoGame (){
     }
 
     fun canDropMainPuyos(): Boolean{
-        return (puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))
+        //return (puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))
+        return (canFall(puyo.first) && !puyo.first.isLocked) || (canFall(puyo.second) && !puyo.second.isLocked)
     }
 
     fun dropMainPuyos(){
         for (i in length-1 downTo 0) {
             for (j in 0 until width) {
                 val block = grid[j][i]
-                if (block != null && isMainPuyo(block) && block.isFalling) {
+                if (block != null && isMainPuyo(block)) {
                     dropBlock(block)
                 }
             }
@@ -382,7 +390,7 @@ class PuyoGame (){
         for (i in length-1 downTo 0) {
             for(j in 0 until width) {
                 val block = grid[j][i]
-                if(block != null && block !is GarbageBlock && !(block == puyo.first && puyo.first.isFalling) && !(block == puyo.second && puyo.second.isFalling)){
+                if(block != null && block !is GarbageBlock){
                     if(canFall(block)){
                         return true
                     }
@@ -417,6 +425,8 @@ class PuyoGame (){
             if(block is PuyoBlock){
                 block.updateSprite("main")
             }
+        } else {
+            block.isLocked = true
         }
     }
 

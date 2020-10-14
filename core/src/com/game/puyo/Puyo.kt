@@ -11,7 +11,7 @@ class Puyo(val first: PuyoBlock, val second: PuyoBlock){
     var gap = 0.5f
 
     fun canSpawn() : Boolean{
-        return bothDropped()
+        return first.isLocked && second.isLocked
     }
 
     fun updateRotationCount(rotation: Int){

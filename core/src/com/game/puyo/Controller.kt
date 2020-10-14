@@ -36,13 +36,11 @@ class Controller(private val timer: Timer) {
                     } else {
                         puyoGame.puyo.gap = 0f
                         puyoGame.dropMainPuyos()
-                        count++
                     }
                     timer.reset(lastPuyoStep)
                 }
             } else {
-                puyoGame.puyo.first.isFalling = false
-                puyoGame.puyo.second.isFalling = false
+                puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(timer.hasPassed(lastBlockDrop)) {
                         puyoGame.dropRemainingPuyos()
