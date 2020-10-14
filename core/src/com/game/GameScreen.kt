@@ -39,7 +39,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     override fun render(delta: Float) {
         game.batch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined
-        Gdx.gl.glClearColor(27 / 255f, 18 / 255f, 64 / 255f, 1f)
+        Gdx.gl.glClearColor(0f, 2/255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         /// Background
