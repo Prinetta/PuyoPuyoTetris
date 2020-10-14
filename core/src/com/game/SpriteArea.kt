@@ -7,14 +7,15 @@ import com.game.puyo.PuyoColor
 class SpriteArea {
     companion object Sprite {
         private val atlas = TextureAtlas("sprites.pack")
-        private val tBgAtlas = TextureAtlas("next-bg.atlas")
+        private val guiAtlas = TextureAtlas("gui.pack")
 
         val tetrisSprites = hashMapOf("blue" to atlas.findRegion("tblue"), "dark-blue" to atlas.findRegion("tdarkblue"),
             "green" to atlas.findRegion("tgreen"), "orange" to atlas.findRegion("torange"),"purple" to atlas.findRegion("tpurple"),
             "red" to atlas.findRegion("tred"), "yellow" to atlas.findRegion("tyellow"), "garbage" to atlas.findRegion("tgarbage"))
 
-        val tBgSprites = hashMapOf("next-field" to tBgAtlas.findRegion("next-field"),
-                "hold-field" to tBgAtlas.findRegion("hold-field"), "next-field-sec" to tBgAtlas.findRegion("next-field-sec"))
+        val bgSprites = hashMapOf("next-field" to guiAtlas.findRegion("next-field"),
+             "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
+             "grid-bg" to guiAtlas.findRegion("gridbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
 
         val puyoSprites = createPuyoSprites()
 

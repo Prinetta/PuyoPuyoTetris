@@ -23,6 +23,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private val titleFont = game.generateTitleFont(55)
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("background.png"))
+    private val bgGif = GifAnimation("bg", 121, 0.1f)
 
     // Tetris
     private val nextFont = game.generateTetrisNextFont(25)
@@ -43,7 +44,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         /// Background
         game.batch.begin()
-        game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+        game.batch.draw(bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+        drawPuyoBgTexture()
         game.batch.end()
 
         /// Puyo Controller
@@ -59,6 +61,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawTetrisGrid()
         /// Shape Renderer End
 
+        /// -Begin draw-
         game.batch.begin()
         /// Puyo Draw
         drawPuyoPreview()
@@ -68,15 +71,15 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawGarbageQueue()
         /// Tetris Draw
         drawTetrominos()
-        drawHeldTetrominoBg()
+        //drawHeldTetrominoBg()
         drawHeldTetromino()
-        drawTetrisNextBg()
+        //drawTetrisNextBg()
         drawNextTetrominos()
         drawTetrisShadow()
-        drawTetrisScore()
+        drawScore()
         drawTetrisGarbageQueue()
-        /// End Draw
         game.batch.end()
+        /// -End Draw-
 
         //println(Gdx.graphics.framesPerSecond)
     }
@@ -86,8 +89,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawTetrisGridBackground() {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        shapeRenderer.rect(TC.GRID_LEFT_X, TC.GRID_TOP_Y - ((TC.ROWS - 1) * TC.CELL_SIZE), (TC.COLUMNS * TC.CELL_SIZE).toFloat(), ((TC.ROWS - 1) * TC.CELL_SIZE).toFloat())
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.8f)
+        shapeRenderer.rect(TC.GRID_LEFT_X, TC.GRID_TOP_Y - ((TC.ROWS - 1) * TC.CELL_SIZE), (TC.COLUMNS * TC.CELL_SIZE), ((TC.ROWS - 1) * TC.CELL_SIZE))
         shapeRenderer.end()
         Gdx.gl.glDisable(GL20.GL_BLEND)
     }
@@ -104,10 +107,10 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTetrisNextBg(){
-        game.batch.draw(SpriteArea.tBgSprites["next-field"],
+        game.batch.draw(SpriteArea.bgSprites["next-field"],
                 TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.NEXT_BLOCK_FIELD_SIZE, TC.NEXT_BLOCK_FIELD_SIZE)
         for (i in 0..9 step 3) {
-            game.batch.draw(SpriteArea.tBgSprites["next-field-sec"],
+            game.batch.draw(SpriteArea.bgSprites["next-field-sec"],
                     TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y - (i * (TC.CELL_SIZE)),
                     TC.NEXT_BLOCK_FIELD2_WIDTH, TC.NEXT_BLOCK_FIELD2_HEIGHT)
         }
@@ -170,7 +173,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
-    private fun drawTetrisScore() {
+    private fun drawScore() {
         scoreFont.draw(game.batch, "${"0".repeat(8-puyoController.getCurrentScore().length)}${puyoController.getCurrentScore()}", PC.GRID_START_X*1.3f, PC.GRID_START_Y - PC.GRID_START_Y * 0.87f)
         scoreFont.draw(game.batch, tetrisGame.scoring.getScoreString(), TC.GRID_LEFT_X + TC.CELL_SIZE * 0.6f,
                 TC.GRID_TOP_Y - TC.GRID_TOP_Y * 0.87f)
@@ -197,7 +200,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawHeldTetrominoBg() {
-        game.batch.draw(SpriteArea.tBgSprites["next-field"],
+        game.batch.draw(SpriteArea.bgSprites["next-field"],
                 TC.HOLD_FIELD_X, TC.GRID_TOP_Y - TC.HOLD_FIELD_SIZE, TC.HOLD_FIELD_SIZE, TC.HOLD_FIELD_SIZE)
     }
 
@@ -264,11 +267,17 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 PC.GRID_START_Y * 0.65f + PC.CELL_SIZE * 0.25f, PC.CELL_SIZE * 0.75f, PC.CELL_SIZE * 0.75f)
     }
 
+    private fun drawPuyoBgTexture(){
+        game.batch.draw(SpriteArea.bgSprites["puyo-bg"]!!,
+                        PC.GRID_START_X-20, PC.GRID_START_Y - (PC.GRID_LENGTH * PC.CELL_SIZE - PC.CELL_SIZE)-20,
+                        PC.GRID_WIDTH * PC.CELL_SIZE+40, (PC.GRID_LENGTH - 1) * PC.CELL_SIZE+40)
+    }
+
     private fun drawPuyoBg(){
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
+        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.8f)
         shapeRenderer.rect(PC.GRID_START_X, PC.GRID_START_Y - (PC.GRID_LENGTH * PC.CELL_SIZE - PC.CELL_SIZE), PC.GRID_WIDTH * PC.CELL_SIZE, (PC.GRID_LENGTH - 1) * PC.CELL_SIZE)
         shapeRenderer.end()
 
