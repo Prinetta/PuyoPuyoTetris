@@ -56,7 +56,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         /// Shape Renderer Begin
         drawPuyoBg()
         drawTetrisGridBackground()
-        drawHeldTetrominoBg()
         drawTetrisGrid()
         /// Shape Renderer End
 
@@ -69,7 +68,9 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawGarbageQueue()
         /// Tetris Draw
         drawTetrominos()
+        drawHeldTetrominoBg()
         drawHeldTetromino()
+        drawTetrisNextBg()
         drawNextTetrominos()
         drawTetrisShadow()
         drawTetrisScore()
@@ -101,15 +102,25 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
+    private fun drawTetrisNextBg(){
+        game.batch.draw(SpriteArea.tBgSprites["next-field"],
+                TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.NEXT_BLOCK_FIELD_SIZE, TC.NEXT_BLOCK_FIELD_SIZE)
+        for (i in 0..9 step 3) {
+            game.batch.draw(SpriteArea.tBgSprites["next-field-sec"],
+                    TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y - (i * (TC.CELL_SIZE)),
+                    TC.NEXT_BLOCK_FIELD2_WIDTH, TC.NEXT_BLOCK_FIELD2_HEIGHT)
+        }
+    }
+
     private fun drawNextTetrominos(){
-        nextFont.draw(game.batch, "NEXT", TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 0.2f), TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.15f))
+        nextFont.draw(game.batch, "NEXT", TC.NEXT_BLOCK_FIELD_X + (TC.CELL_SIZE * 0.4f), TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.4f))
         var nextBlock: Tetromino = tetrisGame.nextTetrominos.peek()
         for (i in nextBlock.shape.indices) { // beeg
             for (j in 0 until nextBlock.shape[i].size) {
                 if (nextBlock.shape[i][j] != null) {
                     game.batch.draw(nextBlock.shape[i][j].texture,
-                            TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 5f - (nextBlock.width * 0.9f)) / 2f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
-                            TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.9f) - ((TC.CELL_SIZE * 4.5f - (nextBlock.height * 0.9f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.9f),
+                            TC.NEXT_BLOCK_FIELD_X + ((TC.NEXT_BLOCK_FIELD_SIZE - (nextBlock.width * 0.9f)) / 2f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.9f) - 2,
+                            TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.9f) - ((TC.NEXT_BLOCK_FIELD_SIZE - (nextBlock.height * 0.9f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.9f),
                             TC.CELL_SIZE * 0.9f, TC.CELL_SIZE * 0.9f)
                 }
             }
@@ -120,8 +131,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 for (j in 0 until nextBlock.shape[i].size) {
                     if (nextBlock.shape[i][j] != null) {
                         game.batch.draw(nextBlock.shape[i][j].texture,
-                                TC.NEXT_BLOCK_FIELD_X + ((TC.CELL_SIZE * 3.5f - (nextBlock.width * 0.7f)) / 2f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.7f),
-                                TC.NEXT_BLOCK_FIELD2_TOP_Y - (((field * 3) + 0.7f) * TC.CELL_SIZE) - ((TC.CELL_SIZE * 2.5f - (nextBlock.height * 0.7f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.7f),
+                                TC.NEXT_BLOCK_FIELD_X + ((TC.NEXT_BLOCK_FIELD2_WIDTH - (nextBlock.width * 0.7f)) / 2f) + ((i - nextBlock.firstColumn()) * TC.CELL_SIZE * 0.7f) - 2,
+                                TC.NEXT_BLOCK_FIELD2_TOP_Y - (((field * 3) + 0.7f) * TC.CELL_SIZE) - ((TC.NEXT_BLOCK_FIELD2_HEIGHT - (nextBlock.height * 0.7f)) / 2) - ((j - nextBlock.firstRow()) * TC.CELL_SIZE * 0.7f),
                                 TC.CELL_SIZE * 0.7f, TC.CELL_SIZE * 0.7f)
                     }
                 }
@@ -149,13 +160,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         var factor = 0f
         while (garbage > 0 && count < PC.GRID_WIDTH) {
             val closest = GC.garbageSteps.last { it <= garbage }
-            if (closest == 1) {
-                factor = 0.75f
-                game.batch.draw(SpriteArea.gameSprites["tgarbage-queue$closest"],
-                        TC.GRID_LEFT_X + (count * (TC.CELL_SIZE * 1.75f)), SCREEN_HEIGHT * 0.88f,
-                        TC.CELL_SIZE * factor, TC.CELL_SIZE * factor)
-                break
-            } else factor = 1f
+            if (closest == 1) factor = 0.75f else factor = 1f
             game.batch.draw(SpriteArea.gameSprites["tgarbage-queue$closest"],
                     TC.GRID_LEFT_X + (count * (TC.CELL_SIZE * 1.75f)), SCREEN_HEIGHT * 0.88f,
                     TC.CELL_SIZE * factor, TC.CELL_SIZE * factor)
@@ -188,24 +193,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         Gdx.gl.glDisable(GL20.GL_BLEND)
         shapeRenderer.end()
-        drawTetrisNextBg()
-    }
-
-    private fun drawTetrisNextBg(){
-        Gdx.gl.glEnable(GL20.GL_BLEND)
-        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        drawRoundedRect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.CELL_SIZE * 5f, TC.CELL_SIZE * 4.5f, 10f)
-        for (i in 0..9 step 3) {
-            drawRoundedRect(TC.NEXT_BLOCK_FIELD_X, TC.NEXT_BLOCK_FIELD2_Y-i*(TC.CELL_SIZE), TC.CELL_SIZE * 3.5f, TC.CELL_SIZE * 2.5f, 10f)
-        }
-        Gdx.gl.glDisable(GL20.GL_BLEND)
     }
 
     private fun drawHeldTetrominoBg() {
-        Gdx.gl.glEnable(GL20.GL_BLEND)
-        shapeRenderer.setColor(0.05f, 0.05f, 0.05f, 0.65f)
-        drawRoundedRect(TC.HOLD_FIELD_X, TC.NEXT_BLOCK_FIELD_Y, TC.HOLD_FIELD_WIDTH, TC.CELL_SIZE * 4.5f, 10f)
-        Gdx.gl.glDisable(GL20.GL_BLEND)
+        game.batch.draw(SpriteArea.tBgSprites["next-field"],
+                TC.HOLD_FIELD_X, TC.GRID_TOP_Y - TC.HOLD_FIELD_SIZE, TC.HOLD_FIELD_SIZE, TC.HOLD_FIELD_SIZE)
     }
 
     private fun drawHeldTetromino() {
@@ -216,17 +208,13 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 for (j in 0 until heldBlock.shape[i].size) {
                     if (heldBlock.shape[i][j] != null) {
                         game.batch.draw(heldBlock.shape[i][j].texture,
-                                TC.HOLD_FIELD_X + ((TC.HOLD_FIELD_WIDTH - (heldBlock.width * 0.9f)) / 2f) + ((i - heldBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
+                                TC.HOLD_FIELD_X + ((TC.HOLD_FIELD_SIZE - (heldBlock.width * 0.9f)) / 2f) + ((i - heldBlock.firstColumn()) * TC.CELL_SIZE * 0.9f),
                                 TC.GRID_TOP_Y - (TC.CELL_SIZE * 0.9f) - ((TC.CELL_SIZE * 4.5f - (heldBlock.height * 0.9f)) / 2) - ((j - heldBlock.firstRow()) * TC.CELL_SIZE * 0.9f),
                                 TC.CELL_SIZE * 0.9f, TC.CELL_SIZE * 0.9f)
                     }
                 }
             }
         }
-    }
-
-    private fun sendTrash(trash: Int){
-
     }
 
     /// Puyo Puyo
