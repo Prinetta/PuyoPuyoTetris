@@ -6,7 +6,7 @@ import com.game.puyo.PuyoColor
 
 class SpriteArea {
     companion object Sprite {
-        val atlas = TextureAtlas("sprites.pack")
+        private val atlas = TextureAtlas("sprites.pack")
         private val guiAtlas = TextureAtlas("gui.pack")
 
         val tetrisSprites = hashMapOf("blue" to atlas.findRegion("tblue"), "dark-blue" to atlas.findRegion("tdarkblue"),
@@ -53,7 +53,8 @@ class SpriteArea {
                     "rd" to atlas.findRegion("${colorLetter}rd"), "ur" to atlas.findRegion("${colorLetter}ur"), "dl" to atlas.findRegion("${colorLetter}dl"),
                     "ul" to atlas.findRegion("${colorLetter}ul"), "udl" to atlas.findRegion("${colorLetter}udl"), "rdl" to atlas.findRegion("${colorLetter}rdl"),
                     "url" to atlas.findRegion("${colorLetter}url"), "urd" to atlas.findRegion("${colorLetter}urd"), "s" to atlas.findRegion("${colorLetter}s"),
-                    "dot" to atlas.findRegion("${colorLetter}dot"), "g" to atlas.findRegion("pg"))
+                    "dot" to atlas.findRegion("${colorLetter}dot"), "p" to atlas.findRegion("${colorLetter}p"), "p2" to atlas.findRegion("${colorLetter}p2"),
+                    "g" to atlas.findRegion("pg"))
         }
     }
 }

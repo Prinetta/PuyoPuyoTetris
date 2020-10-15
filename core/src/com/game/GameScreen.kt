@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
 import com.game.Tetris.*
+import java.awt.geom.Point2D
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
@@ -325,6 +326,9 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
+    private var puyosToPop = mutableListOf<PuyoBlock>()
+    private var popTime = Time(System.currentTimeMillis(), 1000)
+
     private fun drawPuyos(){
         drawMainPuyos()
         val c = game.batch.color
@@ -337,7 +341,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     continue
                 }
                 if(block.isBeingRemoved) {
-                    if (block.removeFrames > 20 && block.flickerCount > 5) {
+                    if (block.removeFrames in 20 until PC.POP_SPRITE_AT && block.flickerCount > 5) {
                         game.batch.setColor(c.r, c.g, c.b, 0.6f)
                     } else {
                         game.batch.setColor(c.r, c.g, c.b, 1f)
@@ -346,13 +350,80 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 } else {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
-                game.batch.draw(block.currentSprite,
-                        PC.GRID_START_X + i * PC.CELL_SIZE,
-                        PC.GRID_START_Y - j * PC.CELL_SIZE,
-                        PC.CELL_SIZE, PC.CELL_SIZE)
+                if(!(block is PuyoBlock && block.removeFrames >= PC.POP3_SPRITE_AT)){
+                    game.batch.draw(block.currentSprite,
+                            PC.GRID_START_X + i * PC.CELL_SIZE,
+                            PC.GRID_START_Y - j * PC.CELL_SIZE,
+                            PC.CELL_SIZE, PC.CELL_SIZE)
+                } else {
+                    if(!puyosToPop.contains(block)){
+                        puyosToPop.add(block)
+                    }
+                }
             }
         }
         game.batch.setColor(c.r, c.g, c.b, 1f)
+        drawPop()
+    }
+
+    private fun drawPop(){
+        while(puyosToPop.listIterator().hasNext()){
+            val block = puyosToPop.listIterator().next()
+            val frames = block.removeFrames-PC.POP3_SPRITE_AT
+            if(frames > 20){
+                puyosToPop.remove(block)
+                continue
+            }
+            val coords = Array(4){ arrayOf(0f, 0f)}
+            var size = 1f
+            when(frames){
+                in 0..5 -> {
+                    coords[0][0] = -PC.CELL_SIZE*0.025f
+                    coords[0][1] = PC.CELL_SIZE*1.05f
+                    coords[1][0] = PC.CELL_SIZE*0.6f
+                    coords[1][1] = PC.CELL_SIZE*1.05f
+                }
+                in 6..10 -> {
+                    coords[2][0] = -PC.CELL_SIZE*0.03f
+                    coords[2][1] = PC.CELL_SIZE*1.06f
+                    coords[3][0] = PC.CELL_SIZE*0.5f
+                    coords[3][1] = PC.CELL_SIZE*1.05f
+                }
+                in 11..15 -> {
+                    coords[2][0] = -PC.CELL_SIZE*0.06f
+                    coords[2][1] = PC.CELL_SIZE*1.05f
+                    coords[3][0] = PC.CELL_SIZE*0.7f
+                    coords[3][1] = PC.CELL_SIZE*1.04f
+                }
+                in 16..20 -> {
+                    coords[2][0] = -PC.CELL_SIZE*0.08f
+                    coords[2][1] = PC.CELL_SIZE*1.03f
+                    coords[3][0] = PC.CELL_SIZE*0.9f
+                    coords[3][1] = PC.CELL_SIZE*1.02f
+                }
+            }
+
+            game.batch.draw(block.sprites["dot"],
+                    PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[0][0],
+                    PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[0][1],
+                    PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
+            game.batch.draw(block.sprites["dot"],
+                    PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[1][0],
+                    PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[1][1],
+                    PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
+            if(frames > 0){
+                game.batch.draw(block.sprites["dot"],
+                        PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[2][0],
+                        PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[2][1],
+                        PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
+                game.batch.draw(block.sprites["dot"],
+                        PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[3][0],
+                        PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[3][1],
+                        PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
+            }
+            println(frames)
+            block.addFrameCount()
+        }
     }
 
     private fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float){

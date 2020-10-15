@@ -348,8 +348,8 @@ class PuyoGame (){
                 val garbage = grid[block.x-1][block.y]
                 if(garbage is GarbageBlock) garbageToRemove.add(garbage)
             }
-            if(!isOutOfBounds(block.x-1, block.y)){
-                val garbage = grid[block.x-1][block.y]
+            if(!isOutOfBounds(block.x+1, block.y)){
+                val garbage = grid[block.x+1][block.y]
                 if(garbage is GarbageBlock) garbageToRemove.add(garbage)
             }
         }
@@ -492,8 +492,10 @@ class PuyoGame (){
                 block.updateSprite(s)
                 if(chain.size >= 4){
                     block.isBeingRemoved = true
-                    if(block.removeFrames > 20){
-                        block.updateSprite("s")
+                    when (block.removeFrames) {
+                        in 20 until PC.POP_SPRITE_AT -> block.updateSprite("s")
+                        in PC.POP_SPRITE_AT until PC.POP2_SPRITE_AT -> block.updateSprite("p")
+                        in PC.POP2_SPRITE_AT until PC.POP3_SPRITE_AT -> block.updateSprite("p2")
                     }
                 }
             }

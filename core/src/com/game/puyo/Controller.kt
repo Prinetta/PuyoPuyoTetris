@@ -87,7 +87,7 @@ class Controller(private val timer: Timer) {
                                 if(!puyoGame.gameOver){
                                     println("puyo lost")
                                     puyoGame.gameOver = true
-                                    Sounds.plost.play()
+                                    //Sounds.plost.play()
                                 }
                             }
                         }

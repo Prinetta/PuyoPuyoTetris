@@ -7,7 +7,7 @@ class Puyo(val first: PuyoBlock, val second: PuyoBlock){
     val minSpeed = 600 //600
     val maxSpeed = 50
     var speed = minSpeed
-    val chainSpeed = 800
+    val chainSpeed = 900
     var gap = 0.5f
 
     fun canSpawn() : Boolean{
