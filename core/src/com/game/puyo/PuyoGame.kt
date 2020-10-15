@@ -243,6 +243,13 @@ class PuyoGame (){
         }
         tetris.receiveGarbage(garbage)
         scoring.garbageToSend = 0
+
+        when {
+            garbage in 1..5 -> Sounds.gsend1.play()
+            garbage in 6..29 -> Sounds.gsend2.play()
+            garbage in 30..179 -> Sounds.gsend3.play()
+            garbage >= 180 -> Sounds.gsend4.play()
+        }
     }
 
     fun receiveGarbage(amount: Int){
@@ -375,6 +382,14 @@ class PuyoGame (){
         return dropped
     }
 
+    fun isFirstLocked(): Boolean {
+        return !(canFall(puyo.first) && !puyo.first.isLocked)
+    }
+
+    fun isSecondLocked(): Boolean {
+        return !(canFall(puyo.second) && !puyo.second.isLocked)
+    }
+
     fun canDropMainPuyos(): Boolean{
         //return (puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))
         return (canFall(puyo.first) && !puyo.first.isLocked) || (canFall(puyo.second) && !puyo.second.isLocked)
@@ -429,9 +444,10 @@ class PuyoGame (){
             updateMovingPos(block)
             if(block is PuyoBlock){
                 block.updateSprite("main")
+                if(!canFall(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){ // change if not all puyos do that sound
+                    Sounds.pdrop.play()
+                }
             }
-        } else {
-            block.isLocked = true
         }
     }
 

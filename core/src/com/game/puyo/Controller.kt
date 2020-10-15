@@ -22,6 +22,9 @@ class Controller(private val timer: Timer) {
     private var doubleTap = Time(time, 3000)
     var count = 0
 
+    private var placedGarbage = 0
+    private var playedDropSound = false
+
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
             if (timer.hasPassed(lastChain)) {
@@ -45,6 +48,9 @@ class Controller(private val timer: Timer) {
                     timer.reset(lastPuyoStep)
                 }
             } else {
+                if(!playedDropSound){
+                    playedDropSound = true
+                }
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(timer.hasPassed(lastBlockDrop)) {
@@ -58,16 +64,25 @@ class Controller(private val timer: Timer) {
                         puyoGame.calculateChainScore()
                         if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){ // still need to test garbage placement more
                             if(puyoGame.hasReceivedGarbage() && timer.hasPassed(delay)){
+                                placedGarbage = puyoGame.scoring.garbageToReceive
                                 puyoGame.placeGarbage()
                                 timer.reset(delay)
-                                Sounds.garbage.play()
                             } else if (timer.hasPassed(lastGarbageDrop)){
                                 puyoGame.dropRemainingGarbage()
                                 timer.reset(lastGarbageDrop)
                             }
                         } else {
+                            if(placedGarbage > 0){
+                                if(placedGarbage >= 6){
+                                    Sounds.garbage2.play()
+                                } else {
+                                    Sounds.garbage.play()
+                                }
+                                placedGarbage = 0
+                            }
                             if (puyoGame.allowSpawn()) {
                                 puyoGame.spawnPuyo()
+                                playedDropSound = false
                             }
                         }
                     }
