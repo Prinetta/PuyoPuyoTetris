@@ -83,6 +83,12 @@ class Controller(private val timer: Timer) {
                             if (puyoGame.allowSpawn()) {
                                 puyoGame.spawnPuyo()
                                 playedDropSound = false
+                            } else {
+                                if(!puyoGame.gameOver){
+                                    println("puyo lost")
+                                    puyoGame.gameOver = true
+                                    Sounds.plost.play()
+                                }
                             }
                         }
                     }

@@ -2,6 +2,7 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -23,6 +24,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private val titleFont = game.generateTitleFont(55)
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
+    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/?.mp3"));
     //private val bgGif = GifAnimation("bg", 121, 0.1f)
 
     // Tetris
@@ -34,6 +36,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         viewport.setScreenPosition(0, 0)
         puyoController.setTetris(tetrisGame)
         tetrisGame.setPuyo(puyoController.puyoGame)
+        Sounds.start.play()
+        bgm.play()
     }
 
     override fun render(delta: Float) {

@@ -444,7 +444,7 @@ class PuyoGame (){
             updateMovingPos(block)
             if(block is PuyoBlock){
                 block.updateSprite("main")
-                if(!canFall(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){ // change if not all puyos do that sound
+                if(!canFall(block) && isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
                     Sounds.pdrop.play()
                 }
             }
@@ -487,7 +487,6 @@ class PuyoGame (){
                 }
                 if(chain.contains(puyo.first) && chain.contains(puyo.second) && puyo.first.y == puyo.second.y && puyo.gap == 0.5f &&
                    ((puyo.first.isFalling && !puyo.second.isFalling) || (!puyo.first.isFalling && puyo.second.isFalling))){
-                    println("uh oh")
                     s = ""
                 }
                 block.updateSprite(s)
