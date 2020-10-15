@@ -595,6 +595,12 @@ class TetrisGame() {
     fun sendGarbage() {
         if(scoring.puyoGarbage > 0){
             puyo.receiveGarbage(Garbage.tetrisToPuyo[scoring.puyoGarbage]!!)
+            when {
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 1..5 -> Sounds.gsend1.play()
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 6..29 -> Sounds.gsend2.play()
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 30..179 -> Sounds.gsend3.play()
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! >= 180 -> Sounds.gsend4.play()
+            }
             scoring.puyoGarbage = 0
         }
     }
