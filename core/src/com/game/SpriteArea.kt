@@ -8,15 +8,33 @@ class SpriteArea {
     companion object Sprite {
         val atlas = TextureAtlas("sprites.pack")
         private val guiAtlas = TextureAtlas("gui.pack")
+        private val tEffectAtlas = TextureAtlas("effects.atlas")
 
         val tetrisSprites = hashMapOf("blue" to atlas.findRegion("tblue"), "dark-blue" to atlas.findRegion("tdarkblue"),
             "green" to atlas.findRegion("tgreen"), "orange" to atlas.findRegion("torange"),"purple" to atlas.findRegion("tpurple"),
             "red" to atlas.findRegion("tred"), "yellow" to atlas.findRegion("tyellow"), "garbage" to atlas.findRegion("tgarbage"))
 
+        val tEffectSprites = hashMapOf("big-twinkle" to tEffectAtlas.findRegion("big-twinkle"),
+                "blue-particle" to tEffectAtlas.findRegion("blue-particle"), "blue-twinkle" to tEffectAtlas.findRegion("blue-twinkle"),
+                "erase-big" to tEffectAtlas.findRegion("erase-big"), "erase-small" to tEffectAtlas.findRegion("erase-small"),
+                "full-line" to tEffectAtlas.findRegion("full-line"), "green-twinkle" to tEffectAtlas.findRegion("green-twinkle"),
+                "hdrop-line1" to tEffectAtlas.findRegion("hdrop-line1"), "hdrop-line2" to tEffectAtlas.findRegion("hdrop-line2"),
+                "hdrop-line3" to tEffectAtlas.findRegion("hdrop-line3"), "hdrop-line4" to tEffectAtlas.findRegion("hdrop-line4"),
+                "hdrop-long-line" to tEffectAtlas.findRegion("hdrop-long-line"), "hdrop-long-shine" to tEffectAtlas.findRegion("hdrop-long-shine"),
+                "hdrop-shine" to tEffectAtlas.findRegion("hdrop-shine"), "hdrop1" to tEffectAtlas.findRegion("hdrop1"),
+                "hdrop2" to tEffectAtlas.findRegion("hdrop2"), "hdrop3" to tEffectAtlas.findRegion("hdrop3"),
+                "hdrop4" to tEffectAtlas.findRegion("hdrop4"), "light-blue-twinkle" to tEffectAtlas.findRegion("light-blue-twinkle"),
+                "pink-twinkle" to tEffectAtlas.findRegion("pink-twinkle"), "sdrop1" to tEffectAtlas.findRegion("sdrop1"),
+                "sdrop2" to tEffectAtlas.findRegion("sdrop2"), "sdrop3" to tEffectAtlas.findRegion("sdrop3"),
+                "sdrop4" to tEffectAtlas.findRegion("sdrop4"), "twinkle" to tEffectAtlas.findRegion("twinkle"),
+                "white-particle-l" to tEffectAtlas.findRegion("white-particle-l"), "white-particle-s" to tEffectAtlas.findRegion("white-particle-s"),
+                "x-twinkle" to tEffectAtlas.findRegion("x-twinkle"))
+
         val bgSprites = hashMapOf("next-field" to guiAtlas.findRegion("next-field"),
              "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
              "grid-bg" to guiAtlas.findRegion("gridbg"), "next-bg" to guiAtlas.findRegion("nextbg2"), "next2-bg" to guiAtlas.findRegion("nextbg2"),
              "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
+
 
         val puyoSprites = createPuyoSprites()
         val cutPuyoSprites = createCutPuyoSprites()

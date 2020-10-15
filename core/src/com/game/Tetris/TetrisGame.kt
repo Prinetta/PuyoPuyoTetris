@@ -44,6 +44,7 @@ class TetrisGame() {
     var dropTetrominoTimer: Float = 0f
     var downKeyHeldTimer: Float = 0f
     var moveKeyHeldTimer: Float = 0f
+    var removeLineTimer: Float = 0f
 
     var columns: Int = 10
     var rows: Int = 25
@@ -70,7 +71,6 @@ class TetrisGame() {
                 if (currentTetromino.isFalling) {
                     dropTetromino(currentTetromino)
                 } else {
-
                     spawnTetromino()
                     tSpinInput = false
                     enableHold = true
@@ -78,6 +78,20 @@ class TetrisGame() {
                 dropTetrominoTimer = 0f
             }
             else dropTetrominoTimer += delta
+
+            if (removeLineTimer > 0) {
+                if (getFullRows().size > 0) {
+                    dropTetrominoTimer = 0.4f
+                    removeLineTimer += delta
+                    if (removeLineTimer > 0.25f) {
+                        removeLineTimer = 0f
+                        updateRows()
+                    }
+                } else {
+                    updateRows()
+                    removeLineTimer = 0f
+                }
+            } else removeLineTimer = 0f
 
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
@@ -242,7 +256,7 @@ class TetrisGame() {
             block.isFalling = false
             if (getFullRows().size == 0) Sounds.tdown.play()
         }
-        if (!currentTetromino.isFalling) updateRows()
+        if (!currentTetromino.isFalling) removeLineTimer = 0.01f
     }
 
     fun removeTetromino(block: Tetromino) {
@@ -417,46 +431,15 @@ class TetrisGame() {
     fun updateRows() {
         var pointsAdded = false
         val fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
-        if (tSpinInput) println("T-Spin")
         if (fullRows.size > 0) {
             if (isTSpin()) {
-                if (b2bBonus == 1) {
-                    println("Back-to-back")
-                    Sounds.tkesib2b.play()
-                } else Sounds.tkesispin.play()
-                scoring.puyoGarbage += scoring.tSpinClearBonus[fullRows.size]!! + b2bBonus
-                scoring.tetrisScore += (scoring.scoreTSpinClearBonus[fullRows.size]!! * (1 + (b2bBonus * 0.5f))).toInt()
+                tSpinClear(fullRows.size)
                 pointsAdded = true
-                b2bBonus = 1
             }
-            for (row in fullRows) {
-                for (j in row downTo 1) {
-                    for (i in cells.size - 1 downTo 0) {
-                        cells[i][j] = cells[i][j - 1]
-                    }
-                }
-            }
-            if (isPerfectClear()) {
-                scoring.puyoGarbage += scoring.perfectClearBonus
-                scoring.tetrisScore += scoring.scorePerfectClearBonus[fullRows.size]!!
-                b2bBonus = 0
-            }
+            removeRows(fullRows)
+            if (isPerfectClear()) perfectClear(fullRows.size)
             else if (!pointsAdded) {
-                if (fullRows.size == 4) {
-                    println("Tetris")
-                    if (b2bBonus == 1) {
-                        println("Back-to-back")
-                        Sounds.tkesib2b.play()
-                    } else Sounds.tkesitetris.play()
-                    scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!! + b2bBonus
-                    scoring.tetrisScore += (scoring.scoreClearBonus[fullRows.size]!! * (1 + (b2bBonus * 0.5f))).toInt()
-                    b2bBonus = 1
-                } else {
-                    scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!!
-                    scoring.tetrisScore += scoring.scoreClearBonus[fullRows.size]!!
-                    b2bBonus = 0
-                    Sounds.tkesiline.play()
-                }
+                if (fullRows.size == 4) tetrisClear() else lineClear(fullRows.size)
             }
             comboCount++
             if (comboCount >= 20) scoring.tetrisScore += 1000
@@ -465,23 +448,69 @@ class TetrisGame() {
         } else {
             if (isTSpin()) {
                 scoring.tetrisScore += scoring.scoreTSpinZeroBonus
+                println("T-Spin")
                 Sounds.tspin.play()
             }
             scoring.puyoGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
+            handleGarbage()
+        }
+    }
 
-            if(scoring.tetrisGarbage > 0){
-                scoring.tetrisGarbage -= scoring.puyoGarbage
-                if(scoring.tetrisGarbage < 0){
-                    scoring.puyoGarbage = -scoring.tetrisGarbage
-                    scoring.tetrisGarbage = 0
-                    sendGarbage()
+    fun removeRows(fullRows: com.badlogic.gdx.utils.Array<Int>) {
+        for (row in fullRows) {
+            for (j in row downTo 1) {
+                for (i in cells.size - 1 downTo 0) {
+                    cells[i][j] = cells[i][j - 1]
                 }
-            } else {
+            }
+        }
+    }
+
+    fun handleGarbage() {
+        if(scoring.tetrisGarbage > 0){
+            scoring.tetrisGarbage -= scoring.puyoGarbage
+            if(scoring.tetrisGarbage < 0){
+                scoring.puyoGarbage = -scoring.tetrisGarbage
+                scoring.tetrisGarbage = 0
                 sendGarbage()
             }
-            fillGarbage()
-        }
+        } else sendGarbage()
+        fillGarbage()
+    }
+
+    fun lineClear(lines: Int) {
+        scoring.puyoGarbage += scoring.clearBonus[lines]!!
+        scoring.tetrisScore += scoring.scoreClearBonus[lines]!!
+        b2bBonus = 0
+        Sounds.tkesiline.play()
+    }
+
+    fun tetrisClear() {
+        println("Tetris")
+        if (b2bBonus == 1) {
+            println("Back-to-back")
+            Sounds.tkesib2b.play()
+        } else Sounds.tkesitetris.play()
+        scoring.puyoGarbage += scoring.clearBonus[4]!! + b2bBonus
+        scoring.tetrisScore += (scoring.scoreClearBonus[4]!! * (1 + (b2bBonus * 0.5f))).toInt()
+        b2bBonus = 1
+    }
+
+    fun perfectClear(lines: Int) {
+        scoring.puyoGarbage += scoring.perfectClearBonus
+        scoring.tetrisScore += scoring.scorePerfectClearBonus[lines]!!
+        b2bBonus = 0
+    }
+
+    fun tSpinClear(lines: Int) {
+        if (b2bBonus == 1) {
+            println("Back-to-back")
+            Sounds.tkesib2b.play()
+        } else Sounds.tkesispin.play()
+        scoring.puyoGarbage += scoring.tSpinClearBonus[lines]!! + b2bBonus
+        scoring.tetrisScore += (scoring.scoreTSpinClearBonus[lines]!! * (1 + (b2bBonus * 0.5f))).toInt()
+        b2bBonus = 1
     }
 
     fun isTSpin(): Boolean {
