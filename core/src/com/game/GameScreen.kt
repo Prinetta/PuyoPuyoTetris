@@ -173,12 +173,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawTetrisGarbageQueue() {
         var garbage = tetrisGame.scoring.tetrisGarbage
         var count = 0
-        var factor = 0f
+        var factor: Float
         while (garbage > 0 && count < PC.GRID_WIDTH) {
             val closest = GC.garbageSteps.last { it <= garbage }
-            if (closest == 1) factor = 0.75f else factor = 1f
+            factor = if (closest == 1) 0.8f else 1f
             game.batch.draw(SpriteArea.gameSprites["tgarbage-queue$closest"],
-                    TC.GRID_LEFT_X + (count * (TC.CELL_SIZE * 1.75f)), SCREEN_HEIGHT * 0.88f,
+                    TC.GRID_LEFT_X + (count * (TC.CELL_SIZE * 1.75f)), SCREEN_HEIGHT * 0.89f,
                     TC.CELL_SIZE * factor, TC.CELL_SIZE * factor)
             garbage -= closest
             count++

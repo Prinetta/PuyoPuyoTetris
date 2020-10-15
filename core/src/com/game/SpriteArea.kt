@@ -32,7 +32,6 @@ class SpriteArea {
             for(color in PuyoColor.values()){
                 hashMap[color] = getColorSprites(color)
             }
-
             return hashMap
         }
 
@@ -43,7 +42,6 @@ class SpriteArea {
                     hashMap[sprite] = TextureRegion(sprite, 0, PC.CELL_SIZE.toInt()/2, PC.CELL_SIZE.toInt(), PC.CELL_SIZE.toInt()/2)
                 }
             }
-            println(hashMap)
             return hashMap
         }
 
