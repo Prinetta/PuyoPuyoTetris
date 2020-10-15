@@ -31,6 +31,8 @@ class Sounds {
         val tspin: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/tspin.wav"))
         val thold: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/thold.wav"))
         val tover: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/tover.wav"))
+        val tlineup: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/tlineup.wav"))
+        val tlinedown: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/tlinedown.wav"))
 
 
         val chainSounds = createChainMap()

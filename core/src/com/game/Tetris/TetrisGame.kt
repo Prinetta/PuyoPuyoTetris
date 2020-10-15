@@ -555,6 +555,7 @@ class TetrisGame() {
                     }
                 }
             }
+            if (scoring.tetrisGarbage < 8) Sounds.tlinedown.play() else Sounds.tlineup.play()
             scoring.tetrisGarbage = 0
         }
     }
