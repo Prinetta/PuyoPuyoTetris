@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
@@ -24,7 +25,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private val titleFont = game.generateTitleFont(55)
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
-    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/?.mp3"));
+    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/corona.mp3"));
     //private val bgGif = GifAnimation("bg", 121, 0.1f)
 
     // Tetris
@@ -37,7 +38,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         puyoController.setTetris(tetrisGame)
         tetrisGame.setPuyo(puyoController.puyoGame)
         Sounds.start.play()
-        bgm.play()
+        //bgm.play()
     }
 
     override fun render(delta: Float) {
@@ -304,10 +305,17 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawMainPuyos(){
         val puyos = puyoController.puyoGame.puyo
         if(puyos.first.isFalling){
-            game.batch.draw(puyos.first.currentSprite,
-                    PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
-                    PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
-                    PC.CELL_SIZE, PC.CELL_SIZE)
+            if(puyos.gap == 0.5f && puyos.first.y == 0){
+                game.batch.draw(SpriteArea.cutPuyoSprites[puyos.first.currentSprite],
+                        PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
+                        PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
+                        PC.CELL_SIZE, PC.CELL_SIZE/2)
+            } else {
+                game.batch.draw(puyos.first.currentSprite,
+                        PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
+                        PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
+                        PC.CELL_SIZE, PC.CELL_SIZE)
+            }
         }
         if(puyos.second.isFalling){
             game.batch.draw(puyos.second.currentSprite,

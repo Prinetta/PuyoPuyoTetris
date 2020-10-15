@@ -6,7 +6,7 @@ import com.game.puyo.PuyoColor
 
 class SpriteArea {
     companion object Sprite {
-        private val atlas = TextureAtlas("sprites.pack")
+        val atlas = TextureAtlas("sprites.pack")
         private val guiAtlas = TextureAtlas("gui.pack")
 
         val tetrisSprites = hashMapOf("blue" to atlas.findRegion("tblue"), "dark-blue" to atlas.findRegion("tdarkblue"),
@@ -19,6 +19,7 @@ class SpriteArea {
              "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
 
         val puyoSprites = createPuyoSprites()
+        val cutPuyoSprites = createCutPuyoSprites()
 
         val gameSprites = hashMapOf("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
                 "garbage-queue30" to atlas.findRegion("g30"), "garbage-queue180" to atlas.findRegion("g180"),"garbage-queue360" to atlas.findRegion("g360"),
@@ -32,6 +33,17 @@ class SpriteArea {
                 hashMap[color] = getColorSprites(color)
             }
 
+            return hashMap
+        }
+
+        private fun createCutPuyoSprites(): MutableMap<TextureRegion, TextureRegion>{
+            val hashMap = mutableMapOf<TextureRegion, TextureRegion>()
+            for(color in PuyoColor.values()){
+                for(sprite in puyoSprites[color]!!.values){
+                    hashMap[sprite] = TextureRegion(sprite, 0, PC.CELL_SIZE.toInt()/2, PC.CELL_SIZE.toInt(), PC.CELL_SIZE.toInt()/2)
+                }
+            }
+            println(hashMap)
             return hashMap
         }
 
