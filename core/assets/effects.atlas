@@ -1,0 +1,202 @@
+
+effects.png
+size: 1024,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+big-twinkle
+  rotate: false
+  xy: 501, 98
+  size: 104, 102
+  orig: 104, 102
+  offset: 0, 0
+  index: -1
+blue-particle
+  rotate: false
+  xy: 411, 18
+  size: 19, 17
+  orig: 19, 17
+  offset: 0, 0
+  index: -1
+blue-twinkle
+  rotate: false
+  xy: 974, 210
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: -1
+erase-big
+  rotate: false
+  xy: 2, 16
+  size: 228, 238
+  orig: 228, 238
+  offset: 0, 0
+  index: -1
+erase-small
+  rotate: false
+  xy: 232, 37
+  size: 221, 217
+  orig: 221, 217
+  offset: 0, 0
+  index: -1
+full-line
+  rotate: false
+  xy: 455, 202
+  size: 376, 52
+  orig: 376, 52
+  offset: 0, 0
+  index: -1
+green-twinkle
+  rotate: false
+  xy: 618, 26
+  size: 34, 42
+  orig: 34, 42
+  offset: 0, 0
+  index: -1
+hdrop-line1
+  rotate: false
+  xy: 602, 11
+  size: 14, 85
+  orig: 14, 85
+  offset: 0, 0
+  index: -1
+hdrop-line2
+  rotate: false
+  xy: 808, 113
+  size: 28, 87
+  orig: 28, 87
+  offset: 0, 0
+  index: -1
+hdrop-line3
+  rotate: false
+  xy: 755, 113
+  size: 51, 87
+  orig: 51, 87
+  offset: 0, 0
+  index: -1
+hdrop-line4
+  rotate: false
+  xy: 607, 117
+  size: 69, 83
+  orig: 69, 83
+  offset: 0, 0
+  index: -1
+hdrop-long-line
+  rotate: false
+  xy: 838, 14
+  size: 28, 240
+  orig: 28, 240
+  offset: 0, 0
+  index: -1
+hdrop-long-shine
+  rotate: false
+  xy: 455, 25
+  size: 44, 175
+  orig: 44, 175
+  offset: 0, 0
+  index: -1
+hdrop-shine
+  rotate: false
+  xy: 868, 103
+  size: 40, 80
+  orig: 40, 80
+  offset: 0, 0
+  index: -1
+hdrop1
+  rotate: false
+  xy: 578, 21
+  size: 22, 75
+  orig: 22, 75
+  offset: 0, 0
+  index: -1
+hdrop2
+  rotate: false
+  xy: 868, 30
+  size: 41, 71
+  orig: 41, 71
+  offset: 0, 0
+  index: -1
+hdrop3
+  rotate: false
+  xy: 868, 185
+  size: 55, 69
+  orig: 55, 69
+  offset: 0, 0
+  index: -1
+hdrop4
+  rotate: false
+  xy: 501, 27
+  size: 75, 69
+  orig: 75, 69
+  offset: 0, 0
+  index: -1
+light-blue-twinkle
+  rotate: false
+  xy: 365, 14
+  size: 23, 21
+  orig: 23, 21
+  offset: 0, 0
+  index: -1
+pink-twinkle
+  rotate: false
+  xy: 925, 172
+  size: 30, 31
+  orig: 30, 31
+  offset: 0, 0
+  index: -1
+sdrop1
+  rotate: false
+  xy: 308, 2
+  size: 21, 15
+  orig: 21, 15
+  offset: 0, 0
+  index: -1
+sdrop2
+  rotate: false
+  xy: 232, 2
+  size: 37, 14
+  orig: 37, 14
+  offset: 0, 0
+  index: -1
+sdrop3
+  rotate: false
+  xy: 308, 19
+  size: 55, 16
+  orig: 55, 16
+  offset: 0, 0
+  index: -1
+sdrop4
+  rotate: false
+  xy: 232, 18
+  size: 74, 17
+  orig: 74, 17
+  offset: 0, 0
+  index: -1
+twinkle
+  rotate: false
+  xy: 618, 70
+  size: 41, 45
+  orig: 41, 45
+  offset: 0, 0
+  index: -1
+white-particle-l
+  rotate: false
+  xy: 925, 205
+  size: 47, 49
+  orig: 47, 49
+  offset: 0, 0
+  index: -1
+white-particle-s
+  rotate: false
+  xy: 390, 16
+  size: 19, 19
+  orig: 19, 19
+  offset: 0, 0
+  index: -1
+x-twinkle
+  rotate: false
+  xy: 678, 124
+  size: 75, 76
+  orig: 75, 76
+  offset: 0, 0
+  index: -1

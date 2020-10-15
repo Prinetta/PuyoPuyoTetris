@@ -3,6 +3,7 @@ package com.game.Tetris
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Garbage
+import com.game.Sounds
 import com.game.SpriteArea
 import com.game.puyo.PuyoGame
 import kotlin.random.Random
@@ -64,86 +65,104 @@ class TetrisGame() {
     }
 
     fun handleInputs(delta: Float) {
-        if (dropTetrominoTimer > 0.5f) {
-            if (currentTetromino.isFalling) {
-                dropTetromino(currentTetromino)
-            } else {
-                updateRows()
-                spawnTetromino()
-                tSpinInput = false
-                enableHold = true
+        if (!gameIsOver) {
+            if (dropTetrominoTimer > 0.5f) {
+                if (currentTetromino.isFalling) {
+                    dropTetromino(currentTetromino)
+                } else {
+
+                    spawnTetromino()
+                    tSpinInput = false
+                    enableHold = true
+                }
+                dropTetrominoTimer = 0f
             }
-            dropTetrominoTimer = 0f
-        }
-        else dropTetrominoTimer += delta
+            else dropTetrominoTimer += delta
 
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            moveLeft(currentTetromino)
-            moveKeyHeldTimer = -0.4f
-        }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+                moveLeft(currentTetromino)
+                moveKeyHeldTimer = -0.4f
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            if (!tetrominoLanded(currentTetromino)) {
-                moveKeyHeldTimer += delta + 0.02f
-                if (moveKeyHeldTimer > 0.1f) {
-                    moveLeft(currentTetromino)
-                    moveKeyHeldTimer = 0f
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                if (!tetrominoLanded(currentTetromino)) {
+                    moveKeyHeldTimer += delta + 0.02f
+                    if (moveKeyHeldTimer > 0.1f) {
+                        moveLeft(currentTetromino)
+                        moveKeyHeldTimer = 0f
+                    }
                 }
             }
-        }
 
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            moveRight(currentTetromino)
-            moveKeyHeldTimer = -0.4f
-        }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+                moveRight(currentTetromino)
+                moveKeyHeldTimer = -0.4f
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            if (!tetrominoLanded(currentTetromino)) {
-                moveKeyHeldTimer += delta + 0.02f
-                if (moveKeyHeldTimer > 0.1f) {
-                    moveRight(currentTetromino)
-                    moveKeyHeldTimer = 0f
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                if (!tetrominoLanded(currentTetromino)) {
+                    moveKeyHeldTimer += delta + 0.02f
+                    if (moveKeyHeldTimer > 0.1f) {
+                        moveRight(currentTetromino)
+                        moveKeyHeldTimer = 0f
+                    }
                 }
             }
-        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            moveKeyHeldTimer = 0f
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            if (!tetrominoLanded(currentTetromino)) dropTetromino(currentTetromino)
-            if (currentTetromino.isFalling) dropTetrominoTimer = 0f
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            if (!tetrominoLanded(currentTetromino)) {
-                downKeyHeldTimer += delta + 0.02f
-                if (downKeyHeldTimer > 0.5f) dropTetrominoTimer += 0.25f
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                moveKeyHeldTimer = 0f
             }
-        } else downKeyHeldTimer = 0f
 
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            if (currentTetromino.isFalling) dropTetrominoTimer = 0.3f
-            while (currentTetromino.isFalling) {
-                dropTetromino(currentTetromino)
+            if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+                if (currentTetromino.isFalling) {
+                    dropTetromino(currentTetromino)
+                    if (currentTetromino.isFalling) {
+                        dropTetrominoTimer = 0f
+                        Sounds.tfall.play()
+                    } else dropTetrominoTimer = 0.3f
+                }
             }
-        }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
-            if (currentTetromino.isFalling) turnLeft(currentTetromino)
-            if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                if (!tetrominoLanded(currentTetromino)) {
+                    downKeyHeldTimer += delta + 0.02f
+                    if (downKeyHeldTimer > 0.5f) dropTetrominoTimer += 0.25f
+                }
+            } else downKeyHeldTimer = 0f
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-            if (currentTetromino.isFalling) turnRight(currentTetromino)
-            if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
-        }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && enableHold) {
-            holdTetromino()
+            if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+                if (currentTetromino.isFalling) {
+                    dropTetrominoTimer = 0.3f
+                    Sounds.thdrop.play()
+                }
+                while (currentTetromino.isFalling) {
+                    dropTetromino(currentTetromino)
+                }
+
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
+                if (currentTetromino.isFalling) {
+                    turnLeft(currentTetromino)
+                    Sounds.trotate.play()
+                }
+                if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+                if (currentTetromino.isFalling) {
+                    turnRight(currentTetromino)
+                    Sounds.trotate.play()
+                }
+                if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && enableHold) {
+                holdTetromino()
+            }
         }
     }
 
@@ -191,6 +210,7 @@ class TetrisGame() {
             heldTetromino!!.turnLeft()
         }
         enableHold = false
+        Sounds.thold.play()
     }
 
     fun addTetromino (block: Tetromino) {
@@ -218,7 +238,11 @@ class TetrisGame() {
                 }
             }
             block.move(0, 1)
-        } else if (tetrominoLanded(block)) block.isFalling = false
+        } else if (tetrominoLanded(block)) {
+            block.isFalling = false
+            if (getFullRows().size == 0) Sounds.tdown.play()
+        }
+        if (!currentTetromino.isFalling) updateRows()
     }
 
     fun removeTetromino(block: Tetromino) {
@@ -260,6 +284,7 @@ class TetrisGame() {
                 }
             }
             block.move(1, 0)
+            Sounds.tmove.play()
         }
     }
 
@@ -290,6 +315,7 @@ class TetrisGame() {
                 }
             }
             block.move(-1, 0)
+            Sounds.tmove.play()
         }
     }
 
@@ -394,7 +420,10 @@ class TetrisGame() {
         if (tSpinInput) println("T-Spin")
         if (fullRows.size > 0) {
             if (isTSpin()) {
-                if (b2bBonus == 1) println("Back-to-back")
+                if (b2bBonus == 1) {
+                    println("Back-to-back")
+                    Sounds.tkesib2b.play()
+                } else Sounds.tkesispin.play()
                 scoring.puyoGarbage += scoring.tSpinClearBonus[fullRows.size]!! + b2bBonus
                 scoring.tetrisScore += (scoring.scoreTSpinClearBonus[fullRows.size]!! * (1 + (b2bBonus * 0.5f))).toInt()
                 pointsAdded = true
@@ -415,7 +444,10 @@ class TetrisGame() {
             else if (!pointsAdded) {
                 if (fullRows.size == 4) {
                     println("Tetris")
-                    if (b2bBonus == 1) println("Back-to-back")
+                    if (b2bBonus == 1) {
+                        println("Back-to-back")
+                        Sounds.tkesib2b.play()
+                    } else Sounds.tkesitetris.play()
                     scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!! + b2bBonus
                     scoring.tetrisScore += (scoring.scoreClearBonus[fullRows.size]!! * (1 + (b2bBonus * 0.5f))).toInt()
                     b2bBonus = 1
@@ -423,6 +455,7 @@ class TetrisGame() {
                     scoring.puyoGarbage += scoring.clearBonus[fullRows.size]!!
                     scoring.tetrisScore += scoring.scoreClearBonus[fullRows.size]!!
                     b2bBonus = 0
+                    Sounds.tkesiline.play()
                 }
             }
             comboCount++
@@ -430,7 +463,10 @@ class TetrisGame() {
             else scoring.tetrisScore += comboCount * scoring.scoreComboBonus
             println("Combo: $comboCount")
         } else {
-            if (isTSpin()) scoring.tetrisScore += scoring.scoreTSpinZeroBonus
+            if (isTSpin()) {
+                scoring.tetrisScore += scoring.scoreTSpinZeroBonus
+                Sounds.tspin.play()
+            }
             scoring.puyoGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
 
@@ -439,10 +475,10 @@ class TetrisGame() {
                 if(scoring.tetrisGarbage < 0){
                     scoring.puyoGarbage = -scoring.tetrisGarbage
                     scoring.tetrisGarbage = 0
-                    sendGarbage(scoring.puyoGarbage)
+                    sendGarbage()
                 }
             } else {
-                sendGarbage(scoring.puyoGarbage)
+                sendGarbage()
             }
             fillGarbage()
         }
@@ -519,6 +555,7 @@ class TetrisGame() {
                     }
                 }
             }
+            if (scoring.tetrisGarbage < 8) Sounds.tlinedown.play() else Sounds.tlineup.play()
             scoring.tetrisGarbage = 0
         }
     }
@@ -551,13 +588,20 @@ class TetrisGame() {
     }
 
     fun gameOver() {
+        if (!gameIsOver) Sounds.tover.play()
         gameIsOver = true
         //println("Tetris lost")
     }
 
-    fun sendGarbage(amount: Int) {
+    fun sendGarbage() {
         if(scoring.puyoGarbage > 0){
             puyo.receiveGarbage(Garbage.tetrisToPuyo[scoring.puyoGarbage]!!)
+            when {
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 1..5 -> Sounds.gsend1.play()
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 6..29 -> Sounds.gsend2.play()
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 30..179 -> Sounds.gsend3.play()
+                Garbage.tetrisToPuyo[scoring.puyoGarbage]!! >= 180 -> Sounds.gsend4.play()
+            }
             scoring.puyoGarbage = 0
         }
     }

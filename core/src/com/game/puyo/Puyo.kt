@@ -4,13 +4,14 @@ class Puyo(val first: PuyoBlock, val second: PuyoBlock){
     var rotateCount = 0
     var dropped = false
 
-    val minSpeed = 600
+    val minSpeed = 600 //600
     val maxSpeed = 50
     var speed = minSpeed
     val chainSpeed = 800
+    var gap = 0.5f
 
     fun canSpawn() : Boolean{
-        return bothDropped()
+        return first.isLocked && second.isLocked
     }
 
     fun updateRotationCount(rotation: Int){

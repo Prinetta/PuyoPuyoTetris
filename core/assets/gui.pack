@@ -1,0 +1,41 @@
+
+gui.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+gridbg
+  rotate: false
+  xy: 432, 166
+  size: 363, 819
+  orig: 363, 819
+  offset: 0, 0
+  index: -1
+holdbg
+  rotate: false
+  xy: 797, 824
+  size: 161, 161
+  orig: 161, 161
+  offset: 0, 0
+  index: -1
+nextbg
+  rotate: false
+  xy: 2, 2
+  size: 161, 162
+  orig: 161, 162
+  offset: 0, 0
+  index: -1
+nextbg2
+  rotate: false
+  xy: 165, 75
+  size: 113, 89
+  orig: 113, 89
+  offset: 0, 0
+  index: -1
+puyobg
+  rotate: false
+  xy: 2, 166
+  size: 428, 819
+  orig: 428, 819
+  offset: 0, 0
+  index: -1

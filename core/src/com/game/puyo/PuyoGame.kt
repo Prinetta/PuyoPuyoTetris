@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 class PuyoGame (){
     private var puyoChain = mutableListOf<List<PuyoBlock>>()
-    private var puyosToRemove = mutableListOf<List<PuyoBlock>>()
+    var puyosToRemove = mutableListOf<List<PuyoBlock>>()
     private var garbageToRemove = mutableListOf<GarbageBlock>()
     var nextPuyos = mutableListOf<Puyo>()
 
@@ -14,7 +14,7 @@ class PuyoGame (){
     private val length = PC.GRID_LENGTH
     var allPuyosDropped = true
     private var allGarbageDropped = true
-    private var chainIndex = -1
+     var chainIndex = -1
     private lateinit var tetris: TetrisGame;
     lateinit var puyo: Puyo
     val grid = Array(width) {Array<Block?>(length) {null} }
@@ -33,6 +33,18 @@ class PuyoGame (){
 
     fun hasFoundChain(): Boolean{
         return chainIndex != -1
+    }
+
+    fun updateHorizontalPuyoState(){
+        puyo.first.isFalling = canFall(puyo.first)
+        puyo.second.isFalling = canFall(puyo.second)
+    }
+
+    fun updatePuyoState(){
+        puyo.first.isLocked = true
+        puyo.second.isLocked = true
+        puyo.first.isFalling = false
+        puyo.second.isFalling = false
     }
 
     fun allowSpawn(): Boolean {
@@ -164,12 +176,14 @@ class PuyoGame (){
 
         updateMovingPos(puyo.first)
         updateMovingPos(puyo.second)
+
+        if(puyo.first.color == puyo.second.color) puyoChain.add(mutableListOf(puyo.first, puyo.second))
     }
 
     fun findBigPuyoChain() : Int{
         findAllChains()
         puyoChain.forEachIndexed { index, chain -> // found big puyo chain
-            if(chain.size > 3 && !chain.any { it.isFalling }){
+            if(chain.size > 3){
                 chainIndex = index
                 findAdjacentGarbage()
                 return index
@@ -229,6 +243,13 @@ class PuyoGame (){
         }
         tetris.receiveGarbage(garbage)
         scoring.garbageToSend = 0
+
+        when {
+            garbage in 1..5 -> Sounds.gsend1.play()
+            garbage in 6..29 -> Sounds.gsend2.play()
+            garbage in 30..179 -> Sounds.gsend3.play()
+            garbage >= 180 -> Sounds.gsend4.play()
+        }
     }
 
     fun receiveGarbage(amount: Int){
@@ -258,11 +279,11 @@ class PuyoGame (){
         return i !in 0 until width || j !in 0 until length
     }
 
-    private fun canFall(block: Block) : Boolean {
+     fun canFall(block: Block) : Boolean {
         return !isOutOfBounds(block.x, block.y + 1) && grid[block.x][block.y + 1] == null
     }
 
-    private fun isMainPuyo(block: Block) : Boolean {
+    fun isMainPuyo(block: Block) : Boolean {
         return block == puyo.first || block == puyo.second
     }
 
@@ -283,9 +304,7 @@ class PuyoGame (){
             return false
         }
         val block = grid[i][j]
-        if(block == null || block.marked || block !is PuyoBlock || block.color != color ||
-           (block == puyo.first && getExpectedDrop(block)[1] != -1) ||
-            block == puyo.second && getExpectedDrop(block)[1] != -1){
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color){
             return false
         }
         if(index < puyoChain.size){
@@ -313,7 +332,6 @@ class PuyoGame (){
                 }
             }
         }
-        if(puyo.first.color == puyo.second.color && !puyoChain.flatten().any{it == puyo.first || it == puyo.second}) puyoChain.add(mutableListOf(puyo.first, puyo.second))
     }
 
     private fun findAdjacentGarbage(){
@@ -364,15 +382,42 @@ class PuyoGame (){
         return dropped
     }
 
+    fun isFirstLocked(): Boolean {
+        return !(canFall(puyo.first) && !puyo.first.isLocked)
+    }
+
+    fun isSecondLocked(): Boolean {
+        return !(canFall(puyo.second) && !puyo.second.isLocked)
+    }
+
+    fun canDropMainPuyos(): Boolean{
+        //return (puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))
+        return (canFall(puyo.first) && !puyo.first.isLocked) || (canFall(puyo.second) && !puyo.second.isLocked)
+    }
+
     fun dropMainPuyos(){
         for (i in length-1 downTo 0) {
             for (j in 0 until width) {
                 val block = grid[j][i]
-                if (block != null && isMainPuyo(block) && block.isFalling) {
+                if (block != null && isMainPuyo(block)) {
                     dropBlock(block)
                 }
             }
         }
+    }
+
+    fun canDropPuyos() : Boolean{
+        for (i in length-1 downTo 0) {
+            for(j in 0 until width) {
+                val block = grid[j][i]
+                if(block != null && block !is GarbageBlock){
+                    if(canFall(block)){
+                        return true
+                    }
+                }
+            }
+        }
+        return false
     }
 
     private fun dropPuyos() : Boolean{
@@ -399,6 +444,9 @@ class PuyoGame (){
             updateMovingPos(block)
             if(block is PuyoBlock){
                 block.updateSprite("main")
+                if(!canFall(block) && isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
+                    Sounds.pdrop.play()
+                }
             }
         }
     }
@@ -423,31 +471,41 @@ class PuyoGame (){
 
     fun connectPuyos(){
         for (chain in puyoChain){
-            if(chain.isEmpty()){
-                continue
-            } else {
-                for(block in chain){
-                    var s = ""
-                    if(!isOutOfBounds(block.x, block.y - 1) && chain.contains(grid[block.x][block.y - 1])){
-                        s += "u"
-                    }
-                    if(!isOutOfBounds(block.x + 1, block.y) && chain.contains(grid[block.x + 1][block.y])){
-                        s += "r"
-                    }
-                    if(!isOutOfBounds(block.x, block.y + 1) && chain.contains(grid[block.x][block.y + 1])){
-                        s += "d"
-                    }
-                    if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid[block.x - 1][block.y])){
-                        s += "l"
-                    }
-                    block.updateSprite(s)
-                    if(chain.size >= 4){
-                        block.isBeingRemoved = true
-                        if(block.removeFrames > 20){
-                            block.updateSprite("s")
-                        }
+            for(block in chain){
+                var s = ""
+                if(!isOutOfBounds(block.x, block.y - 1) && chain.contains(grid[block.x][block.y - 1])){
+                    s += "u"
+                }
+                if(!isOutOfBounds(block.x + 1, block.y) && chain.contains(grid[block.x + 1][block.y])){
+                    s += "r"
+                }
+                if(!isOutOfBounds(block.x, block.y + 1) && chain.contains(grid[block.x][block.y + 1])){
+                    s += "d"
+                }
+                if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid[block.x - 1][block.y])){
+                    s += "l"
+                }
+                if(chain.contains(puyo.first) && chain.contains(puyo.second) && puyo.first.y == puyo.second.y && puyo.gap == 0.5f &&
+                   ((puyo.first.isFalling && !puyo.second.isFalling) || (!puyo.first.isFalling && puyo.second.isFalling))){
+                    s = ""
+                }
+                block.updateSprite(s)
+                if(chain.size >= 4){
+                    block.isBeingRemoved = true
+                    if(block.removeFrames > 20){
+                        block.updateSprite("s")
                     }
                 }
+            }
+        }
+        connectNextPuyos()
+    }
+
+    private fun connectNextPuyos(){
+        for (puyos in nextPuyos){
+            if(puyos.first.color == puyos.second.color){
+                puyos.first.updateSprite("d")
+                puyos.second.updateSprite("u")
             }
         }
     }
