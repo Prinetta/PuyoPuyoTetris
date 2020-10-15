@@ -22,8 +22,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var viewport : FitViewport
     private val titleFont = game.generateTitleFont(55)
     private val scoreFont = game.generateScoreFont(50)
-    private val background = Texture(Gdx.files.internal("background.png"))
-    private val bgGif = GifAnimation("bg", 121, 0.1f)
+    private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
+    //private val bgGif = GifAnimation("bg", 121, 0.1f)
 
     // Tetris
     private val nextFont = game.generateTetrisNextFont(25)
@@ -44,7 +44,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
         /// Background
         game.batch.begin()
-        game.batch.draw(bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+        //game.batch.draw(bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+        game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
         drawPuyoBgTexture()
         drawTetrisGridTexture()
         game.batch.end()

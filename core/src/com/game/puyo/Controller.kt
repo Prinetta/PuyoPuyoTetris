@@ -3,6 +3,7 @@ package com.game.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Block
+import com.game.Sounds
 import com.game.Tetris.TetrisGame
 import com.game.Timer
 
@@ -27,6 +28,7 @@ class Controller(private val timer: Timer) {
                 puyoGame.removeCombo()
                 timer.reset(lastChain)
                 puyoGame.allPuyosDropped = false
+                playChainSound(puyoGame.puyosToRemove.size)
             }
         } else {
             if(puyoGame.puyo.rotateCount % 2 != 0){
@@ -58,6 +60,7 @@ class Controller(private val timer: Timer) {
                             if(puyoGame.hasReceivedGarbage() && timer.hasPassed(delay)){
                                 puyoGame.placeGarbage()
                                 timer.reset(delay)
+                                Sounds.garbage.play()
                             } else if (timer.hasPassed(lastGarbageDrop)){
                                 puyoGame.dropRemainingGarbage()
                                 timer.reset(lastGarbageDrop)
@@ -75,6 +78,14 @@ class Controller(private val timer: Timer) {
         puyoGame.connectPuyos()
         //puyoGame.updateSprites() // might delete that one
         puyoGame.unmark()
+    }
+
+    private fun playChainSound(chainCount: Int){
+        if(chainCount > 7){
+            Sounds.chainSounds["pchain7"]?.play()
+        } else {
+            Sounds.chainSounds["pchain$chainCount"]?.play()
+        }
     }
 
     fun setTetris(tetris: TetrisGame){
@@ -159,10 +170,12 @@ class Controller(private val timer: Timer) {
 
     private fun movePuyo(direction: Int){
         puyoGame.movePuyo(direction)
+        Sounds.pmove.play()
     }
 
     private fun rotatePuyo(direction: Int){
         puyoGame.rotatePuyo(direction)
+        Sounds.protate.play()
     }
 
     private fun increaseSpeed(){

@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 class PuyoGame (){
     private var puyoChain = mutableListOf<List<PuyoBlock>>()
-    private var puyosToRemove = mutableListOf<List<PuyoBlock>>()
+    var puyosToRemove = mutableListOf<List<PuyoBlock>>()
     private var garbageToRemove = mutableListOf<GarbageBlock>()
     var nextPuyos = mutableListOf<Puyo>()
 
