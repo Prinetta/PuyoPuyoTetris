@@ -5,21 +5,19 @@ import com.badlogic.gdx.Input
 import com.game.Block
 import com.game.Sounds
 import com.game.Tetris.TetrisGame
-import com.game.Timer
 
-class Controller(private val timer: Timer) {
+class Controller() {
 
     private var tapCount = 0
     val puyoGame = PuyoGame()
 
-    private var time = System.currentTimeMillis()
-    private var lastInput = Time(time, 80)
-    private var lastChain = Time(time, puyoGame.puyo.chainSpeed)
-    private var lastBlockDrop = Time(time, puyoGame.puyo.speed/2)
-    private var lastGarbageDrop = Time(time, 70)
-    private var lastPuyoStep = Time(time, puyoGame.puyo.speed/2)
-    private var delay = Time(time, 500)
-    private var doubleTap = Time(time, 3000)
+    private var lastInput = Time(80)
+    private var lastChain = Time(puyoGame.puyo.chainSpeed)
+    private var lastBlockDrop = Time(puyoGame.puyo.speed/2)
+    private var lastGarbageDrop = Time(70)
+    private var lastPuyoStep = Time(puyoGame.puyo.speed/2)
+    private var delay = Time(500)
+    private var doubleTap = Time(3000)
     var count = 0
 
     private var placedGarbage = 0
@@ -27,9 +25,9 @@ class Controller(private val timer: Timer) {
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
-            if (timer.hasPassed(lastChain)) {
+            if (lastChain.hasPassed()) {
                 puyoGame.removeCombo()
-                timer.reset(lastChain)
+                lastChain.reset()
                 puyoGame.allPuyosDropped = false
                 playChainSound(puyoGame.puyosToRemove.size)
             }
@@ -38,14 +36,14 @@ class Controller(private val timer: Timer) {
                 puyoGame.updateHorizontalPuyoState()
             }
             if(puyoGame.canDropMainPuyos()){
-                if(timer.hasPassed(lastPuyoStep)){
+                if(lastPuyoStep.hasPassed()){
                     if(puyoGame.puyo.gap == 0f){
                         puyoGame.puyo.gap = 0.5f
                     } else {
                         puyoGame.puyo.gap = 0f
                         puyoGame.dropMainPuyos()
                     }
-                    timer.reset(lastPuyoStep)
+                    lastPuyoStep.reset()
                 }
             } else {
                 if(!playedDropSound){
@@ -53,23 +51,23 @@ class Controller(private val timer: Timer) {
                 }
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
-                    if(timer.hasPassed(lastBlockDrop)) {
+                    if(lastBlockDrop.hasPassed()) {
                         puyoGame.dropRemainingPuyos()
                         puyoGame.dropRemainingGarbage()
-                        timer.reset(lastBlockDrop)
+                        lastBlockDrop.reset()
                     }
                 } else {
                     puyoGame.findBigPuyoChain()
                     if(!puyoGame.hasFoundChain()){
                         puyoGame.calculateChainScore()
                         if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){ // still need to test garbage placement more
-                            if(puyoGame.hasReceivedGarbage() && timer.hasPassed(delay)){
+                            if(puyoGame.hasReceivedGarbage() && delay.hasPassed()){
                                 placedGarbage = puyoGame.scoring.garbageToReceive
                                 puyoGame.placeGarbage()
-                                timer.reset(delay)
-                            } else if (timer.hasPassed(lastGarbageDrop)){
+                                delay.reset()
+                            } else if (lastGarbageDrop.hasPassed()){
                                 puyoGame.dropRemainingGarbage()
-                                timer.reset(lastGarbageDrop)
+                                lastGarbageDrop.reset()
                             }
                         } else {
                             if(placedGarbage > 0){
@@ -94,7 +92,7 @@ class Controller(private val timer: Timer) {
                     }
                 }
             }
-            timer.reset(lastChain)
+            lastChain.reset()
         }
         puyoGame.connectPuyos()
         //puyoGame.updateSprites() // might delete that one
@@ -121,7 +119,7 @@ class Controller(private val timer: Timer) {
                 Gdx.input.isKeyPressed(Input.Keys.H) -> checkDoubleRotate(1)
                 Gdx.input.isKeyPressed(Input.Keys.G) -> checkDoubleRotate(-1)
             }
-            timer.reset(lastInput)
+            lastInput.reset()
         } else if(Gdx.input.isKeyPressed(Input.Keys.S)){
             increaseSpeed()
         } else {
@@ -132,17 +130,17 @@ class Controller(private val timer: Timer) {
 
     fun checkDoubleRotate(rotation: Int){
         tapCount++
-        if(!timer.hasPassed(doubleTap) && tapCount > 1 && puyoGame.canQuickTurn()){
+        if(!doubleTap.hasPassed() && tapCount > 1 && puyoGame.canQuickTurn()){
             puyoGame.quickTurn()
             tapCount = 0
         } else {
-            if(timer.hasPassed(doubleTap) && tapCount > 1){
+            if(doubleTap.hasPassed() && tapCount > 1){
                 tapCount = 0
             }
             rotatePuyo(rotation)
         }
 
-        timer.reset(doubleTap)
+        doubleTap.reset()
     }
 
     fun displayPreview() : Boolean {
@@ -186,7 +184,7 @@ class Controller(private val timer: Timer) {
     }
 
     private fun allowInput() : Boolean {
-        return timer.hasPassed(lastInput) && !puyoGame.puyo.startedDrop()
+        return lastInput.hasPassed() && !puyoGame.puyo.startedDrop()
     }
 
     private fun movePuyo(direction: Int){

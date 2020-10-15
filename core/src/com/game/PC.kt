@@ -9,8 +9,8 @@ class PC {
         const val GRID_START_X = SCREEN_WIDTH*0.1f
         const val GRID_START_Y = SCREEN_HEIGHT*0.13f + GRID_LENGTH*CELL_SIZE-CELL_SIZE
 
-        const val POP_SPRITE_AT = 42-5 //42
-        const val POP2_SPRITE_AT = 45-5 //45
-        const val POP3_SPRITE_AT = 52-5 //52
+        const val POP_SPRITE_AT = 42 //42
+        const val POP2_SPRITE_AT = 45 //45
+        const val POP3_SPRITE_AT = 52 //52
     }
 }

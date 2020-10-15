@@ -1,7 +1,8 @@
 package com.game.puyo
 
-class Time (var currentTime: Long, var delay: Int){
-    
+class Time (var delay: Int){
+    private var currentTime = System.currentTimeMillis()
+
     fun reset(){
         currentTime = System.currentTimeMillis()
     }

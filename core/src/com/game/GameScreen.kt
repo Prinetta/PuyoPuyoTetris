@@ -18,7 +18,7 @@ const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var tetrisGame: TetrisGame = TetrisGame()
-    private val puyoController = Controller(Timer())
+    private val puyoController = Controller()
 
     private var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     private var shapeRenderer = ShapeRenderer()
@@ -353,7 +353,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private var puyosToPop = mutableListOf<PuyoBlock>()
-    private var popTime = Time(System.currentTimeMillis(), 1000)
+    private var popTime = Time(1000)
 
     private fun drawPuyos(){
         drawMainPuyos()
@@ -389,65 +389,14 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             }
         }
         game.batch.setColor(c.r, c.g, c.b, 1f)
-        drawPop()
+        //drawPop()
     }
 
     private fun drawPop(){
         while(puyosToPop.listIterator().hasNext()){
             val block = puyosToPop.listIterator().next()
             val frames = block.removeFrames-PC.POP3_SPRITE_AT
-            if(frames > 20){
-                puyosToPop.remove(block)
-                continue
-            }
             val coords = Array(4){ arrayOf(0f, 0f)}
-            var size = 1f
-            when(frames){
-                in 0..5 -> {
-                    coords[0][0] = -PC.CELL_SIZE*0.025f
-                    coords[0][1] = PC.CELL_SIZE*1.05f
-                    coords[1][0] = PC.CELL_SIZE*0.6f
-                    coords[1][1] = PC.CELL_SIZE*1.05f
-                }
-                in 6..10 -> {
-                    coords[2][0] = -PC.CELL_SIZE*0.03f
-                    coords[2][1] = PC.CELL_SIZE*1.06f
-                    coords[3][0] = PC.CELL_SIZE*0.5f
-                    coords[3][1] = PC.CELL_SIZE*1.05f
-                }
-                in 11..15 -> {
-                    coords[2][0] = -PC.CELL_SIZE*0.06f
-                    coords[2][1] = PC.CELL_SIZE*1.05f
-                    coords[3][0] = PC.CELL_SIZE*0.7f
-                    coords[3][1] = PC.CELL_SIZE*1.04f
-                }
-                in 16..20 -> {
-                    coords[2][0] = -PC.CELL_SIZE*0.08f
-                    coords[2][1] = PC.CELL_SIZE*1.03f
-                    coords[3][0] = PC.CELL_SIZE*0.9f
-                    coords[3][1] = PC.CELL_SIZE*1.02f
-                }
-            }
-
-            game.batch.draw(block.sprites["dot"],
-                    PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[0][0],
-                    PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[0][1],
-                    PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
-            game.batch.draw(block.sprites["dot"],
-                    PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[1][0],
-                    PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[1][1],
-                    PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
-            if(frames > 0){
-                game.batch.draw(block.sprites["dot"],
-                        PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[2][0],
-                        PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[2][1],
-                        PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
-                game.batch.draw(block.sprites["dot"],
-                        PC.GRID_START_X + block.x * PC.CELL_SIZE+coords[3][0],
-                        PC.GRID_START_Y - block.y * PC.CELL_SIZE+coords[3][1],
-                        PC.CELL_SIZE*0.5f, PC.CELL_SIZE*0.5f)
-            }
-            println(frames)
             block.addFrameCount()
         }
     }
