@@ -10,4 +10,13 @@ class Time (var delay: Int){
     fun hasPassed(): Boolean{
         return System.currentTimeMillis() - currentTime > delay
     }
+
+    fun fastForwardBy(millis: Long) {
+        currentTime -= millis
+    }
+
+    fun startAt(millis: Long) {
+        reset()
+        fastForwardBy(millis)
+    }
 }

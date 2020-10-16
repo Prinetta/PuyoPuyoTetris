@@ -82,7 +82,7 @@ class TetrisGame() {
             if (removeLineTimer > 0) {
                 if (getFullRows().size > 0) {
                     removeLineTimer += delta
-                    dropTetrominoTime.currentTime = System.currentTimeMillis() - 300
+                    dropTetrominoTime.startAt(220)
                     if (removeLineTimer > 0.25f) {
                         removeLineTimer = 0f
                         updateRows()
@@ -135,21 +135,21 @@ class TetrisGame() {
                     if (currentTetromino.isFalling) {
                         dropTetrominoTime.reset()
                         Sounds.tfall.play()
-                    } else dropTetrominoTime.currentTime = System.currentTimeMillis() - 350
+                    } else dropTetrominoTime.startAt(350)
                 }
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 if (!tetrominoLanded(currentTetromino)) {
                     downKeyHeldTimer += delta + 0.02f
-                    if (downKeyHeldTimer > 0.5f) dropTetrominoTime.currentTime -= 250
+                    if (downKeyHeldTimer > 0.5f) dropTetrominoTime.fastForwardBy(250)
                 }
             } else downKeyHeldTimer = 0f
 
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                 if (currentTetromino.isFalling) {
-                    dropTetrominoTime.currentTime = System.currentTimeMillis() - 350
+                    dropTetrominoTime.startAt(350)
                     Sounds.thdrop.play()
                 }
                 while (currentTetromino.isFalling) {
