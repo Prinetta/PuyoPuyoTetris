@@ -6,6 +6,7 @@ import com.game.Garbage
 import com.game.Sounds
 import com.game.SpriteArea
 import com.game.puyo.PuyoGame
+import com.game.puyo.Time
 import kotlin.random.Random
 
 class TetrisGame() {
@@ -41,7 +42,7 @@ class TetrisGame() {
     var iOffsetsMap: MutableMap<Char, Array<Pair<Int, Int>>> = mutableMapOf('0' to iOffsets0, 'L' to iOffsetsL, 'R' to iOffsetsR, '2' to iOffsets2)
 
 
-    var dropTetrominoTimer: Float = 0f
+    var dropTetrominoTime = Time(500)
     var downKeyHeldTimer: Float = 0f
     var moveKeyHeldTimer: Float = 0f
     var removeLineTimer: Float = 0f
@@ -67,7 +68,7 @@ class TetrisGame() {
 
     fun handleInputs(delta: Float) {
         if (!gameIsOver) {
-            if (dropTetrominoTimer > 0.5f) {
+            if (dropTetrominoTime.hasPassed()) {
                 if (currentTetromino.isFalling) {
                     dropTetromino(currentTetromino)
                 } else {
@@ -75,14 +76,13 @@ class TetrisGame() {
                     tSpinInput = false
                     enableHold = true
                 }
-                dropTetrominoTimer = 0f
+                dropTetrominoTime.reset()
             }
-            else dropTetrominoTimer += delta
 
             if (removeLineTimer > 0) {
                 if (getFullRows().size > 0) {
-                    dropTetrominoTimer = 0.4f
                     removeLineTimer += delta
+                    dropTetrominoTime.currentTime = System.currentTimeMillis() - 300
                     if (removeLineTimer > 0.25f) {
                         removeLineTimer = 0f
                         updateRows()
@@ -133,23 +133,23 @@ class TetrisGame() {
                 if (currentTetromino.isFalling) {
                     dropTetromino(currentTetromino)
                     if (currentTetromino.isFalling) {
-                        dropTetrominoTimer = 0f
+                        dropTetrominoTime.reset()
                         Sounds.tfall.play()
-                    } else dropTetrominoTimer = 0.3f
+                    } else dropTetrominoTime.currentTime = System.currentTimeMillis() - 350
                 }
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 if (!tetrominoLanded(currentTetromino)) {
                     downKeyHeldTimer += delta + 0.02f
-                    if (downKeyHeldTimer > 0.5f) dropTetrominoTimer += 0.25f
+                    if (downKeyHeldTimer > 0.5f) dropTetrominoTime.currentTime -= 250
                 }
             } else downKeyHeldTimer = 0f
 
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                 if (currentTetromino.isFalling) {
-                    dropTetrominoTimer = 0.3f
+                    dropTetrominoTime.currentTime = System.currentTimeMillis() - 350
                     Sounds.thdrop.play()
                 }
                 while (currentTetromino.isFalling) {
@@ -206,7 +206,7 @@ class TetrisGame() {
     }
 
     fun holdTetromino() {
-        dropTetrominoTimer = 0f
+        dropTetrominoTime.reset()
         if (heldTetromino != null) {
             var temp: Tetromino = heldTetromino!!
             heldTetromino = currentTetromino
