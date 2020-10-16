@@ -19,4 +19,12 @@ class Time (var delay: Int){
         reset()
         fastForwardBy(millis)
     }
+
+    fun runtime() = System.currentTimeMillis() - currentTime
+
+    fun cancel() {
+        currentTime = Long.MAX_VALUE
+    }
+
+    fun isRunning() = currentTime != Long.MAX_VALUE
 }

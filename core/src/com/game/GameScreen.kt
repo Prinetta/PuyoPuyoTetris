@@ -240,7 +240,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawTetrisRemoveLine() {
-        if (tetrisGame.removeLineTimer > 0) {
+        if (tetrisGame.removeLineTime.isRunning()) {
             var fullRows = tetrisGame.getFullRows()
             for (row in 0 until fullRows.size) {
                 var count = 1
@@ -248,14 +248,15 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 if (count == 1) {
                     count = 1
                     while (fullRows.contains(fullRows[row] - count)) count++
+                    var time: Float = tetrisGame.removeLineTime.runtime() / 1000f
                     game.batch.draw(SpriteArea.tEffectSprites["erase-big"],
-                            TC.GRID_LEFT_X + (tetrisGame.removeLineTimer * ((TC.CELL_SIZE * TC.COLUMNS) / 0.27f)) - (1.5f * TC.CELL_SIZE),
+                            TC.GRID_LEFT_X + (time * ((TC.CELL_SIZE * TC.COLUMNS) / 0.27f)) - (1.5f * TC.CELL_SIZE),
                             TC.GRID_TOP_Y - ((fullRows[row] + (count - 1)) * TC.CELL_SIZE) - ((1.5f * TC.CELL_SIZE)),
                             8f * TC.CELL_SIZE, (4f * TC.CELL_SIZE) * count)
                     game.batch.draw(SpriteArea.tEffectSprites["full-line"], TC.GRID_LEFT_X - 3f,
-                            TC.GRID_TOP_Y - ((fullRows[row]) * TC.CELL_SIZE) - (3f * count) + (tetrisGame.removeLineTimer * 2f * TC.CELL_SIZE * count),
+                            TC.GRID_TOP_Y - ((fullRows[row]) * TC.CELL_SIZE) - (3f * count) + (time * 2f * TC.CELL_SIZE * count),
                             TC.COLUMNS * TC.CELL_SIZE + 6f,
-                            (TC.CELL_SIZE + 6f) * count - (tetrisGame.removeLineTimer * 4f * TC.CELL_SIZE * count))
+                            (TC.CELL_SIZE + 6f) * count - (time * 4f * TC.CELL_SIZE * count))
                 }
             }
         }

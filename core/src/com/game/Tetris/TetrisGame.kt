@@ -43,9 +43,9 @@ class TetrisGame() {
 
 
     var dropTetrominoTime = Time(500)
-    var downKeyHeldTimer: Float = 0f
-    var moveKeyHeldTimer: Float = 0f
-    var removeLineTimer: Float = 0f
+    var downKeyHeldTime = Time(200)
+    var moveKeyHeldTime = Time(230)
+    var removeLineTime = Time(250)
 
     var columns: Int = 10
     var rows: Int = 25
@@ -57,6 +57,7 @@ class TetrisGame() {
                 row.add(null)
             }
         }
+        removeLineTime.cancel()
         createRandomOrder()
         spawnTetromino()
         createNextTetrominos()
@@ -79,32 +80,30 @@ class TetrisGame() {
                 dropTetrominoTime.reset()
             }
 
-            if (removeLineTimer > 0) {
+            if (removeLineTime.isRunning()) {
                 if (getFullRows().size > 0) {
-                    removeLineTimer += delta
-                    dropTetrominoTime.startAt(220)
-                    if (removeLineTimer > 0.25f) {
-                        removeLineTimer = 0f
+                    dropTetrominoTime.startAt(dropTetrominoTime.delay - (removeLineTime.delay.toLong() - removeLineTime.runtime()) - 50)
+                    if (removeLineTime.hasPassed()) {
+                        removeLineTime.cancel()
                         updateRows()
                     }
                 } else {
                     updateRows()
-                    removeLineTimer = 0f
+                    removeLineTime.cancel()
                 }
-            } else removeLineTimer = 0f
+            }
 
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
                 moveLeft(currentTetromino)
-                moveKeyHeldTimer = -0.4f
+
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
                 if (!tetrominoLanded(currentTetromino)) {
-                    moveKeyHeldTimer += delta + 0.02f
-                    if (moveKeyHeldTimer > 0.1f) {
+                    if (moveKeyHeldTime.hasPassed()) {
                         moveLeft(currentTetromino)
-                        moveKeyHeldTimer = 0f
+                        moveKeyHeldTime.startAt(190)
                     }
                 }
             }
@@ -112,21 +111,19 @@ class TetrisGame() {
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
                 moveRight(currentTetromino)
-                moveKeyHeldTimer = -0.4f
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                 if (!tetrominoLanded(currentTetromino)) {
-                    moveKeyHeldTimer += delta + 0.02f
-                    if (moveKeyHeldTimer > 0.1f) {
+                    if (moveKeyHeldTime.hasPassed()) {
                         moveRight(currentTetromino)
-                        moveKeyHeldTimer = 0f
+                        moveKeyHeldTime.startAt(190)
                     }
                 }
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                moveKeyHeldTimer = 0f
+            if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                moveKeyHeldTime.reset()
             }
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
@@ -135,21 +132,20 @@ class TetrisGame() {
                     if (currentTetromino.isFalling) {
                         dropTetrominoTime.reset()
                         Sounds.tfall.play()
-                    } else dropTetrominoTime.startAt(350)
+                    } else dropTetrominoTime.startAt(380)
                 }
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 if (!tetrominoLanded(currentTetromino)) {
-                    downKeyHeldTimer += delta + 0.02f
-                    if (downKeyHeldTimer > 0.5f) dropTetrominoTime.fastForwardBy(250)
+                    if (downKeyHeldTime.hasPassed()) dropTetrominoTime.fastForwardBy(250)
                 }
-            } else downKeyHeldTimer = 0f
+            } else downKeyHeldTime.reset()
 
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                 if (currentTetromino.isFalling) {
-                    dropTetrominoTime.startAt(350)
+                    dropTetrominoTime.startAt(380)
                     Sounds.thdrop.play()
                 }
                 while (currentTetromino.isFalling) {
@@ -256,7 +252,7 @@ class TetrisGame() {
             block.isFalling = false
             if (getFullRows().size == 0) Sounds.tdown.play()
         }
-        if (!currentTetromino.isFalling) removeLineTimer = 0.01f
+        if (!currentTetromino.isFalling) removeLineTime.reset()
     }
 
     fun removeTetromino(block: Tetromino) {
