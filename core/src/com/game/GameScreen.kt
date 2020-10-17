@@ -109,7 +109,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawTetrominos(){
         for (i in tetrisGame.cells.indices) { // invisible rows are nice
             for (j in 1 until tetrisGame.cells[i].size) {
-                if (tetrisGame.cells[i][j] != null) {
+                if (tetrisGame.cells[i][j] != null && !tetrisGame.getFullRows().contains(j)) {
                     game.batch.draw(tetrisGame.cells[i][j].texture, i.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X, TC.GRID_TOP_Y - (j.toFloat() * TC.CELL_SIZE),
                             TC.CELL_SIZE, TC.CELL_SIZE)
                 }
@@ -234,26 +234,44 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawTetrisEffects() {
         drawTetrisRemoveLine()
+        drawHardDropEffect()
     }
 
     private fun drawTetrisRemoveLine() {
-        if (tetrisGame.removeLineTimer > 0) {
+        if (tetrisGame.removeLineTime.isRunning()) {
             var fullRows = tetrisGame.getFullRows()
             for (row in 0 until fullRows.size) {
-                game.batch.draw(SpriteArea.tEffectSprites["full-line"], TC.GRID_LEFT_X - 3f,
-                        TC.GRID_TOP_Y - (fullRows[row] * TC.CELL_SIZE) - 3f,
-                        TC.COLUMNS * TC.CELL_SIZE + 6f, TC.CELL_SIZE + 6f)
                 var count = 1
                 while (fullRows.contains(fullRows[row] + count)) count++
                 if (count == 1) {
                     count = 1
                     while (fullRows.contains(fullRows[row] - count)) count++
+                    var time: Float = tetrisGame.removeLineTime.runtime() / 1000f
                     game.batch.draw(SpriteArea.tEffectSprites["erase-big"],
-                            TC.GRID_LEFT_X + (tetrisGame.removeLineTimer * ((TC.CELL_SIZE * TC.COLUMNS) / 0.27f)) - (1.5f * TC.CELL_SIZE),
+                            TC.GRID_LEFT_X + (time * ((TC.CELL_SIZE * TC.COLUMNS) / 0.27f)) - (1.5f * TC.CELL_SIZE),
                             TC.GRID_TOP_Y - ((fullRows[row] + (count - 1)) * TC.CELL_SIZE) - ((1.5f * TC.CELL_SIZE)),
                             8f * TC.CELL_SIZE, (4f * TC.CELL_SIZE) * count)
+                    game.batch.draw(SpriteArea.tEffectSprites["full-line"], TC.GRID_LEFT_X - 3f,
+                            TC.GRID_TOP_Y - ((fullRows[row]) * TC.CELL_SIZE) - (3f * count) + (time * 2f * TC.CELL_SIZE * count),
+                            TC.COLUMNS * TC.CELL_SIZE + 6f,
+                            (TC.CELL_SIZE + 6f) * count - (time * 4f * TC.CELL_SIZE * count))
                 }
             }
+        }
+    }
+
+    private fun drawHardDropEffect() {
+        if(tetrisGame.hardDropTime.isRunning()) {
+            var block = tetrisGame.currentTetromino
+            var timeProcess: Float = tetrisGame.hardDropTime.runtime().toFloat() / tetrisGame.hardDropTime.delay
+
+            var c = game.batch.color
+            game.batch.setColor(c.r, c.g, c.b, 1 - timeProcess)
+            game.batch.draw(SpriteArea.tEffectSprites["hdrop-line${block.getColumns()}"],
+            TC.GRID_LEFT_X + (block.column + (block.firstColumn() - block.pivotX)) * TC.CELL_SIZE,
+            TC.GRID_TOP_Y - ((block.row) + (block.firstRow() - block.pivotY)) * TC.CELL_SIZE + timeProcess * (TC.CELL_SIZE * 2),
+            block.getColumns() * TC.CELL_SIZE, TC.CELL_SIZE * 3)
+            game.batch.setColor(c.r, c.g, c.b, 1f)
         }
     }
 

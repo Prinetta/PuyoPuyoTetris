@@ -1,7 +1,7 @@
 package com.game.puyo
 
 class Time (var delay: Int){
-    private var currentTime = System.currentTimeMillis()
+    var currentTime = System.currentTimeMillis()
 
     fun reset(){
         currentTime = System.currentTimeMillis()
@@ -10,4 +10,21 @@ class Time (var delay: Int){
     fun hasPassed(): Boolean{
         return System.currentTimeMillis() - currentTime > delay
     }
+
+    fun fastForwardBy(millis: Long) {
+        currentTime -= millis
+    }
+
+    fun startAt(millis: Long) {
+        reset()
+        fastForwardBy(millis)
+    }
+
+    fun runtime() = System.currentTimeMillis() - currentTime
+
+    fun cancel() {
+        currentTime = Long.MAX_VALUE
+    }
+
+    fun isRunning() = currentTime != Long.MAX_VALUE
 }

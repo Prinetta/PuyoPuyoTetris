@@ -13,8 +13,8 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
 
     var width: Float = 0f
     var height: Float = 0f
-    var columns: Int = 0
-    var rows: Int = 0
+    var initColumns: Int = 0
+    var initRows: Int = 0
     var pivotX: Int = 3
     var pivotY: Int = 3
 
@@ -33,10 +33,10 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
             'Z' -> createZ()
         }
         isFalling = true
-        columns = blockColumns()
-        rows = blockRows()
-        width = columns * TC.CELL_SIZE
-        height = rows * TC.CELL_SIZE
+        initColumns = getColumns()
+        initRows = getRows()
+        width = initColumns * TC.CELL_SIZE
+        height = initRows * TC.CELL_SIZE
     }
 
     fun move(x: Int, y: Int) {
@@ -148,7 +148,7 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
         }
     }
 
-    fun blockRows(): Int {
+    fun getRows(): Int {
         var rows: Int = 0
         var indices: IntArray = IntArray(7)
         for (i in shape.indices) {
@@ -164,7 +164,7 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
         return rows
     }
 
-    fun blockColumns(): Int {
+    fun getColumns(): Int {
         var columns: Int = 0
         var indices: IntArray = IntArray(7)
         for (i in shape.indices) {
