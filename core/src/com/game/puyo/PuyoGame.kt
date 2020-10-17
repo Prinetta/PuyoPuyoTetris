@@ -19,6 +19,7 @@ class PuyoGame (){
     lateinit var puyo: Puyo
     val grid = Array(width) {Array<Block?>(length) {null} }
     var gameOver = false
+    var animationDone = false
 
     val scoring = PuyoScoring()
 
@@ -48,7 +49,11 @@ class PuyoGame (){
     }
 
     fun allowSpawn(): Boolean {
-        return puyo.canSpawn() && !isColliding(width / 2, 1)
+        return puyo.canSpawn() && !isColliding(width / 2, 1) && animationDone
+    }
+
+    fun hasLost(): Boolean {
+        return isColliding(width / 2, 1)
     }
 
     fun calculateChainScore(){
@@ -446,6 +451,7 @@ class PuyoGame (){
                 block.updateSprite("main")
                 if(!canFall(block) && isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
                     Sounds.pdrop.play()
+                    block.isLocked = true
                 }
             }
         }

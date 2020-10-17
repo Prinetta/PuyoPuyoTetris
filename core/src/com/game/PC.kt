@@ -11,6 +11,6 @@ class PC {
 
         const val POP_SPRITE_AT = 42 //42
         const val POP2_SPRITE_AT = 45 //45
-        const val POP3_SPRITE_AT = 52 //52
+        const val POP3_SPRITE_AT = 49 //52
     }
 }

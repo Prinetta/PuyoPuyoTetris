@@ -2,16 +2,13 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
 import com.game.Tetris.*
-import java.awt.geom.Point2D
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
@@ -263,7 +260,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     /// Puyo Puyo
 
     private fun drawPuyoPreview(){
-        if(puyoController.displayPreview()){
+        if(puyoController.displayPreview() && puyosToPop.isEmpty()){
             val c = game.batch.color
             game.batch.setColor(c.r, c.g, c.b, 0.8f)
 
@@ -353,7 +350,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private var puyosToPop = mutableListOf<PuyoBlock>()
-    private var popTime = Time(1000)
+    private var popTime = Time(50)
 
     private fun drawPuyos(){
         drawMainPuyos()
@@ -376,28 +373,104 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 } else {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
-                if(!(block is PuyoBlock && block.removeFrames >= PC.POP3_SPRITE_AT)){
+                if(!(block is PuyoBlock && block.removeFrames >= PC.POP3_SPRITE_AT)) {
                     game.batch.draw(block.currentSprite,
                             PC.GRID_START_X + i * PC.CELL_SIZE,
                             PC.GRID_START_Y - j * PC.CELL_SIZE,
                             PC.CELL_SIZE, PC.CELL_SIZE)
-                } else {
-                    if(!puyosToPop.contains(block)){
+                    if (block is PuyoBlock && block.removeFrames >= PC.POP_SPRITE_AT && !puyosToPop.contains(block)) {
                         puyosToPop.add(block)
                     }
                 }
             }
         }
+
         game.batch.setColor(c.r, c.g, c.b, 1f)
-        //drawPop()
+        drawPop()
+        if(popTime.hasPassed()){
+            updatePop()
+            popTime.reset()
+        }
     }
 
     private fun drawPop(){
-        while(puyosToPop.listIterator().hasNext()){
-            val block = puyosToPop.listIterator().next()
-            val frames = block.removeFrames-PC.POP3_SPRITE_AT
-            val coords = Array(4){ arrayOf(0f, 0f)}
-            block.addFrameCount()
+        puyoController.puyoGame.animationDone = puyosToPop.isEmpty()
+        for(puyo in puyosToPop){
+            val x = PC.GRID_START_X + puyo.x * PC.CELL_SIZE
+            val y = PC.GRID_START_Y - puyo.y * PC.CELL_SIZE
+            val pop = puyo.pop
+
+
+            if(pop.coords[0][0] != 0f){
+                if(pop.coords[2][0] != 0f){
+                    game.batch.draw(puyo.sprites["dot"], x+pop.coords[2][0], y+pop.coords[2][1], pop.secondSize, pop.secondSize)
+                    game.batch.draw(puyo.sprites["dot"], x+pop.coords[3][0], y+pop.coords[3][1], pop.secondSize, pop.secondSize)
+                }
+                game.batch.draw(puyo.sprites["dot"], x+pop.coords[0][0], y+pop.coords[0][1], pop.firstSize, pop.firstSize)
+                game.batch.draw(puyo.sprites["dot"], x+pop.coords[1][0], y+pop.coords[1][1], pop.firstSize, pop.firstSize)
+            }
+        }
+    }
+
+    private fun updatePop(){
+        val iterator = puyosToPop.listIterator()
+        while(iterator.hasNext()){
+            val puyo = iterator.next()
+            val pop = puyo.pop
+
+            if(pop.frames > 7){
+                iterator.remove()
+                continue
+            }
+
+            println(pop.frames)
+
+            val x = PC.GRID_START_X + puyo.x * PC.CELL_SIZE
+            val y = PC.GRID_START_Y - puyo.y * PC.CELL_SIZE
+
+            if(pop.frames in 1..2){
+                pop.updateFirst(PC.CELL_SIZE * 0.1f, PC.CELL_SIZE * 0.53f,
+                                pop.coords[0][0] + pop.firstSize * 0.72f, PC.CELL_SIZE * 0.52f,pop.firstSize)
+            }
+            if(pop.frames in 2..3){
+                pop.updateSecond(pop.coords[0][0] - pop.firstSize * 0.45f, pop.coords[0][1] + pop.firstSize * 0.4f,
+                                 pop.coords[1][0] + pop.firstSize * 0.2f, pop.coords[1][1] + pop.firstSize * 0.35f, pop.secondSize)
+            }
+            if(pop.frames == 3){
+                pop.updateFirst(pop.coords[2][0] - pop.secondSize * 0.2f, pop.coords[2][1] + pop.secondSize * 0.26f,
+                                pop.coords[3][0] + pop.secondSize * 0.2f, pop.coords[3][1] + pop.secondSize * 0.26f, PC.CELL_SIZE * 0.7f)
+            }
+            if(pop.frames == 4){
+                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.2f, pop.coords[2][1] + pop.secondSize * 0.26f,
+                                 pop.coords[3][0] + pop.secondSize * 0.2f, pop.coords[3][1] + pop.secondSize * 0.26f, PC.CELL_SIZE * 0.7f)
+                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.2f, pop.coords[0][1] + pop.secondSize * 0.13f,
+                                pop.coords[1][0] + pop.secondSize * 0.2f , pop.coords[1][1] + pop.secondSize * 0.11f, PC.CELL_SIZE * 0.77f)
+            }
+            if(pop.frames == 5){
+                pop.updateSecond(pop.coords[0][0], pop.coords[0][1], pop.coords[1][0], pop.coords[1][1], pop.firstSize)
+                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.1f, pop.coords[0][1] + pop.secondSize * 0.1f,
+                                pop.coords[1][0] + pop.secondSize * 0.45f , pop.coords[1][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.6f)
+            }
+            if(pop.frames == 6){
+                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.1f, pop.coords[2][1] + pop.secondSize * 0.1f,
+                                 pop.coords[3][0] + pop.secondSize * 0.1f, pop.coords[3][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.5f)
+                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.25f, pop.coords[0][1],
+                                pop.coords[1][0] + pop.secondSize * 0.25f , pop.coords[1][1], PC.CELL_SIZE * 0.4f)
+            }
+            if(pop.frames == 7){
+                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.3f, pop.coords[2][1] + pop.secondSize * 0.1f,
+                                 pop.coords[3][0] + pop.secondSize * 0.2f, pop.coords[3][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.4f)
+                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.35f, pop.coords[0][1],
+                                pop.coords[1][0] + pop.firstSize * 0.1f , pop.coords[1][1], PC.CELL_SIZE * 0.3f)
+            }
+            if(pop.frames == 8){
+                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.3f, pop.coords[2][1] + pop.secondSize * 0.1f,
+                                 pop.coords[3][0] + pop.secondSize * 0.15f, pop.coords[3][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.3f)
+                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.3f, pop.coords[0][1],
+                                pop.coords[1][0] + pop.firstSize * 0.1f , pop.coords[1][1], PC.CELL_SIZE * 0.2f)
+            }
+
+            pop.frames++
         }
     }
 

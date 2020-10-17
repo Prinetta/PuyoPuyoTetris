@@ -46,9 +46,6 @@ class Controller() {
                     lastPuyoStep.reset()
                 }
             } else {
-                if(!playedDropSound){
-                    playedDropSound = true
-                }
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(lastBlockDrop.hasPassed()) {
@@ -82,7 +79,7 @@ class Controller() {
                                 puyoGame.spawnPuyo()
                                 playedDropSound = false
                             } else {
-                                if(!puyoGame.gameOver){
+                                if(puyoGame.hasLost() && !puyoGame.gameOver){
                                     println("puyo lost")
                                     puyoGame.gameOver = true
                                     //Sounds.plost.play()
