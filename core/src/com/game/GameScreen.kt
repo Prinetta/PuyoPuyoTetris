@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
 import com.game.Tetris.*
+import kotlin.random.Random
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
@@ -109,9 +110,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private fun drawTetrominos(){
         for (i in tetrisGame.cells.indices) { // invisible rows are nice
             for (j in 1 until tetrisGame.cells[i].size) {
-                if (tetrisGame.cells[i][j] != null && !tetrisGame.getFullRows().contains(j)) {
-                    game.batch.draw(tetrisGame.cells[i][j].texture, i.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X, TC.GRID_TOP_Y - (j.toFloat() * TC.CELL_SIZE),
-                            TC.CELL_SIZE, TC.CELL_SIZE)
+                if (tetrisGame.cells[i][j] != null) {
+                    if (!tetrisGame.getFullRows().contains(j) || tetrisGame.currentTetromino.isFalling) {
+                        game.batch.draw(tetrisGame.cells[i][j].texture, i.toFloat() * TC.CELL_SIZE + TC.GRID_LEFT_X, TC.GRID_TOP_Y - (j.toFloat() * TC.CELL_SIZE),
+                                TC.CELL_SIZE, TC.CELL_SIZE)
+                    }
                 }
             }
         }
@@ -269,8 +272,20 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             game.batch.setColor(c.r, c.g, c.b, 1 - timeProcess)
             game.batch.draw(SpriteArea.tEffectSprites["hdrop-line${block.getColumns()}"],
             TC.GRID_LEFT_X + (block.column + (block.firstColumn() - block.pivotX)) * TC.CELL_SIZE,
-            TC.GRID_TOP_Y - ((block.row) + (block.firstRow() - block.pivotY)) * TC.CELL_SIZE + timeProcess * (TC.CELL_SIZE * 2),
-            block.getColumns() * TC.CELL_SIZE, TC.CELL_SIZE * 3)
+            TC.GRID_TOP_Y - ((block.row) + (block.lastRow() - block.pivotY)) * TC.CELL_SIZE + timeProcess * (TC.CELL_SIZE * 2),
+            block.getColumns() * TC.CELL_SIZE, TC.CELL_SIZE * (block.getRows() + 1))
+            var effects = arrayOf(SpriteArea.tEffectSprites["big-twinkle"],
+                    SpriteArea.tEffectSprites["twinkle"],
+                    SpriteArea.tEffectSprites["white-particle-s"],
+                    SpriteArea.tEffectSprites["x-twinkle"]
+            )
+            for (i in 0 until block.getColumns()) {
+                game.batch.draw(effects[i],
+                        TC.GRID_LEFT_X + (block.column + (block.firstColumn() - block.pivotX) + i) * TC.CELL_SIZE,
+                        TC.GRID_TOP_Y - ((block.row) + (block.lastRow() - block.pivotY) + i % 2)
+                                * TC.CELL_SIZE + timeProcess * (TC.CELL_SIZE * 2) + TC.CELL_SIZE * (block.getRows() + 1),
+                        TC.CELL_SIZE, TC.CELL_SIZE)
+            }
             game.batch.setColor(c.r, c.g, c.b, 1f)
         }
     }

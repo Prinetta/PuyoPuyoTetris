@@ -202,6 +202,28 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
         return -1
     }
 
+    fun lastRow(): Int {
+        for (i in shape.size - 1 downTo 0) {
+            for (j in shape[i].size - 1 downTo 0) {
+                if (shape[j][i] != null) {
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+
+    fun lastColumn(): Int {
+        for (i in shape.size - 1 downTo 0) {
+            for (j in shape[i].size - 1 downTo 0) {
+                if (shape[i][j] != null) {
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+
     fun createT() {
         shape[2][3] = TetrisBlock(column - 1, row, texture)
         shape[3][3] = TetrisBlock(column, row, texture) // main brick for T-Block
