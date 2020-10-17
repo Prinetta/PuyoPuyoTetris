@@ -2,16 +2,13 @@ package com.game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
 import com.game.Tetris.*
-import java.awt.geom.Point2D
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
@@ -237,6 +234,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawTetrisEffects() {
         drawTetrisRemoveLine()
+        drawHardDropEffect()
     }
 
     private fun drawTetrisRemoveLine() {
@@ -259,6 +257,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                             (TC.CELL_SIZE + 6f) * count - (time * 4f * TC.CELL_SIZE * count))
                 }
             }
+        }
+    }
+
+    private fun drawHardDropEffect() {
+        if(tetrisGame.hardDropTime.isRunning()) {
+            var block = tetrisGame.currentTetromino
+            var timeProcess: Float = tetrisGame.hardDropTime.runtime().toFloat() / tetrisGame.hardDropTime.delay
+
+            var c = game.batch.color
+            game.batch.setColor(c.r, c.g, c.b, 1 - timeProcess)
+            game.batch.draw(SpriteArea.tEffectSprites["hdrop-line${block.getColumns()}"],
+            TC.GRID_LEFT_X + (block.column + (block.firstColumn() - block.pivotX)) * TC.CELL_SIZE,
+            TC.GRID_TOP_Y - ((block.row) + (block.firstRow() - block.pivotY)) * TC.CELL_SIZE + timeProcess * (TC.CELL_SIZE * 2),
+            block.getColumns() * TC.CELL_SIZE, TC.CELL_SIZE * 3)
+            game.batch.setColor(c.r, c.g, c.b, 1f)
         }
     }
 

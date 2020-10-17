@@ -46,6 +46,7 @@ class TetrisGame() {
     var downKeyHeldTime = Time(200)
     var moveKeyHeldTime = Time(230)
     var removeLineTime = Time(250)
+    var hardDropTime = Time(120)
 
     var columns: Int = 10
     var rows: Int = 25
@@ -58,6 +59,7 @@ class TetrisGame() {
             }
         }
         removeLineTime.cancel()
+        hardDropTime.cancel()
         createRandomOrder()
         spawnTetromino()
         createNextTetrominos()
@@ -93,6 +95,7 @@ class TetrisGame() {
                 }
             }
 
+            if (hardDropTime.hasPassed()) hardDropTime.cancel()
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
                 moveLeft(currentTetromino)
@@ -146,6 +149,7 @@ class TetrisGame() {
             if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                 if (currentTetromino.isFalling) {
                     dropTetrominoTime.startAt(380)
+                    hardDropTime.reset()
                     Sounds.thdrop.play()
                 }
                 while (currentTetromino.isFalling) {
