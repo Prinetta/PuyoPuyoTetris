@@ -20,4 +20,5 @@ abstract class Block(var x: Int, var y: Int) {
         removeFrames++
         flickerCount += if(flickerCount+1 > 10) -9 else 1
     }
+
 }

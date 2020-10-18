@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
 import com.game.Tetris.*
-import kotlin.random.Random
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
@@ -406,6 +405,16 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 } else {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
+
+                if(block is GarbageBlock && block.frame == 0 && block.shineStart.hasPassed()){
+                    block.changeSprite()
+                    block.shineStart.reset()
+                    block.shineDuration.reset()
+                } else if (block is GarbageBlock && block.frame > 0 && block.shineDuration.hasPassed()){
+                    block.changeSprite()
+                    block.shineDuration.reset()
+                }
+
                 if(!(block is PuyoBlock && block.removeFrames >= PC.POP3_SPRITE_AT)) {
                     game.batch.draw(block.currentSprite,
                             PC.GRID_START_X + i * PC.CELL_SIZE,
@@ -455,11 +464,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 iterator.remove()
                 continue
             }
-
-            println(pop.frames)
-
-            val x = PC.GRID_START_X + puyo.x * PC.CELL_SIZE
-            val y = PC.GRID_START_Y - puyo.y * PC.CELL_SIZE
 
             if(pop.frames in 1..2){
                 pop.updateFirst(PC.CELL_SIZE * 0.1f, PC.CELL_SIZE * 0.53f,

@@ -39,11 +39,12 @@ class SpriteArea {
         val puyoSprites = createPuyoSprites()
         val cutPuyoSprites = createCutPuyoSprites()
 
-        val gameSprites = hashMapOf("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
+        val gameSprites = hashMapOf<String, TextureRegion>("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
                 "garbage-queue30" to atlas.findRegion("g30"), "garbage-queue180" to atlas.findRegion("g180"),"garbage-queue360" to atlas.findRegion("g360"),
                 "garbage-queue720" to atlas.findRegion("g720"), "garbage-queue1440" to atlas.findRegion("g1440"),
                 "tgarbage-queue1" to atlas.findRegion("garbage1"), "tgarbage-queue6" to atlas.findRegion("garbage2"),
-                "tgarbage-queue30" to atlas.findRegion("garbage3"))
+                "tgarbage-queue30" to atlas.findRegion("garbage3"),
+                "pgarbage" to atlas.findRegion("pg"), "pgarbage-shine1" to atlas.findRegion("pg3"), "pgarbage-shine2" to atlas.findRegion("pg4"))
 
         private fun createPuyoSprites() : MutableMap<PuyoColor, HashMap<String, TextureRegion>> {
             val hashMap = mutableMapOf<PuyoColor, HashMap<String, TextureRegion>>()
@@ -71,8 +72,7 @@ class SpriteArea {
                     "rd" to atlas.findRegion("${colorLetter}rd"), "ur" to atlas.findRegion("${colorLetter}ur"), "dl" to atlas.findRegion("${colorLetter}dl"),
                     "ul" to atlas.findRegion("${colorLetter}ul"), "udl" to atlas.findRegion("${colorLetter}udl"), "rdl" to atlas.findRegion("${colorLetter}rdl"),
                     "url" to atlas.findRegion("${colorLetter}url"), "urd" to atlas.findRegion("${colorLetter}urd"), "s" to atlas.findRegion("${colorLetter}s"),
-                    "dot" to atlas.findRegion("${colorLetter}dot"), "p" to atlas.findRegion("${colorLetter}p"), "p2" to atlas.findRegion("${colorLetter}p2"),
-                    "g" to atlas.findRegion("pg"))
+                    "dot" to atlas.findRegion("${colorLetter}dot"), "p" to atlas.findRegion("${colorLetter}p"), "p2" to atlas.findRegion("${colorLetter}p2"))
         }
     }
 }
