@@ -69,6 +69,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         /// -Begin draw-
         game.batch.begin()
         /// Puyo Draw
+        drawCross()
         drawPuyoPreview()
         drawPuyos()
         drawNextPuyos()
@@ -379,6 +380,34 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     PC.GRID_START_Y - puyos.second.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
                     PC.CELL_SIZE, PC.CELL_SIZE)
         }
+    }
+
+    private val crossAnim = CrossAnimation()
+    private var isFlipped = false
+
+    private fun drawCross(){
+        if(crossAnim.start.hasPassed() && crossAnim.frame == 0){
+            crossAnim.updateSprite()
+            crossAnim.start.reset()
+            crossAnim.delay.reset()
+        } else if(crossAnim.frame > 0 && crossAnim.delay.hasPassed()){
+            crossAnim.updateSprite()
+            crossAnim.start.reset()
+            crossAnim.delay.reset()
+        }
+
+        if(crossAnim.flip && !isFlipped){
+            crossAnim.currentSprite.flip(true, false)
+            isFlipped = true
+        } else if(!crossAnim.flip && isFlipped){
+            crossAnim.currentSprite.flip(true, false) // flipped back
+            isFlipped = false
+        }
+
+        game.batch.draw(crossAnim.currentSprite,
+                PC.GRID_START_X + 3 * PC.CELL_SIZE,
+                PC.GRID_START_Y - PC.CELL_SIZE,
+                PC.CELL_SIZE*0.7f, PC.CELL_SIZE*0.7f)
     }
 
     private var puyosToPop = mutableListOf<PuyoBlock>()

@@ -1,8 +1,10 @@
 package com.game
 
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.game.puyo.PuyoColor
+import java.util.function.Consumer
 
 class SpriteArea {
     companion object Sprite {
@@ -11,8 +13,8 @@ class SpriteArea {
         private val tEffectAtlas = TextureAtlas("effects.atlas")
 
         val tetrisSprites = hashMapOf("blue" to atlas.findRegion("tblue"), "dark-blue" to atlas.findRegion("tdarkblue"),
-            "green" to atlas.findRegion("tgreen"), "orange" to atlas.findRegion("torange"),"purple" to atlas.findRegion("tpurple"),
-            "red" to atlas.findRegion("tred"), "yellow" to atlas.findRegion("tyellow"), "garbage" to atlas.findRegion("tgarbage"))
+                "green" to atlas.findRegion("tgreen"), "orange" to atlas.findRegion("torange"), "purple" to atlas.findRegion("tpurple"),
+                "red" to atlas.findRegion("tred"), "yellow" to atlas.findRegion("tyellow"), "garbage" to atlas.findRegion("tgarbage"))
 
         val tEffectSprites = hashMapOf("big-twinkle" to tEffectAtlas.findRegion("big-twinkle"),
                 "blue-particle" to tEffectAtlas.findRegion("blue-particle"), "blue-twinkle" to tEffectAtlas.findRegion("blue-twinkle"),
@@ -31,20 +33,22 @@ class SpriteArea {
                 "x-twinkle" to tEffectAtlas.findRegion("x-twinkle"))
 
         val bgSprites = hashMapOf("next-field" to guiAtlas.findRegion("next-field"),
-             "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
-             "grid-bg" to guiAtlas.findRegion("gridbg"), "next-bg" to guiAtlas.findRegion("nextbg2"), "next2-bg" to guiAtlas.findRegion("nextbg2"),
-             "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
+                "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
+                "grid-bg" to guiAtlas.findRegion("gridbg"), "next-bg" to guiAtlas.findRegion("nextbg2"), "next2-bg" to guiAtlas.findRegion("nextbg2"),
+                "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
 
-
-        val puyoSprites = createPuyoSprites()
-        val cutPuyoSprites = createCutPuyoSprites()
 
         val gameSprites = hashMapOf<String, TextureRegion>("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
-                "garbage-queue30" to atlas.findRegion("g30"), "garbage-queue180" to atlas.findRegion("g180"),"garbage-queue360" to atlas.findRegion("g360"),
+                "garbage-queue30" to atlas.findRegion("g30"), "garbage-queue180" to atlas.findRegion("g180"), "garbage-queue360" to atlas.findRegion("g360"),
                 "garbage-queue720" to atlas.findRegion("g720"), "garbage-queue1440" to atlas.findRegion("g1440"),
                 "tgarbage-queue1" to atlas.findRegion("garbage1"), "tgarbage-queue6" to atlas.findRegion("garbage2"),
                 "tgarbage-queue30" to atlas.findRegion("garbage3"),
-                "pgarbage" to atlas.findRegion("pg"), "pgarbage-shine1" to atlas.findRegion("pg3"), "pgarbage-shine2" to atlas.findRegion("pg4"))
+                "pgarbage" to atlas.findRegion("pg"), "pgarbage-shine1" to atlas.findRegion("pg3"), "pgarbage-shine2" to atlas.findRegion("pg4"),
+                "x1" to atlas.findRegion("cross1"), "x2" to atlas.findRegion("cross2"), "x3" to atlas.findRegion("cross3"),
+                "x4" to atlas.findRegion("cross4"), "x5" to atlas.findRegion("cross5"))
+
+        val puyoSprites = createPuyoSprites()
+        val cutPuyoSprites = createCutPuyoSprites()
 
         private fun createPuyoSprites() : MutableMap<PuyoColor, HashMap<String, TextureRegion>> {
             val hashMap = mutableMapOf<PuyoColor, HashMap<String, TextureRegion>>()
@@ -58,9 +62,10 @@ class SpriteArea {
             val hashMap = mutableMapOf<TextureRegion, TextureRegion>()
             for(color in PuyoColor.values()){
                 for(sprite in puyoSprites[color]!!.values){
-                    hashMap[sprite] = TextureRegion(sprite, 0, PC.CELL_SIZE.toInt()/2, PC.CELL_SIZE.toInt(), PC.CELL_SIZE.toInt()/2)
+                    hashMap[sprite] = TextureRegion(sprite, 0, PC.CELL_SIZE.toInt() / 2, PC.CELL_SIZE.toInt(), PC.CELL_SIZE.toInt() / 2)
                 }
             }
+            atlas.textures.forEach(Consumer { t: Texture -> t.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear) })
             return hashMap
         }
 
