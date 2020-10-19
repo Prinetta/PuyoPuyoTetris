@@ -18,6 +18,7 @@ class Controller() {
     private var lastPuyoStep = Time(puyoGame.puyo.speed/2)
     private var delay = Time(500)
     private var doubleTap = Time(3000)
+    private var lockIn = Time(puyoGame.puyo.speed/2)
     var count = 0
 
     private var placedGarbage = 0
@@ -25,6 +26,7 @@ class Controller() {
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
+            println("a")
             if (lastChain.hasPassed()) {
                 puyoGame.removeCombo()
                 lastChain.reset()
@@ -35,7 +37,20 @@ class Controller() {
             if(puyoGame.puyo.rotateCount % 2 != 0){
                 puyoGame.updateHorizontalPuyoState()
             }
+            if(puyoGame.puyo.startedDrop()){
+                if(lockIn.hasPassed() && !puyoGame.puyo.isLocked){
+                    puyoGame.puyo.isLocked = true
+                    if(puyoGame.puyo.isLocked && (!puyoGame.canFall(puyoGame.puyo.first) && (puyoGame.puyo.first.x != puyoGame.puyo.second.x || puyoGame.puyo.first.y > puyoGame.puyo.second.y)) ||
+                      (!puyoGame.canFall(puyoGame.puyo.second) && (puyoGame.puyo.second.x != puyoGame.puyo.first.x || puyoGame.puyo.second.y > puyoGame.puyo.first.y))){
+                        Sounds.pdrop.play()
+                        puyoGame.puyo.isMain = false
+                    }
+                }
+            } else {
+                lockIn.reset()
+            }
             if(puyoGame.canDropMainPuyos()){
+                println("b")
                 if(lastPuyoStep.hasPassed()){
                     if(puyoGame.puyo.gap == 0f){
                         puyoGame.puyo.gap = 0.5f
@@ -44,8 +59,10 @@ class Controller() {
                         puyoGame.dropMainPuyos()
                     }
                     lastPuyoStep.reset()
+                    lastBlockDrop.reset()
                 }
             } else {
+                println("c")
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(lastBlockDrop.hasPassed()) {
@@ -181,7 +198,7 @@ class Controller() {
     }
 
     private fun allowInput() : Boolean {
-        return lastInput.hasPassed() && !puyoGame.puyo.startedDrop()
+        return lastInput.hasPassed() && !puyoGame.puyo.isLocked
     }
 
     private fun movePuyo(direction: Int){

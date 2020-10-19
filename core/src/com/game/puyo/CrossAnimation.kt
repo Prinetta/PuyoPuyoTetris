@@ -27,6 +27,5 @@ class CrossAnimation {
                            }
             }
         }
-        println(frame)
     }
 }

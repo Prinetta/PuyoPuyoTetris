@@ -42,8 +42,6 @@ class PuyoGame (){
     }
 
     fun updatePuyoState(){
-        puyo.first.isLocked = true
-        puyo.second.isLocked = true
         puyo.first.isFalling = false
         puyo.second.isFalling = false
     }
@@ -266,7 +264,7 @@ class PuyoGame (){
         while (!isColliding(block.x, y+1)){
             y++
         }
-        if(y == block.y){
+        if(y == block.y || puyo.isLocked){
             y = -1
         }
         return arrayOf(block.x, y)
@@ -309,7 +307,7 @@ class PuyoGame (){
             return false
         }
         val block = grid[i][j]
-        if(block == null || block.marked || block !is PuyoBlock || block.color != color){
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked)){
             return false
         }
         if(index < puyoChain.size){
@@ -387,17 +385,9 @@ class PuyoGame (){
         return dropped
     }
 
-    fun isFirstLocked(): Boolean {
-        return !(canFall(puyo.first) && !puyo.first.isLocked)
-    }
-
-    fun isSecondLocked(): Boolean {
-        return !(canFall(puyo.second) && !puyo.second.isLocked)
-    }
-
     fun canDropMainPuyos(): Boolean{
-        //return (puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))
-        return (canFall(puyo.first) && !puyo.first.isLocked) || (canFall(puyo.second) && !puyo.second.isLocked)
+        return ((puyo.first.isFalling && canFall(puyo.first)) || (puyo.second.isFalling && canFall(puyo.second))) && puyo.isMain
+        //return (canFall(puyo.first) || canFall(puyo.second)) && puyo.first.isFalling && puyo.second.isFalling
     }
 
     fun dropMainPuyos(){
@@ -448,10 +438,8 @@ class PuyoGame (){
             block.y++
             updateMovingPos(block)
             if(block is PuyoBlock){
-                block.updateSprite("main")
-                if(!canFall(block) && isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
+                if(puyo.isLocked && !canFall(block) && isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
                     Sounds.pdrop.play()
-                    block.isLocked = true
                 }
             }
         }

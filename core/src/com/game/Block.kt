@@ -6,7 +6,6 @@ abstract class Block(var x: Int, var y: Int) {
     abstract var currentSprite: TextureRegion
     var marked = false
     var isFalling = true
-    var isLocked = false
     var isBeingRemoved = false
     var removeFrames = 0
     var flickerCount = 0
