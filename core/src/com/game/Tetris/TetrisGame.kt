@@ -69,120 +69,127 @@ class TetrisGame {
         this.puyo = puyo
     }
 
-    fun handleInputs() {
+    fun run() {
         if (!gameIsOver) {
-            if (dropTetrominoTime.hasPassed()) {
-                if (currentTetromino.isFalling) {
-                    dropTetromino(currentTetromino)
-                } else {
-                    spawnTetromino()
-                    tSpinInput = false
-                    enableHold = true
-                }
-                dropTetrominoTime.reset()
-            }
+            handleTimers()
+            handleInputs()
+        }
+    }
 
-            if (removeLineTime.isRunning()) {
-                if (getFullRows().size > 0) {
-                    dropTetrominoTime.startAt(dropTetrominoTime.delay - (removeLineTime.delay.toLong() - removeLineTime.runtime()) - 50)
-                    if (removeLineTime.hasPassed()) {
-                        removeLineTime.cancel()
-                        updateRows()
-                    }
-                } else {
-                    updateRows()
+    private fun handleTimers() {
+        if (dropTetrominoTime.hasPassed()) {
+            if (currentTetromino.isFalling) {
+                dropTetromino(currentTetromino)
+            } else {
+                spawnTetromino()
+                tSpinInput = false
+                enableHold = true
+            }
+            dropTetrominoTime.reset()
+        }
+
+        if (removeLineTime.isRunning()) {
+            if (getFullRows().size > 0) {
+                dropTetrominoTime.startAt(dropTetrominoTime.delay - (removeLineTime.delay.toLong() - removeLineTime.runtime()) - 50)
+                if (removeLineTime.hasPassed()) {
                     removeLineTime.cancel()
+                    updateRows()
+                }
+            } else {
+                updateRows()
+                removeLineTime.cancel()
+            }
+        }
+
+        if (hardDropTime.hasPassed()) hardDropTime.cancel()
+    }
+
+    private fun handleInputs() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+            moveLeft(currentTetromino)
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            if (!tetrominoLanded(currentTetromino)) {
+                if (moveKeyHeldTime.hasPassed()) {
+                    moveLeft(currentTetromino)
+                    moveKeyHeldTime.startAt(190)
                 }
             }
+        }
 
-            if (hardDropTime.hasPassed()) hardDropTime.cancel()
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-                moveLeft(currentTetromino)
-            }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            moveRight(currentTetromino)
+        }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                if (!tetrominoLanded(currentTetromino)) {
-                    if (moveKeyHeldTime.hasPassed()) {
-                        moveLeft(currentTetromino)
-                        moveKeyHeldTime.startAt(190)
-                    }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            if (!tetrominoLanded(currentTetromino)) {
+                if (moveKeyHeldTime.hasPassed()) {
+                    moveRight(currentTetromino)
+                    moveKeyHeldTime.startAt(190)
                 }
             }
+        }
 
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            moveKeyHeldTime.reset()
+        }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-                moveRight(currentTetromino)
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                if (!tetrominoLanded(currentTetromino)) {
-                    if (moveKeyHeldTime.hasPassed()) {
-                        moveRight(currentTetromino)
-                        moveKeyHeldTime.startAt(190)
-                    }
-                }
-            }
-
-            if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                moveKeyHeldTime.reset()
-            }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            if (currentTetromino.isFalling) {
+                dropTetromino(currentTetromino)
                 if (currentTetromino.isFalling) {
+                    dropTetrominoTime.reset()
+                    scoring.tetrisScore++
+                    Sounds.tfall.play()
+                } else dropTetrominoTime.startAt(380)
+            }
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            if (!tetrominoLanded(currentTetromino)) {
+                if (downKeyHeldTime.hasPassed()) {
                     dropTetromino(currentTetromino)
-                    if (currentTetromino.isFalling) {
-                        dropTetrominoTime.reset()
-                        scoring.tetrisScore++
-                        Sounds.tfall.play()
-                    } else dropTetrominoTime.startAt(380)
+                    downKeyHeldTime.startAt(160)
+                    scoring.tetrisScore++
+                    dropTetrominoTime.reset()
                 }
             }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                if (!tetrominoLanded(currentTetromino)) {
-                    if (downKeyHeldTime.hasPassed()) {
-                        dropTetromino(currentTetromino)
-                        downKeyHeldTime.startAt(160)
-                        scoring.tetrisScore++
-                        dropTetrominoTime.reset()
-                    }
-                }
-            } else downKeyHeldTime.reset()
+        } else downKeyHeldTime.reset()
 
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-                if (currentTetromino.isFalling) {
-                    dropTetrominoTime.startAt(380)
-                    hardDropTime.reset()
-                    Sounds.thdrop.play()
-                }
-                while (currentTetromino.isFalling) {
-                    dropTetromino(currentTetromino)
-                    if (currentTetromino.isFalling) scoring.tetrisScore += 2
-                }
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            if (currentTetromino.isFalling) {
+                dropTetrominoTime.startAt(380)
+                hardDropTime.reset()
+                Sounds.thdrop.play()
+            }
+            while (currentTetromino.isFalling) {
+                dropTetromino(currentTetromino)
+                if (currentTetromino.isFalling) scoring.tetrisScore += 2
             }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
-                if (currentTetromino.isFalling) {
-                    turnLeft(currentTetromino)
-                    Sounds.trotate.play()
-                }
-                if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
-            }
+        }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-                if (currentTetromino.isFalling) {
-                    turnRight(currentTetromino)
-                    Sounds.trotate.play()
-                }
-                if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
+            if (currentTetromino.isFalling) {
+                turnLeft(currentTetromino)
+                Sounds.trotate.play()
             }
+            if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
+        }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && enableHold) {
-                holdTetromino()
+        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            if (currentTetromino.isFalling) {
+                turnRight(currentTetromino)
+                Sounds.trotate.play()
             }
+            if (tetrominoLanded(currentTetromino) && currentTetromino.type == 'T') tSpinInput = true
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && enableHold) {
+            holdTetromino()
         }
     }
 

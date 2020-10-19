@@ -58,7 +58,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         puyoController.mainLoop()
 
         /// Tetris Controller
-        tetrisGame.handleInputs()
+        tetrisGame.run()
 
         /// Shape Renderer Begin
         drawPuyoBg()
