@@ -6,8 +6,6 @@ class GarbageBlock(x: Int, y: Int) : Block(x, y) {
     val sprites = SpriteArea.gameSprites
     override var currentSprite = sprites["pgarbage"]!!
     var frame = 0
-    var shineStart = Time(5000)
-    var shineDuration = Time(100)
 
     fun changeSprite(){
         frame++

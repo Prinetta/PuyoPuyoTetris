@@ -359,26 +359,47 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawRoundedRect(PC.GRID_START_X * 1.3f + PC.GRID_WIDTH * PC.CELL_SIZE, PC.GRID_START_Y * 0.65f, PC.CELL_SIZE * 1.25f, PC.CELL_SIZE * 2f, 10f)
     }
 
+    private fun drawBounce(puyo: PuyoBlock) {
+        if(puyo.bounceDelay.hasPassed()){
+            puyo.bounceFrame++
+            when(puyo.bounceFrame){
+                1, 7, 8 -> {
+                    puyo.width = 0.8f
+                    puyo.length = 1f
+                }
+                in 3..5, in 10..12 -> {
+                    puyo.width = 1f
+                    puyo.length = 0.8f
+                }
+                else -> {
+                    puyo.width = 1f
+                    puyo.length = 1f
+                }
+            }
+            if(puyo.bounceFrame > 12){
+                puyo.bounceOver = true
+            }
+            puyo.bounceDelay.reset()
+        }
+        val x = if(puyo.width < 1f) PC.CELL_SIZE * puyo.width * 0.1f else 0f
+        game.batch.draw(puyo.currentSprite, PC.GRID_START_X + puyo.x * PC.CELL_SIZE + x,
+                PC.GRID_START_Y - puyo.y * PC.CELL_SIZE, PC.CELL_SIZE * puyo.width, PC.CELL_SIZE * puyo.length)
+    }
+
     private fun drawMainPuyos(){
         val puyos = puyoController.puyoGame.puyo
         if(puyos.first.isFalling){
             if(puyos.gap == 0.5f && puyos.first.y == 0){
-                game.batch.draw(SpriteArea.cutPuyoSprites[puyos.first.currentSprite],
-                        PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
-                        PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
-                        PC.CELL_SIZE, PC.CELL_SIZE/2)
+                game.batch.draw(SpriteArea.cutPuyoSprites[puyos.first.currentSprite], PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
+                        PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap, PC.CELL_SIZE, PC.CELL_SIZE/2)
             } else {
-                game.batch.draw(puyos.first.currentSprite,
-                        PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
-                        PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
-                        PC.CELL_SIZE, PC.CELL_SIZE)
+                game.batch.draw(puyos.first.currentSprite, PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
+                        PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap, PC.CELL_SIZE, PC.CELL_SIZE)
             }
         }
         if(puyos.second.isFalling){
-            game.batch.draw(puyos.second.currentSprite,
-                    PC.GRID_START_X + puyos.second.x * PC.CELL_SIZE,
-                    PC.GRID_START_Y - puyos.second.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap,
-                    PC.CELL_SIZE, PC.CELL_SIZE)
+            game.batch.draw(puyos.second.currentSprite, PC.GRID_START_X + puyos.second.x * PC.CELL_SIZE,
+                    PC.GRID_START_Y - puyos.second.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap, PC.CELL_SIZE, PC.CELL_SIZE)
         }
     }
 
@@ -412,6 +433,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private var puyosToPop = mutableListOf<PuyoBlock>()
     private var popTime = Time(50)
+    private var shineStart = Time(5000)
+    private var shineDuration = Time(100)
 
     private fun drawPuyos(){
         drawMainPuyos()
@@ -435,20 +458,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
 
-                if(block is GarbageBlock && block.frame == 0 && block.shineStart.hasPassed()){
+                if(block is GarbageBlock && block.frame == 0 && shineStart.hasPassed()){
                     block.changeSprite()
-                    block.shineStart.reset()
-                    block.shineDuration.reset()
-                } else if (block is GarbageBlock && block.frame > 0 && block.shineDuration.hasPassed()){
+                    shineStart.reset()
+                    shineDuration.reset()
+                } else if (block is GarbageBlock && block.frame > 0 && shineDuration.hasPassed()){
                     block.changeSprite()
-                    block.shineDuration.reset()
+                    shineDuration.reset()
                 }
 
                 if(!(block is PuyoBlock && block.removeFrames >= PC.POP3_SPRITE_AT)) {
-                    game.batch.draw(block.currentSprite,
-                            PC.GRID_START_X + i * PC.CELL_SIZE,
-                            PC.GRID_START_Y - j * PC.CELL_SIZE,
-                            PC.CELL_SIZE, PC.CELL_SIZE)
+                    if(block is PuyoBlock && !block.bounceOver){
+                        drawBounce(block)
+                    } else {
+                        game.batch.draw(block.currentSprite, PC.GRID_START_X + i * PC.CELL_SIZE, PC.GRID_START_Y - j * PC.CELL_SIZE, PC.CELL_SIZE, PC.CELL_SIZE)
+                    }
                     if (block is PuyoBlock && block.removeFrames >= PC.POP_SPRITE_AT && !puyosToPop.contains(block)) {
                         puyosToPop.add(block)
                     }

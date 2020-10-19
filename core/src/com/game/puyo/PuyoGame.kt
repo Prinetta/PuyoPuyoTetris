@@ -287,7 +287,13 @@ class PuyoGame (){
         return i !in 0 until width || j !in 0 until length
     }
 
-     fun canFall(block: Block) : Boolean {
+    fun canMainPuyoFall(block: PuyoBlock): Boolean{
+        return !isOutOfBounds(block.x, block.y + 1) &&
+               (grid[block.x][block.y + 1] == null || (grid[block.x][block.y + 1] == puyo.first && canFall(puyo.first))
+               || (grid[block.x][block.y + 1] == puyo.second && canFall(puyo.second)))
+    }
+
+    fun canFall(block: Block) : Boolean {
         return !isOutOfBounds(block.x, block.y + 1) && grid[block.x][block.y + 1] == null
     }
 
@@ -312,7 +318,7 @@ class PuyoGame (){
             return false
         }
         val block = grid[i][j]
-        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked)){
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked) || !block.bounceOver){
             return false
         }
         if(index < puyoChain.size){
@@ -443,8 +449,12 @@ class PuyoGame (){
             block.y++
             updateMovingPos(block)
             if(block is PuyoBlock){
-                if(puyo.isLocked && !canFall(block) && isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
-                    Sounds.pdrop.play()
+                if(puyo.isLocked && !canFall(block)){
+                    if(isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
+                        Sounds.pdrop.play()
+                    }
+                    println("bbb ounce over")
+                    block.bounceOver = false
                 }
             }
         }
@@ -486,6 +496,8 @@ class PuyoGame (){
                 }
                 if(chain.contains(puyo.first) && chain.contains(puyo.second) && puyo.first.y == puyo.second.y && puyo.gap == 0.5f &&
                    ((puyo.first.isFalling && !puyo.second.isFalling) || (!puyo.first.isFalling && puyo.second.isFalling))){
+                    s = ""
+                } else if (chain.contains(puyo.first) && chain.contains(puyo.second) && !block.bounceOver){
                     s = ""
                 }
                 block.updateSprite(s)

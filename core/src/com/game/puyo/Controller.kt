@@ -19,14 +19,13 @@ class Controller() {
     private var delay = Time(500)
     private var doubleTap = Time(3000)
     private var lockIn = Time(puyoGame.puyo.speed/2)
+    private var spawnDelay = Time(500)
     var count = 0
 
     private var placedGarbage = 0
-    private var playedDropSound = false
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
-            //println("a")
             if (lastChain.hasPassed()) {
                 puyoGame.removeCombo()
                 lastChain.reset()
@@ -44,13 +43,13 @@ class Controller() {
                       (!puyoGame.canFall(puyoGame.puyo.second) && (puyoGame.puyo.second.x != puyoGame.puyo.first.x || puyoGame.puyo.second.y > puyoGame.puyo.first.y))){
                         Sounds.pdrop.play()
                         puyoGame.puyo.isMain = false
+                        spawnDelay.reset()
                     }
                 }
             } else {
                 lockIn.reset()
             }
             if(puyoGame.canDropMainPuyos()){
-                //println("b")
                 if(lastPuyoStep.hasPassed()){
                     if(puyoGame.puyo.gap == 0f){
                         puyoGame.puyo.gap = 0.5f
@@ -61,14 +60,22 @@ class Controller() {
                     lastPuyoStep.reset()
                     lastBlockDrop.reset()
                 }
+                if(!puyoGame.canMainPuyoFall(puyoGame.puyo.first) && puyoGame.puyo.first.firstBounce){
+                    puyoGame.puyo.first.bounceOver = false
+                    puyoGame.puyo.first.firstBounce = false
+                }
+                if(!puyoGame.canMainPuyoFall(puyoGame.puyo.second) && puyoGame.puyo.second.firstBounce){
+                    puyoGame.puyo.second.bounceOver = false
+                    puyoGame.puyo.second.firstBounce = false
+                }
             } else {
-                //println("c")
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(lastBlockDrop.hasPassed()) {
                         puyoGame.dropRemainingPuyos()
                         puyoGame.dropRemainingGarbage()
                         lastBlockDrop.reset()
+                        spawnDelay.reset()
                     }
                 } else {
                     puyoGame.findBigPuyoChain()
@@ -82,6 +89,7 @@ class Controller() {
                             } else if (lastGarbageDrop.hasPassed()){
                                 puyoGame.dropRemainingGarbage()
                                 lastGarbageDrop.reset()
+                                spawnDelay.reset()
                             }
                         } else {
                             if(placedGarbage > 0){
@@ -93,8 +101,11 @@ class Controller() {
                                 placedGarbage = 0
                             }
                             if (puyoGame.allowSpawn()) {
-                                puyoGame.spawnPuyo()
-                                playedDropSound = false
+                                if(spawnDelay.hasPassed()){
+                                    puyoGame.puyo.first.firstBounce = true
+                                    puyoGame.puyo.second.firstBounce = true
+                                    puyoGame.spawnPuyo()
+                                }
                             } else {
                                 if(puyoGame.hasLost() && !puyoGame.gameOver){
                                     println("puyo lost")
@@ -109,7 +120,6 @@ class Controller() {
             lastChain.reset()
         }
         puyoGame.connectPuyos()
-        //puyoGame.updateSprites() // might delete that one
         puyoGame.unmark()
     }
 
