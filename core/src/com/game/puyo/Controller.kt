@@ -26,7 +26,7 @@ class Controller() {
 
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
-            println("a")
+            //println("a")
             if (lastChain.hasPassed()) {
                 puyoGame.removeCombo()
                 lastChain.reset()
@@ -50,7 +50,7 @@ class Controller() {
                 lockIn.reset()
             }
             if(puyoGame.canDropMainPuyos()){
-                println("b")
+                //println("b")
                 if(lastPuyoStep.hasPassed()){
                     if(puyoGame.puyo.gap == 0f){
                         puyoGame.puyo.gap = 0.5f
@@ -62,7 +62,7 @@ class Controller() {
                     lastBlockDrop.reset()
                 }
             } else {
-                println("c")
+                //println("c")
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(lastBlockDrop.hasPassed()) {

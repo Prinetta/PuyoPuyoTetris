@@ -97,7 +97,8 @@ class PuyoGame (){
     }
 
     fun movePuyo(direction: Int){
-        if(isColliding(puyo.first.x + direction, puyo.first.y) || isColliding(puyo.second.x + direction, puyo.second.y)){
+        if((isColliding(puyo.first.x + direction, puyo.first.y) && !(puyo.first.x + direction == puyo.second.x && puyo.first.y == puyo.second.y)) ||
+            isColliding(puyo.second.x + direction, puyo.second.y) && !(puyo.second.x + direction == puyo.first.x && puyo.second.y == puyo.first.y)){
             return
         }
         if (puyo.first.x*direction < puyo.second.x*direction) {
@@ -153,10 +154,14 @@ class PuyoGame (){
         }
 
         if(canWallKick(puyo.first.x + x, puyo.first.y + y)){
+            println("wall kick")
             wallkick(puyo.first.x + x)
         } else if(canFloorKick(puyo.first.x + x, puyo.first.y + y)){
+            println("floor kick")
             floorKick()
-        } else if(isColliding(puyo.first.x + x, puyo.first.y + y)){
+        } else if(isColliding(puyo.first.x + x, puyo.first.y + y) ||
+                 !(((puyo.first.x+x == puyo.second.x+1 || puyo.first.x+x == puyo.second.x-1) && puyo.first.y+y == puyo.second.y)
+                 || ((puyo.first.y+y == puyo.second.y+1 || puyo.first.y+y == puyo.second.y-1) && puyo.first.x+x == puyo.second.x))){
             puyo.updateRotationCount(-rotation)
             return
         } else {
@@ -261,7 +266,7 @@ class PuyoGame (){
 
     fun getExpectedDrop(block: PuyoBlock): Array<Int>{
         var y = block.y
-        while (!isColliding(block.x, y+1)){
+        while (!isColliding(block.x, y+1) || (block == puyo.first && y+1 == puyo.second.y) || (block == puyo.second && y+1 == puyo.first.y)){
             y++
         }
         if(y == block.y || puyo.isLocked){
@@ -291,7 +296,7 @@ class PuyoGame (){
     }
 
     private fun isColliding(x: Int, y: Int) : Boolean{
-        return isOutOfBounds(x, y) || grid[x][y] != null && !grid[x][y]?.isFalling!!
+        return isOutOfBounds(x, y) || grid[x][y] != null
     }
 
     private fun generatePuyoList(){
