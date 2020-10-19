@@ -99,7 +99,6 @@ class TetrisGame() {
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
                 moveLeft(currentTetromino)
-
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -134,6 +133,7 @@ class TetrisGame() {
                     dropTetromino(currentTetromino)
                     if (currentTetromino.isFalling) {
                         dropTetrominoTime.reset()
+                        scoring.tetrisScore++
                         Sounds.tfall.play()
                     } else dropTetrominoTime.startAt(380)
                 }
@@ -141,7 +141,12 @@ class TetrisGame() {
 
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 if (!tetrominoLanded(currentTetromino)) {
-                    if (downKeyHeldTime.hasPassed()) dropTetrominoTime.fastForwardBy(250)
+                    if (downKeyHeldTime.hasPassed()) {
+                        dropTetromino(currentTetromino)
+                        downKeyHeldTime.startAt(160)
+                        scoring.tetrisScore++
+                        dropTetrominoTime.reset()
+                    }
                 }
             } else downKeyHeldTime.reset()
 
@@ -154,6 +159,7 @@ class TetrisGame() {
                 }
                 while (currentTetromino.isFalling) {
                     dropTetromino(currentTetromino)
+                    if (currentTetromino.isFalling) scoring.tetrisScore += 2
                 }
 
             }
@@ -206,25 +212,27 @@ class TetrisGame() {
     }
 
     fun holdTetromino() {
-        dropTetrominoTime.reset()
-        if (heldTetromino != null) {
-            var temp: Tetromino = heldTetromino!!
-            heldTetromino = currentTetromino
-            currentTetromino = temp
+        if (currentTetromino.isFalling) {
+            dropTetrominoTime.reset()
+            if (heldTetromino != null) {
+                var temp: Tetromino = heldTetromino!!
+                heldTetromino = currentTetromino
+                currentTetromino = temp
 
-            removeTetromino(heldTetromino!!) // has to be removed before setting current tetrominos' position
-            currentTetromino.setPosition(4, 1) // y calc for some reason necessary
-            addTetromino(currentTetromino)
-        } else {
-            heldTetromino = currentTetromino
-            removeTetromino(heldTetromino!!)
-            spawnTetromino()
+                removeTetromino(heldTetromino!!) // has to be removed before setting current tetrominos' position
+                currentTetromino.setPosition(4, 1) // y calc for some reason necessary
+                addTetromino(currentTetromino)
+            } else {
+                heldTetromino = currentTetromino
+                removeTetromino(heldTetromino!!)
+                spawnTetromino()
+            }
+            while (heldTetromino!!.rotationState != '0') {
+                heldTetromino!!.turnLeft()
+            }
+            enableHold = false
+            Sounds.thold.play()
         }
-        while (heldTetromino!!.rotationState != '0') {
-            heldTetromino!!.turnLeft()
-        }
-        enableHold = false
-        Sounds.thold.play()
     }
 
     fun addTetromino (block: Tetromino) {
@@ -624,7 +632,8 @@ class TetrisGame() {
 
     fun sendGarbage() {
         if(scoring.puyoGarbage > 0){
-            puyo.receiveGarbage(Garbage.tetrisToPuyo[scoring.puyoGarbage]!!)
+            puyo.receiveGarbage(Garbage.tetrisToPuyo.getValue(scoring.puyoGarbage)!!)
+            println("Tetris sent ${Garbage.tetrisToPuyo.getValue(scoring.puyoGarbage)!!} Puyo Garbage")
             when {
                 Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 1..5 -> Sounds.gsend1.play()
                 Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 6..29 -> Sounds.gsend2.play()
@@ -637,5 +646,6 @@ class TetrisGame() {
 
     fun receiveGarbage(amount: Int) {
         scoring.tetrisGarbage += amount
+        println("Tetris received $amount Tetris Garbage")
     }
 }
