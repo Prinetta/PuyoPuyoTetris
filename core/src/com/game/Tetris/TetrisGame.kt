@@ -9,7 +9,7 @@ import com.game.puyo.PuyoGame
 import com.game.puyo.Time
 import kotlin.random.Random
 
-class TetrisGame() {
+class TetrisGame {
     private lateinit var puyo: PuyoGame
     var nextTetrominos: com.badlogic.gdx.utils.Array<Tetromino> = com.badlogic.gdx.utils.Array(5)
     lateinit var currentTetromino: Tetromino
@@ -27,19 +27,19 @@ class TetrisGame() {
     private var b2bBonus: Int = 0 // basically works as boolean here using 0 and 1
 
     // y-offsets have to be reversed from srs system
-    var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
-    var offsetsL: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(-1, 0), Pair(-1, 1), Pair(0, -2), Pair(-1, -2))
-    var offsetsR: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(0, -2), Pair(-1, -2))
+    private var offsets02: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0), Pair(0, 0))
+    private var offsetsL: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(-1, 0), Pair(-1, 1), Pair(0, -2), Pair(-1, -2))
+    private var offsetsR: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(1, 0), Pair(1, 1), Pair(0, -2), Pair(-1, -2))
 
-    var offsetsMap: MutableMap<Char, Array<Pair<Int, Int>>> = mutableMapOf('0' to offsets02, 'L' to offsetsL, 'R' to offsetsR, '2' to offsets02)
+    private var offsetsMap: MutableMap<Char, Array<Pair<Int, Int>>> = mutableMapOf('0' to offsets02, 'L' to offsetsL, 'R' to offsetsR, '2' to offsets02)
 
     // I has own offsets (what a troublesome tetromino)
-    var iOffsets0: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(-1, 0), Pair(2, 0), Pair(-1, 0), Pair(2, 0))
-    var iOffsetsL: Array<Pair<Int, Int>> = arrayOf(Pair(0, -1), Pair(0, -1), Pair(0, -1), Pair(0, 1), Pair(0, -2))
-    var iOffsetsR: Array<Pair<Int, Int>> = arrayOf(Pair(-1, 0), Pair(0, 0), Pair(0, 0), Pair(0, -1), Pair(0, 2))
-    var iOffsets2: Array<Pair<Int, Int>> = arrayOf(Pair(-1, -1), Pair(1, -1), Pair(-2, -1), Pair(1, 0), Pair(-2, 0))
+    private var iOffsets0: Array<Pair<Int, Int>> = arrayOf(Pair(0, 0), Pair(-1, 0), Pair(2, 0), Pair(-1, 0), Pair(2, 0))
+    private var iOffsetsL: Array<Pair<Int, Int>> = arrayOf(Pair(0, -1), Pair(0, -1), Pair(0, -1), Pair(0, 1), Pair(0, -2))
+    private var iOffsetsR: Array<Pair<Int, Int>> = arrayOf(Pair(-1, 0), Pair(0, 0), Pair(0, 0), Pair(0, -1), Pair(0, 2))
+    private var iOffsets2: Array<Pair<Int, Int>> = arrayOf(Pair(-1, -1), Pair(1, -1), Pair(-2, -1), Pair(1, 0), Pair(-2, 0))
 
-    var iOffsetsMap: MutableMap<Char, Array<Pair<Int, Int>>> = mutableMapOf('0' to iOffsets0, 'L' to iOffsetsL, 'R' to iOffsetsR, '2' to iOffsets2)
+    private var iOffsetsMap: MutableMap<Char, Array<Pair<Int, Int>>> = mutableMapOf('0' to iOffsets0, 'L' to iOffsetsL, 'R' to iOffsetsR, '2' to iOffsets2)
 
 
     var dropTetrominoTime = Time(500)
@@ -69,7 +69,7 @@ class TetrisGame() {
         this.puyo = puyo
     }
 
-    fun handleInputs(delta: Float) {
+    fun handleInputs() {
         if (!gameIsOver) {
             if (dropTetrominoTime.hasPassed()) {
                 if (currentTetromino.isFalling) {
@@ -186,7 +186,7 @@ class TetrisGame() {
         }
     }
 
-    fun spawnTetromino(){
+    private fun spawnTetromino(){
         if (currentTypes.isEmpty()) createRandomOrder()
         if (nextTetrominos.size > 0) {
             currentTetromino = nextTetrominos.pop()
@@ -198,7 +198,7 @@ class TetrisGame() {
         addTetromino(currentTetromino)
     }
 
-    fun createNextTetrominos() {
+    private fun createNextTetrominos() {
         for (i in 0 until 5) {
             // gotta add stuff
             nextTetrominos.add(Tetromino(4, 1, currentTypes.removeAt(0),
@@ -206,16 +206,16 @@ class TetrisGame() {
         }
     }
 
-    fun createRandomOrder() {
+    private fun createRandomOrder() {
         currentTypes = tetrominoTypes.toMutableList()
         currentTypes.shuffle()
     }
 
-    fun holdTetromino() {
+    private fun holdTetromino() {
         if (currentTetromino.isFalling) {
             dropTetrominoTime.reset()
             if (heldTetromino != null) {
-                var temp: Tetromino = heldTetromino!!
+                val temp: Tetromino = heldTetromino!!
                 heldTetromino = currentTetromino
                 currentTetromino = temp
 
@@ -235,7 +235,7 @@ class TetrisGame() {
         }
     }
 
-    fun addTetromino (block: Tetromino) {
+    private fun addTetromino (block: Tetromino) {
         if (wrongState(block)) gameOver()
         else {
             for (i in block.shape.indices) {
@@ -249,7 +249,7 @@ class TetrisGame() {
         }
     }
 
-    fun dropTetromino (block: Tetromino) {
+    private fun dropTetromino (block: Tetromino) {
         if (block.isFalling && !tetrominoLanded(block)) {
             for (i in block.shape.size - 1 downTo 0) {
                 for (j in block.shape[i].size - 1 downTo 0) {
@@ -267,7 +267,7 @@ class TetrisGame() {
         if (!currentTetromino.isFalling) removeLineTime.reset()
     }
 
-    fun removeTetromino(block: Tetromino) {
+    private fun removeTetromino(block: Tetromino) {
         for (i in block.shape.indices) {
             for (j in 0 until block.shape[i].size) {
                 if (block.shape[i][j] != null && cells[block.shape[i][j].column][block.shape[i][j].row] == block.shape[i][j]) {
@@ -277,7 +277,7 @@ class TetrisGame() {
         }
     }
 
-    fun tetrominoLanded (block: Tetromino): Boolean { // only gives back if can't move down
+    private fun tetrominoLanded (block: Tetromino): Boolean { // only gives back if can't move down
         for (i in block.shape.indices) {
             for (j in 0 until block.shape[i].size) {
                 if (block.shape[i][j] != null) {
@@ -295,7 +295,7 @@ class TetrisGame() {
         return false
     }
 
-    fun moveRight(block: Tetromino) {
+    private fun moveRight(block: Tetromino) {
         if (block.isFalling && !rightIsBlocked(block)) {
             for (i in block.shape[0].size - 1 downTo 0) { // reverse order is necessary
                 for (j in block.shape.size - 1 downTo 0) {
@@ -310,7 +310,7 @@ class TetrisGame() {
         }
     }
 
-    fun rightIsBlocked (block: Tetromino): Boolean {
+    private fun rightIsBlocked (block: Tetromino): Boolean {
         for (i in block.shape.indices) {
             for (j in 0 until block.shape[i].size) {
                 if (block.shape[i][j] != null) {
@@ -326,7 +326,7 @@ class TetrisGame() {
         return false
     }
 
-    fun moveLeft(block: Tetromino) {
+    private fun moveLeft(block: Tetromino) {
         if (block.isFalling && !leftIsBlocked(block)) {
             for (i in 0 until block.shape[0].size) {
                 for (j in block.shape.indices) {
@@ -341,7 +341,7 @@ class TetrisGame() {
         }
     }
 
-    fun leftIsBlocked (block: Tetromino): Boolean {
+    private fun leftIsBlocked (block: Tetromino): Boolean {
         for (i in block.shape.indices) {
             for (j in 0 until block.shape[i].size) {
                 if (block.shape[i][j] != null) {
@@ -357,7 +357,7 @@ class TetrisGame() {
         return false
     }
 
-    fun turnLeft(block: Tetromino){ // might change for I
+    private fun turnLeft(block: Tetromino){ // might change for I
         if (block.type != 'O') {
             for (i in block.shape.indices) {
                 for (j in 0 until block.shape[i].size) {
@@ -377,21 +377,19 @@ class TetrisGame() {
         }
     }
 
-    fun wallKick(block: Tetromino, rotation: Char) {
+    private fun wallKick(block: Tetromino, rotation: Char) {
         val oldState: Char = block.rotationState
         if (rotation == 'L') block.turnLeft()
         else if (rotation == 'R') block.turnRight()
 
-        val map: MutableMap<Char, Array<Pair<Int, Int>>>
-        if (block.type != 'I') map = offsetsMap
-        else map = iOffsetsMap
+        val map: MutableMap<Char, Array<Pair<Int, Int>>> = if (block.type != 'I') offsetsMap else iOffsetsMap
 
         for (i in 0..4) {
-            block.move(map[oldState]!![i].first - map[block.rotationState]!!.get(i).first,
-                    map[oldState]!!.get(i).second - map.get(block.rotationState)!!.get(i).second)
+            block.move(map[oldState]!![i].first - map[block.rotationState]!![i].first,
+                    map[oldState]!![i].second - map[block.rotationState]!![i].second)
             if (wrongState(block)) {
-                block.move(-(map.get(oldState)!!.get(i).first - map.get(block.rotationState)!!.get(i).first),
-                        -(map.get(oldState)!!.get(i).second - map.get(block.rotationState)!!.get(i).second))
+                block.move(-(map[oldState]!![i].first - map[block.rotationState]!![i].first),
+                        -(map[oldState]!![i].second - map[block.rotationState]!![i].second))
             } else break
         }
         if (wrongState(block)) {
@@ -399,7 +397,7 @@ class TetrisGame() {
         }
     }
 
-    fun turnRight(block: Tetromino){ // not compatible with I
+    private fun turnRight(block: Tetromino){ // not compatible with I
         if (block.type != 'O') {
             for (i in block.shape.indices) {
                 for (j in 0 until block.shape[i].size) {
@@ -420,7 +418,7 @@ class TetrisGame() {
         }
     }
 
-    fun wrongState(block: Tetromino): Boolean {
+    private fun wrongState(block: Tetromino): Boolean {
         for (i in block.shape.indices) {
             for (j in 0 until block.shape[i].size) {
                 if (block.shape[i][j] != null) {
@@ -436,7 +434,7 @@ class TetrisGame() {
         return false
     }
 
-    fun updateRows() {
+    private fun updateRows() {
         var pointsAdded = false
         val fullRows: com.badlogic.gdx.utils.Array<Int> = getFullRows()
         if (fullRows.size > 0) {
@@ -465,7 +463,7 @@ class TetrisGame() {
         }
     }
 
-    fun removeRows(fullRows: com.badlogic.gdx.utils.Array<Int>) {
+    private fun removeRows(fullRows: com.badlogic.gdx.utils.Array<Int>) {
         for (row in fullRows) {
             for (j in row downTo 1) {
                 for (i in cells.size - 1 downTo 0) {
@@ -475,7 +473,7 @@ class TetrisGame() {
         }
     }
 
-    fun handleGarbage() {
+    private fun handleGarbage() {
         if(scoring.tetrisGarbage > 0){
             scoring.tetrisGarbage -= scoring.puyoGarbage
             if(scoring.tetrisGarbage < 0){
@@ -487,14 +485,14 @@ class TetrisGame() {
         fillGarbage()
     }
 
-    fun lineClear(lines: Int) {
+    private fun lineClear(lines: Int) {
         scoring.puyoGarbage += scoring.clearBonus[lines]!!
         scoring.tetrisScore += scoring.scoreClearBonus[lines]!!
         b2bBonus = 0
         Sounds.tkesiline.play()
     }
 
-    fun tetrisClear() {
+    private fun tetrisClear() {
         println("Tetris")
         if (b2bBonus == 1) {
             println("Back-to-back")
@@ -505,13 +503,13 @@ class TetrisGame() {
         b2bBonus = 1
     }
 
-    fun perfectClear(lines: Int) {
+    private fun perfectClear(lines: Int) {
         scoring.puyoGarbage += scoring.perfectClearBonus
         scoring.tetrisScore += scoring.scorePerfectClearBonus[lines]!!
         b2bBonus = 0
     }
 
-    fun tSpinClear(lines: Int) {
+    private fun tSpinClear(lines: Int) {
         if (b2bBonus == 1) {
             println("Back-to-back")
             Sounds.tkesib2b.play()
@@ -521,10 +519,10 @@ class TetrisGame() {
         b2bBonus = 1
     }
 
-    fun isTSpin(): Boolean {
+    private fun isTSpin(): Boolean {
         if (currentTetromino.type == 'T') {
-            var onWall: Boolean = false
-            var blocks: Int = 0
+            var onWall = false
+            var blocks = 0
             for (i in currentTetromino.column - 1..currentTetromino.column + 1) {
                 for (j in currentTetromino.row - 1..currentTetromino.row + 1) {
                     if (i >= columns || i < 0 || j >= rows) {
@@ -544,7 +542,7 @@ class TetrisGame() {
     }
 
     fun getFullRows(): com.badlogic.gdx.utils.Array<Int> {
-        var rowIsFull: Boolean = true
+        var rowIsFull = true
         // LibGDX Array because apparently ArrayList takes memory space
         val fullRows: com.badlogic.gdx.utils.Array<Int> = com.badlogic.gdx.utils.Array()
         for (i in 0 until cells[0].size) {
@@ -558,16 +556,16 @@ class TetrisGame() {
         return fullRows
     }
 
-    fun isFull(): Boolean {
-        for (i in 0 until cells.size) {
-            if (cells[i][0] != null) {
+    private fun isFull(): Boolean {
+        for (column in cells) {
+            if (column[0] != null) {
                 return true
             }
         }
         return false
     }
 
-    fun isPerfectClear(): Boolean {
+    private fun isPerfectClear(): Boolean {
         for (i in cells.indices) {
             for (j in 0 until cells[i].size) {
                 if (cells[i][j] != null) return false
@@ -576,7 +574,7 @@ class TetrisGame() {
         return true
     }
 
-    fun fillGarbage() {
+    private fun fillGarbage() {
         if (scoring.tetrisGarbage > 0) {
             for (line in 1..scoring.tetrisGarbage) {
                 if (!isFull()) {
@@ -585,9 +583,9 @@ class TetrisGame() {
                             cells[j][i] = cells[j][i + 1]
                         }
                     }
-                    var freeColumn: Int = Random.nextInt(columns - 1)
+                    val freeColumn: Int = Random.nextInt(columns - 1)
                     for (i in 0 until columns) {
-                        if (i != freeColumn) cells[i][rows - 1] = TetrisBlock(i, rows - 1, SpriteArea.tetrisSprites.get("garbage")!!)
+                        if (i != freeColumn) cells[i][rows - 1] = TetrisBlock(i, rows - 1, SpriteArea.tetrisSprites["garbage"]!!)
                         else cells[i][rows - 1] = null
                     }
                 }
@@ -598,14 +596,14 @@ class TetrisGame() {
     }
 
     fun getShadowCoordinates(): MutableList<Pair<Int, Int>>? {
-        if (currentTetromino != null && !tetrominoLanded(currentTetromino)) {
-            var coordinates: MutableList<Pair<Int, Int>> = mutableListOf()
+        if (!tetrominoLanded(currentTetromino)) {
+            val coordinates: MutableList<Pair<Int, Int>> = mutableListOf()
             var dropsTillLand: Int = Int.MAX_VALUE
-            var currentDrops: Int = 0
+            var currentDrops = 0
             for (i in currentTetromino.shape.indices) {
                 for (j in 0 until currentTetromino.shape[i].size) {
                     if (currentTetromino.shape[i][j] != null) {
-                        var block: TetrisBlock = currentTetromino.shape[i][j]
+                        val block: TetrisBlock = currentTetromino.shape[i][j]
                         coordinates.add(Pair(block.column, block.row))
                         while (block.row + currentDrops < rows && (cells[block.column][block.row + currentDrops] == null
                                 || currentTetromino.contains(cells[block.column][block.row + currentDrops]))) {
@@ -624,16 +622,16 @@ class TetrisGame() {
         return null
     }
 
-    fun gameOver() {
+    private fun gameOver() {
         if (!gameIsOver) Sounds.tover.play()
         gameIsOver = true
         //println("Tetris lost")
     }
 
-    fun sendGarbage() {
+    private fun sendGarbage() {
         if(scoring.puyoGarbage > 0){
-            puyo.receiveGarbage(Garbage.tetrisToPuyo.getValue(scoring.puyoGarbage)!!)
-            println("Tetris sent ${Garbage.tetrisToPuyo.getValue(scoring.puyoGarbage)!!} Puyo Garbage")
+            puyo.receiveGarbage(Garbage.tetrisToPuyo.getValue(scoring.puyoGarbage))
+            println("Tetris sent ${Garbage.tetrisToPuyo.getValue(scoring.puyoGarbage)} Puyo Garbage")
             when {
                 Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 1..5 -> Sounds.gsend1.play()
                 Garbage.tetrisToPuyo[scoring.puyoGarbage]!! in 6..29 -> Sounds.gsend2.play()
