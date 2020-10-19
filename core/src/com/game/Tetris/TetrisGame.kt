@@ -23,7 +23,7 @@ class TetrisGame {
     private var tSpinInput: Boolean = false
 
     var scoring: TetrisScoring = TetrisScoring()
-    private var comboCount: Int = 0
+    var comboCount: Int = 0
     private var b2bBonus: Int = 0 // basically works as boolean here using 0 and 1
 
     // y-offsets have to be reversed from srs system
@@ -47,6 +47,7 @@ class TetrisGame {
     var moveKeyHeldTime = Time(230)
     var removeLineTime = Time(250)
     var hardDropTime = Time(120)
+    var comboTime = Time(100)
 
     var columns: Int = 10
     var rows: Int = 25
@@ -60,6 +61,7 @@ class TetrisGame {
         }
         removeLineTime.cancel()
         hardDropTime.cancel()
+        comboTime.cancel()
         createRandomOrder()
         spawnTetromino()
         createNextTetrominos()
@@ -102,6 +104,9 @@ class TetrisGame {
         }
 
         if (hardDropTime.hasPassed()) hardDropTime.cancel()
+
+        if (comboCount > 1 && !comboTime.isRunning()) comboTime.reset()
+        if (comboCount <= 1 && comboTime.isRunning()) comboTime.cancel()
     }
 
     private fun handleInputs() {
