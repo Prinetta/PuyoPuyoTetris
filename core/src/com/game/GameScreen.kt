@@ -445,7 +445,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private var puyosToPop = mutableListOf<PuyoBlock>()
     private var popTime = Time(50)
-    private var shineStartAll = Time(5000)
+    private var shineStart = Time(3000)
 
     private fun drawPuyos(){
         drawMainPuyos()
@@ -469,13 +469,13 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
 
-                if(block is GarbageBlock && block.frame == 0 && block.shineStart.hasPassed()){
+                if(block is GarbageBlock && block.frame == 0 && shineStart.hasPassed()){
                     block.changeSprite()
-                    block.shineStart.reset()
                     block.shineDuration.reset()
                 } else if (block is GarbageBlock && block.frame > 0 && block.shineDuration.hasPassed()){
                     block.changeSprite()
                     block.shineDuration.reset()
+                    shineStart.reset()
                 }
 
                 if(!(block is PuyoBlock && block.removeFrames >= PC.POP3_SPRITE_AT)) {

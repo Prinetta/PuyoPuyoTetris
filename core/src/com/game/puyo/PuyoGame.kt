@@ -233,13 +233,7 @@ class PuyoGame (){
     }
 
     fun placeGarbage(){
-        val garbageBlocks = if(grid.flatten().any { it is GarbageBlock }){
-            MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0,
-                    (grid.flatten().first { it is GarbageBlock } as GarbageBlock).shineStart.copy()) }
-        } else {
-            MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0, Time(1000)) }
-        }
-
+        val garbageBlocks = MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0) }
         placeGarbageBlocks(garbageBlocks)
         dropRemainingGarbage()
         scoring.garbageToReceive = 0
