@@ -110,7 +110,14 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 game.batch.setColor(c.r, c.g, c.b, (3 - (tetrisGame.comboTime.runtime() - tetrisGame.comboTime.delay) / 1000f))
                 process = 1f
             }
-            game.batch.draw(SpriteArea.gameSprites["tcombo${tetrisGame.comboCount - 1}"], TC.COMBO_NUMBER_LABEL_LEFT_X,
+            if (tetrisGame.comboCount > 10) {
+                game.batch.draw(SpriteArea.gameSprites["tcombo${tetrisGame.comboCount.toString().first()}"],
+                        TC.COMBO_NUMBER_LABEL_LEFT_X - TC.COMBO_NUMBER_LABEL_WIDTH * 1.01f,
+                        TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)),
+                        TC.COMBO_NUMBER_LABEL_WIDTH, TC.COMBO_NUMBER_LABEL_HEIGHT * process)
+            }
+            game.batch.draw(SpriteArea.gameSprites["tcombo${tetrisGame.comboCount.toString().last() - 1}"],
+                    TC.COMBO_NUMBER_LABEL_LEFT_X,
                     TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)),
                     TC.COMBO_NUMBER_LABEL_WIDTH, TC.COMBO_NUMBER_LABEL_HEIGHT * process)
             game.batch.draw(SpriteArea.gameSprites["tcombo"], TC.COMBO_LABEL_LEFT_X,
