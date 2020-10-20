@@ -132,72 +132,72 @@ tcombo
   index: -1
 tcombo0
   rotate: false
-  xy: 595, 150
-  size: 40, 51
-  orig: 40, 51
+  xy: 912, 334
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo1
   rotate: false
-  xy: 677, 154
-  size: 29, 47
-  orig: 29, 47
+  xy: 960, 367
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo2
   rotate: false
-  xy: 637, 152
-  size: 38, 49
-  orig: 38, 49
+  xy: 325, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo3
   rotate: false
-  xy: 463, 150
-  size: 42, 51
-  orig: 42, 51
+  xy: 373, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo4
   rotate: false
-  xy: 417, 150
-  size: 44, 51
-  orig: 44, 51
+  xy: 661, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo5
   rotate: false
-  xy: 912, 336
-  size: 44, 53
-  orig: 44, 53
+  xy: 421, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo6
   rotate: false
-  xy: 325, 150
-  size: 44, 51
-  orig: 44, 51
+  xy: 469, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo7
   rotate: false
-  xy: 507, 150
-  size: 42, 51
-  orig: 42, 51
+  xy: 517, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo8
   rotate: false
-  xy: 371, 150
-  size: 44, 51
-  orig: 44, 51
+  xy: 565, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo9
   rotate: false
-  xy: 551, 150
-  size: 42, 51
-  orig: 42, 51
+  xy: 613, 146
+  size: 46, 55
+  orig: 46, 55
   offset: 0, 0
   index: -1
 tetris

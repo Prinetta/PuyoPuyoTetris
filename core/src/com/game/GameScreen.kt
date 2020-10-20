@@ -503,13 +503,13 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var numX = 0
     private var numY = 0
     private var displayChainTime = Time(500)
-    private var isDisplayed = false
+    private var startedDisplay = false
 
     private fun drawPuyoLabels(){
         if(!displayChainTime.hasPassed()){
             game.batch.draw(SpriteArea.gameSprites["p$chainCount"],
             PC.GRID_START_X + numX * PC.CELL_SIZE, PC.GRID_START_Y - numY * PC.CELL_SIZE, 40f, 60f)
-            isDisplayed = true
+            startedDisplay = true
         } else {
             chainCount = 0
         }
@@ -537,14 +537,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             chainCount = puyoController.chainCount
             numX = puyo.x
             numY = puyo.y
-            isDisplayed = false
+            startedDisplay = false
         }
-        if(chainCount > 0){
-            if(!isDisplayed){
-                displayChainTime.reset()
-            }
-            drawPuyoLabels()
+        if(chainCount > 0 && !startedDisplay){
+            displayChainTime.reset()
         }
+        drawPuyoLabels()
     }
 
     private fun updatePop(){
