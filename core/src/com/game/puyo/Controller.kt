@@ -19,7 +19,8 @@ class Controller() {
     private var delay = Time(500)
     private var doubleTap = Time(3000)
     private var lockIn = Time(puyoGame.puyo.speed/2)
-    private var spawnDelay = Time(500)
+    private var spawnDelay = Time(400) // 500
+    private var chainCount = 0
     var count = 0
 
     private var placedGarbage = 0
@@ -27,10 +28,11 @@ class Controller() {
     fun mainLoop(){
         if(puyoGame.hasFoundChain()) {
             if (lastChain.hasPassed()) {
+                chainCount++
                 puyoGame.removeCombo()
                 lastChain.reset()
                 puyoGame.allPuyosDropped = false
-                playChainSound(puyoGame.puyosToRemove.size)
+                playChainSound(chainCount)
             }
         } else {
             if(puyoGame.puyo.rotateCount % 2 != 0){
@@ -50,6 +52,7 @@ class Controller() {
                 lockIn.reset()
             }
             if(puyoGame.canDropMainPuyos()){
+                println("a")
                 if(lastPuyoStep.hasPassed()){
                     if(puyoGame.puyo.gap == 0f){
                         puyoGame.puyo.gap = 0.5f
@@ -59,6 +62,7 @@ class Controller() {
                     }
                     lastPuyoStep.reset()
                     lastBlockDrop.reset()
+                    println()
                 }
                 if(!puyoGame.canMainPuyoFall(puyoGame.puyo.first) && puyoGame.puyo.first.firstBounce){
                     puyoGame.puyo.first.bounceOver = false
@@ -69,6 +73,7 @@ class Controller() {
                     puyoGame.puyo.second.firstBounce = false
                 }
             } else {
+                puyoGame.puyo.gap = 0f
                 puyoGame.updatePuyoState()
                 if (puyoGame.canDropPuyos()){
                     if(lastBlockDrop.hasPassed()) {
@@ -78,8 +83,10 @@ class Controller() {
                         spawnDelay.reset()
                     }
                 } else {
+                    puyoGame.bouncePuyos()
                     puyoGame.findBigPuyoChain()
                     if(!puyoGame.hasFoundChain()){
+                        chainCount = 0
                         puyoGame.calculateChainScore()
                         if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){ // still need to test garbage placement more
                             if(puyoGame.hasReceivedGarbage() && delay.hasPassed()){
@@ -119,8 +126,8 @@ class Controller() {
             }
             lastChain.reset()
         }
-        puyoGame.connectPuyos()
         puyoGame.unmark()
+        puyoGame.connectPuyos()
     }
 
     private fun playChainSound(chainCount: Int){

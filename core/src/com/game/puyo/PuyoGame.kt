@@ -318,7 +318,7 @@ class PuyoGame (){
             return false
         }
         val block = grid[i][j]
-        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked) || !block.bounceOver){
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked) || block.allowBounce || !block.bounceOver){
             return false
         }
         if(index < puyoChain.size){
@@ -335,7 +335,7 @@ class PuyoGame (){
         return true
     }
 
-    private fun findAllChains(){
+    fun findAllChains(){
         puyoChain.clear()
         for(i in 0 until width) {
             for (j in 0 until length) {
@@ -442,6 +442,19 @@ class PuyoGame (){
         return dropped
     }
 
+    private fun getLastBlock(puyo: PuyoBlock): Block?{
+        var lastBlock: Block? = null
+        for (i in puyo.y+1 until PC.GRID_LENGTH) {
+            val block = grid[puyo.x][i]
+            if(block != null) {
+                lastBlock = block
+            } else {
+                return lastBlock
+            }
+        }
+        return lastBlock
+    }
+
     private fun dropBlock(block: Block){
         block.isFalling = canFall(block)
         if(block.isFalling){
@@ -452,12 +465,22 @@ class PuyoGame (){
                 if(puyo.isLocked && !canFall(block)){
                     if(isMainPuyo(block) && (puyo.first.x != puyo.second.x || block.y > puyo.first.y || block.y > puyo.second.y)){
                         Sounds.pdrop.play()
+                        block.allowBounce = true
                     }
-                    println("bbb ounce over")
-                    block.bounceOver = false
+                    if(getLastBlock(block) != null || block.y+1 == PC.GRID_LENGTH){
+                        block.allowBounce = true
+                    }
                 }
             }
         }
+    }
+
+    fun bouncePuyos(){
+        grid.flatten().filterIsInstance<PuyoBlock>().filter { it.allowBounce }.forEach {
+            it.bounceOver = false
+            it.allowBounce = false
+        }
+        unmark()
     }
 
     private fun moveBlock(block: PuyoBlock, direction: Int){
@@ -497,7 +520,7 @@ class PuyoGame (){
                 if(chain.contains(puyo.first) && chain.contains(puyo.second) && puyo.first.y == puyo.second.y && puyo.gap == 0.5f &&
                    ((puyo.first.isFalling && !puyo.second.isFalling) || (!puyo.first.isFalling && puyo.second.isFalling))){
                     s = ""
-                } else if (chain.contains(puyo.first) && chain.contains(puyo.second) && !block.bounceOver){
+                } else if(chain.any { !it.bounceOver || it.allowBounce }){
                     s = ""
                 }
                 block.updateSprite(s)

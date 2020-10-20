@@ -378,6 +378,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             }
             if(puyo.bounceFrame > 12){
                 puyo.bounceOver = true
+                puyo.bounceFrame = 0
             }
             puyo.bounceDelay.reset()
         }
@@ -388,7 +389,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private fun drawMainPuyos(){
         val puyos = puyoController.puyoGame.puyo
-        if(puyos.first.isFalling){
+        if(puyos.first.isFalling && puyos.first.bounceOver){
             if(puyos.gap == 0.5f && puyos.first.y == 0){
                 game.batch.draw(SpriteArea.cutPuyoSprites[puyos.first.currentSprite], PC.GRID_START_X + puyos.first.x * PC.CELL_SIZE,
                         PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap, PC.CELL_SIZE, PC.CELL_SIZE/2)
@@ -397,7 +398,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                         PC.GRID_START_Y - puyos.first.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap, PC.CELL_SIZE, PC.CELL_SIZE)
             }
         }
-        if(puyos.second.isFalling){
+        if(puyos.second.isFalling && puyos.second.bounceOver){
             game.batch.draw(puyos.second.currentSprite, PC.GRID_START_X + puyos.second.x * PC.CELL_SIZE,
                     PC.GRID_START_Y - puyos.second.y * PC.CELL_SIZE - PC.CELL_SIZE*puyos.gap, PC.CELL_SIZE, PC.CELL_SIZE)
         }
@@ -443,8 +444,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             for(j in 0 until PC.GRID_LENGTH){
                 val block = puyoController.getBlockAt(i, j)
                 if(block == null || j == 0 ||
-                  (block == puyoController.puyoGame.puyo.first && block.isFalling) ||
-                  (block == puyoController.puyoGame.puyo.second && block.isFalling)){
+                  (block == puyoController.puyoGame.puyo.first && block.isFalling  && puyoController.puyoGame.puyo.first.bounceOver) ||
+                  (block == puyoController.puyoGame.puyo.second && block.isFalling && puyoController.puyoGame.puyo.second.bounceOver)){
                     continue
                 }
                 if(block.isBeingRemoved) {
