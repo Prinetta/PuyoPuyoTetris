@@ -15,6 +15,7 @@ class Controller() {
     private var lastChain = Time(puyoGame.puyo.chainSpeed)
     private var lastBlockDrop = Time(puyoGame.puyo.speed/2)
     private var lastGarbageDrop = Time(70)
+    private var rotationDelay = Time(puyoGame.puyo.speed/2)
     private var lastPuyoStep = Time(puyoGame.puyo.speed/2)
     private var delay = Time(500)
     private var doubleTap = Time(3000)
@@ -29,6 +30,7 @@ class Controller() {
         if(puyoGame.hasFoundChain()) {
             if (lastChain.hasPassed()) {
                 chainCount++
+                println(chainCount)
                 puyoGame.removeCombo()
                 lastChain.reset()
                 puyoGame.allPuyosDropped = false
@@ -52,7 +54,6 @@ class Controller() {
                 lockIn.reset()
             }
             if(puyoGame.canDropMainPuyos()){
-                println("a")
                 if(lastPuyoStep.hasPassed()){
                     if(puyoGame.puyo.gap == 0f){
                         puyoGame.puyo.gap = 0.5f
@@ -62,7 +63,6 @@ class Controller() {
                     }
                     lastPuyoStep.reset()
                     lastBlockDrop.reset()
-                    println()
                 }
                 if(!puyoGame.canMainPuyoFall(puyoGame.puyo.first) && puyoGame.puyo.first.firstBounce){
                     puyoGame.puyo.first.bounceOver = false
@@ -156,6 +156,13 @@ class Controller() {
         } else {
             decreaseSpeed()
         }
+        if(puyoGame.puyo.fullRotateCount >= 7){
+            if(rotationDelay.hasPassed()){
+                puyoGame.puyo.fullRotateCount = 0
+            }
+        } else {
+            rotationDelay.reset()
+        }
         lastPuyoStep.delay = puyoGame.puyo.speed/2
     }
 
@@ -163,14 +170,15 @@ class Controller() {
         tapCount++
         if(!doubleTap.hasPassed() && tapCount > 1 && puyoGame.canQuickTurn()){
             puyoGame.quickTurn()
+            puyoGame.puyo.fullRotateCount++
             tapCount = 0
         } else {
             if(doubleTap.hasPassed() && tapCount > 1){
                 tapCount = 0
             }
             rotatePuyo(rotation)
+            puyoGame.puyo.fullRotateCount++
         }
-
         doubleTap.reset()
     }
 
@@ -215,7 +223,8 @@ class Controller() {
     }
 
     private fun allowInput() : Boolean {
-        return lastInput.hasPassed() && !puyoGame.puyo.isLocked
+        return lastInput.hasPassed() && !puyoGame.puyo.isLocked &&
+                !(puyoGame.puyo.fullRotateCount > 7 && (!puyoGame.canFall(puyoGame.puyo.first) || !puyoGame.canFall(puyoGame.puyo.second)))
     }
 
     private fun movePuyo(direction: Int){

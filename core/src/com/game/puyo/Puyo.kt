@@ -2,6 +2,7 @@ package com.game.puyo
 
 class Puyo(val first: PuyoBlock, val second: PuyoBlock){
     var rotateCount = 0
+    var fullRotateCount = 0
     var isLocked = false
     var isMain = true
     val minSpeed = 600 //600

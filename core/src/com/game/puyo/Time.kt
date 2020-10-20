@@ -7,6 +7,12 @@ class Time (var delay: Int){
         currentTime = System.currentTimeMillis()
     }
 
+    fun copy(): Time{
+        val time = Time(delay)
+        time.currentTime = currentTime
+        return time
+    }
+
     fun hasPassed(): Boolean{
         return System.currentTimeMillis() - currentTime > delay
     }

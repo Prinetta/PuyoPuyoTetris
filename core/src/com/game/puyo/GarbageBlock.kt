@@ -2,10 +2,11 @@ package com.game.puyo
 import com.game.Block
 import com.game.SpriteArea
 
-class GarbageBlock(x: Int, y: Int) : Block(x, y) {
+class GarbageBlock(x: Int, y: Int, var shineStart: Time) : Block(x, y) {
     val sprites = SpriteArea.gameSprites
     override var currentSprite = sprites["pgarbage"]!!
     var frame = 0
+    var shineDuration = Time(100)
 
     fun changeSprite(){
         frame++

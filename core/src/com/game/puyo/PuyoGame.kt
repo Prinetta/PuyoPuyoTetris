@@ -14,7 +14,7 @@ class PuyoGame (){
     private val length = PC.GRID_LENGTH
     var allPuyosDropped = true
     private var allGarbageDropped = true
-     var chainIndex = -1
+    private var chainIndex = -1
     private lateinit var tetris: TetrisGame;
     lateinit var puyo: Puyo
     val grid = Array(width) {Array<Block?>(length) {null} }
@@ -193,6 +193,7 @@ class PuyoGame (){
         puyoChain.forEachIndexed { index, chain -> // found big puyo chain
             if(chain.size > 3){
                 chainIndex = index
+                println("i found a big chain")
                 findAdjacentGarbage()
                 return index
             }
@@ -232,7 +233,13 @@ class PuyoGame (){
     }
 
     fun placeGarbage(){
-        val garbageBlocks = MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0) }
+        val garbageBlocks = if(grid.flatten().any { it is GarbageBlock }){
+            MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0,
+                    (grid.flatten().first { it is GarbageBlock } as GarbageBlock).shineStart.copy()) }
+        } else {
+            MutableList(scoring.garbageToReceive) { GarbageBlock(0, 0, Time(1000)) }
+        }
+
         placeGarbageBlocks(garbageBlocks)
         dropRemainingGarbage()
         scoring.garbageToReceive = 0
@@ -318,7 +325,7 @@ class PuyoGame (){
             return false
         }
         val block = grid[i][j]
-        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked) || block.allowBounce || !block.bounceOver){
+        if(block == null || block.marked || block !is PuyoBlock || block.color != color || (isMainPuyo(block) && !puyo.isLocked)){ // || block.allowBounce || !block.bounceOver
             return false
         }
         if(index < puyoChain.size){
@@ -335,7 +342,7 @@ class PuyoGame (){
         return true
     }
 
-    fun findAllChains(){
+    private fun findAllChains(){
         puyoChain.clear()
         for(i in 0 until width) {
             for (j in 0 until length) {
@@ -506,21 +513,34 @@ class PuyoGame (){
             for(block in chain){
                 var s = ""
                 if(!isOutOfBounds(block.x, block.y - 1) && chain.contains(grid[block.x][block.y - 1])){
-                    s += "u"
+                    val puyo = grid[block.x][block.y - 1] as PuyoBlock
+                    if(!puyo.allowBounce && puyo.bounceOver){
+                        s += "u"
+                    }
                 }
                 if(!isOutOfBounds(block.x + 1, block.y) && chain.contains(grid[block.x + 1][block.y])){
-                    s += "r"
+                    val puyo = grid[block.x + 1][block.y] as PuyoBlock
+                    if(!puyo.allowBounce && puyo.bounceOver){
+                        s += "r"
+                    }
                 }
                 if(!isOutOfBounds(block.x, block.y + 1) && chain.contains(grid[block.x][block.y + 1])){
-                    s += "d"
+                    val puyo = grid[block.x][block.y + 1] as PuyoBlock
+                    if(!puyo.allowBounce && puyo.bounceOver){
+                        s += "d"
+                    }
                 }
                 if(!isOutOfBounds(block.x - 1, block.y) && chain.contains(grid[block.x - 1][block.y])){
-                    s += "l"
+                    val puyo = grid[block.x - 1][block.y] as PuyoBlock
+                    if(!puyo.allowBounce && puyo.bounceOver){
+                        s += "l"
+                    }
                 }
                 if(chain.contains(puyo.first) && chain.contains(puyo.second) && puyo.first.y == puyo.second.y && puyo.gap == 0.5f &&
                    ((puyo.first.isFalling && !puyo.second.isFalling) || (!puyo.first.isFalling && puyo.second.isFalling))){
                     s = ""
-                } else if(chain.any { !it.bounceOver || it.allowBounce }){
+                }
+                if(!block.bounceOver || block.allowBounce){
                     s = ""
                 }
                 block.updateSprite(s)
