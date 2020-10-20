@@ -84,6 +84,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawScore()
         drawTetrisGarbageQueue()
         drawTetrisEffects()
+        drawTetrisCombo()
         game.batch.end()
         /// -End Draw-
 
@@ -91,6 +92,16 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     /// Tetris Methods
+
+    private fun drawTetrisCombo() {
+        if (tetrisGame.comboTime.isRunning()) {
+            var process: Float = tetrisGame.comboTime.runtime() / tetrisGame.comboTime.delay.toFloat()
+            if (process > 1) process = 1f
+            game.batch.draw(SpriteArea.bgSprites["tcombo"],
+                    TC.COMBO_LABEL_LEFT_X, TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)),
+                    TC.COMBO_LABEL_WIDTH, TC.COMBO_LABEL_HEIGHT * process)
+        }
+    }
 
     private fun drawTetrisGridBackground() {
         Gdx.gl.glEnable(GL20.GL_BLEND)

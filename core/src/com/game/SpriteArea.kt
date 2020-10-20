@@ -35,7 +35,8 @@ class SpriteArea {
         val bgSprites = hashMapOf("next-field" to guiAtlas.findRegion("next-field"),
                 "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
                 "grid-bg" to guiAtlas.findRegion("gridbg"), "next-bg" to guiAtlas.findRegion("nextbg2"), "next2-bg" to guiAtlas.findRegion("nextbg2"),
-                "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
+                "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"),
+                "tcombo" to guiAtlas.findRegion("tcombo"))
 
 
         val gameSprites = hashMapOf<String, TextureRegion>("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
