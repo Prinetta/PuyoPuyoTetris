@@ -39,5 +39,9 @@ class TC {
 
         const val T_SPIN_LABEL_WIDTH: Float = 6f * CELL_SIZE
         const val T_SPIN_LABEL_HEIGHT: Float = 0.34f * T_SPIN_LABEL_WIDTH
+
+        const val TETRIS_WIDTH: Float = CELL_SIZE * COLUMNS
+        const val TETRIS_HEIGHT: Float = 0.224f * TETRIS_WIDTH
+        const val TETRIS_LEFT_X: Float = GRID_LEFT_X + (((CELL_SIZE * COLUMNS) - TETRIS_WIDTH) / 2)
     }
 }

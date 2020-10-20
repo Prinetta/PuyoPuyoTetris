@@ -99,6 +99,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawTetrisComboLabel()
         drawTetrisB2BLabel()
         drawTetrisTSpinLabel()
+        drawTetrisTetrisLabel()
     }
 
     private fun drawTetrisComboLabel() {
@@ -159,6 +160,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                         TC.T_SPIN_LABEL_WIDTH, TC.T_SPIN_LABEL_HEIGHT * process)
                 game.batch.setColor(c.r, c.g, c.b, 1f)
             }
+        }
+    }
+
+    private fun drawTetrisTetrisLabel() {
+        val c = game.batch.color
+        if (tetrisGame.tetrisTime.isRunning() && tetrisGame.tetrisTime.runtime() < 2000f) {
+            var process: Float = tetrisGame.tetrisTime.runtime() / tetrisGame.tetrisTime.delay.toFloat()
+            if (process > 1) {
+                game.batch.setColor(c.r, c.g, c.b, (1 - (tetrisGame.tetrisTime.runtime() - tetrisGame.tetrisTime.delay) / 1000f))
+                process = 1f
+            }
+            game.batch.draw(SpriteArea.gameSprites["tetris"], TC.TETRIS_LEFT_X,
+                    TC.GRID_TOP_Y - ((TC.ROWS - 3) * TC.CELL_SIZE) - ((TC.TETRIS_HEIGHT * process) / 2),
+                    TC.TETRIS_WIDTH, TC.TETRIS_HEIGHT * process)
+            game.batch.setColor(c.r, c.g, c.b, 1f)
         }
     }
 
