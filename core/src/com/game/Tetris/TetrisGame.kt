@@ -20,6 +20,7 @@ class TetrisGame {
 
     private var gameIsOver: Boolean = false
     private var enableHold: Boolean = true
+    private var wallKicked: Boolean = false
     private var tSpinInput: Boolean = false
 
     var scoring: TetrisScoring = TetrisScoring()
@@ -48,6 +49,15 @@ class TetrisGame {
     var removeLineTime = Time(250)
     var hardDropTime = Time(120)
     var comboTime = Time(100)
+    var b2bTime = Time(100)
+    var tetrisTime = Time(100)
+    var tSpin0Time = Time(100)
+    var tSpin1Time = Time(100)
+    var tSpin2Time = Time(100)
+    var tSpin3Time = Time(100)
+    var tSpinMini0Time = Time(100)
+    var tSpinMiniTime = Time(100)
+
 
     var columns: Int = 10
     var rows: Int = 25
@@ -59,9 +69,7 @@ class TetrisGame {
                 row.add(null)
             }
         }
-        removeLineTime.cancel()
-        hardDropTime.cancel()
-        comboTime.cancel()
+        cancelAnimTimers()
         createRandomOrder()
         spawnTetromino()
         createNextTetrominos()
@@ -69,6 +77,20 @@ class TetrisGame {
 
     fun setPuyo(puyo: PuyoGame){
         this.puyo = puyo
+    }
+
+    fun cancelAnimTimers() {
+        removeLineTime.cancel()
+        hardDropTime.cancel()
+        comboTime.cancel()
+        b2bTime.cancel()
+        tetrisTime.cancel()
+        tSpin0Time.cancel()
+        tSpin1Time.cancel()
+        tSpin2Time.cancel()
+        tSpin3Time.cancel()
+        tSpinMini0Time.cancel()
+        tSpinMiniTime.cancel()
     }
 
     fun run() {
@@ -105,8 +127,7 @@ class TetrisGame {
 
         if (hardDropTime.hasPassed()) hardDropTime.cancel()
 
-        if (comboCount > 1 && !comboTime.isRunning()) comboTime.reset()
-        if (comboCount <= 1 && comboTime.isRunning()) comboTime.cancel()
+        if (comboCount < 1 && comboTime.isRunning()) comboTime.cancel()
     }
 
     private fun handleInputs() {
@@ -402,7 +423,10 @@ class TetrisGame {
             if (wrongState(block)) {
                 block.move(-(map[oldState]!![i].first - map[block.rotationState]!![i].first),
                         -(map[oldState]!![i].second - map[block.rotationState]!![i].second))
-            } else break
+            } else {
+                wallKicked = i != 0
+                break
+            }
         }
         if (wrongState(block)) {
             if (rotation == 'L') block.turnRight() else block.turnLeft()
@@ -460,19 +484,19 @@ class TetrisGame {
                 if (fullRows.size == 4) tetrisClear() else lineClear(fullRows.size)
             }
             comboCount++
+            if (comboCount > 1) comboTime.reset()
             if (comboCount >= 20) scoring.tetrisScore += 1000
             else scoring.tetrisScore += comboCount * scoring.scoreComboBonus
             println("Combo: $comboCount")
         } else {
             if (isTSpin()) {
-                scoring.tetrisScore += scoring.scoreTSpinZeroBonus
-                println("T-Spin")
-                Sounds.tspin.play()
+                tSpinZeroBonus()
             }
             scoring.puyoGarbage += scoring.getComboBonus(comboCount)
             comboCount = 0
             handleGarbage()
         }
+        wallKicked = false
     }
 
     private fun removeRows(fullRows: com.badlogic.gdx.utils.Array<Int>) {
@@ -506,8 +530,10 @@ class TetrisGame {
 
     private fun tetrisClear() {
         println("Tetris")
+        tetrisTime.reset()
         if (b2bBonus == 1) {
             println("Back-to-back")
+            b2bTime.reset()
             Sounds.tkesib2b.play()
         } else Sounds.tkesitetris.play()
         scoring.puyoGarbage += scoring.clearBonus[4]!! + b2bBonus
@@ -521,14 +547,60 @@ class TetrisGame {
         b2bBonus = 0
     }
 
+    private fun cancelTSpinTimers() {
+        tSpin0Time.cancel()
+        tSpin1Time.cancel()
+        tSpin2Time.cancel()
+        tSpin3Time.cancel()
+        tSpinMini0Time.cancel()
+        tSpinMiniTime.cancel()
+    }
+
+    fun getCurrentTSpinTimer(): Time? {
+        if (tSpin1Time.isRunning()) return tSpin1Time
+        else if (tSpin2Time.isRunning()) return tSpin2Time
+        else if (tSpin3Time.isRunning()) return tSpin3Time
+        else if (tSpinMiniTime.isRunning()) return tSpinMiniTime
+        else if (tSpin0Time.isRunning()) return tSpin0Time
+        else if (tSpinMini0Time.isRunning()) return tSpinMini0Time
+        else return null
+    }
+
     private fun tSpinClear(lines: Int) {
+        cancelTSpinTimers()
         if (b2bBonus == 1) {
             println("Back-to-back")
+            b2bTime.reset()
             Sounds.tkesib2b.play()
         } else Sounds.tkesispin.play()
-        scoring.puyoGarbage += scoring.tSpinClearBonus[lines]!! + b2bBonus
-        scoring.tetrisScore += (scoring.scoreTSpinClearBonus[lines]!! * (1 + (b2bBonus * 0.5f))).toInt()
+        if (!wallKicked || lines > 1) {
+            scoring.puyoGarbage += scoring.tSpinClearBonus[lines]!! + b2bBonus
+            scoring.tetrisScore += (scoring.scoreTSpinClearBonus[lines]!! * (1 + (b2bBonus * 0.5f))).toInt()
+            when (lines) {
+                1 -> tSpin1Time.reset()
+                2 -> tSpin2Time.reset()
+                3 -> tSpin3Time.reset()
+            }
+        } else {
+            scoring.tetrisScore += (scoring.scoreTSpinMiniBonus * (1 + (b2bBonus * 0.5f))).toInt()
+            println("Mini t spin single")
+            tSpinMiniTime.reset()
+        }
         b2bBonus = 1
+    }
+
+    private fun tSpinZeroBonus() {
+        cancelTSpinTimers()
+        if (!wallKicked) {
+            scoring.tetrisScore += scoring.scoreTSpinZeroBonus
+            println("T-Spin")
+            tSpin0Time.reset()
+        } else {
+            scoring.tetrisScore += scoring.scoreTSpinMiniZeroBonus
+            println("Mini-T-Spin")
+            tSpinMini0Time.reset()
+        }
+        Sounds.tspin.play()
     }
 
     private fun isTSpin(): Boolean {
@@ -543,9 +615,7 @@ class TetrisGame {
                             onWall = true
                         }
                     }
-                    else if (cells[i][j] != null && !currentTetromino.contains(cells[i][j])) {
-                        blocks++
-                    }
+                    else if (cells[i][j] != null && !currentTetromino.contains(cells[i][j])) blocks++
                 }
             }
             if (tSpinInput && blocks >= 3) return true

@@ -2,7 +2,6 @@ package com.game
 
 
 class TC {
-
     companion object Constants {
         const val COLUMNS: Int = 10
         const val ROWS: Int = 25
@@ -26,8 +25,19 @@ class TC {
         const val HOLD_FIELD_SIZE: Float = 4.5f * CELL_SIZE
         const val HOLD_FIELD_X: Float = GRID_LEFT_X - HOLD_FIELD_SIZE - (CELL_SIZE * 0.5f)
 
-        const val COMBO_LABEL_WIDTH: Float = 5f * CELL_SIZE
-        const val COMBO_LABEL_HEIGHT: Float = 0.585f * COMBO_LABEL_WIDTH
-        const val COMBO_LABEL_LEFT_X: Float = GRID_LEFT_X - COMBO_LABEL_WIDTH - (COMBO_LABEL_WIDTH * 0.1f)
+        const val COMBO_LABEL_WIDTH: Float = 4f * CELL_SIZE
+        const val COMBO_LABEL_HEIGHT: Float = 0.28f * COMBO_LABEL_WIDTH
+        const val COMBO_LABEL_LEFT_X: Float = GRID_LEFT_X - COMBO_LABEL_WIDTH - (COMBO_LABEL_WIDTH * 0.05f)
+
+        const val COMBO_NUMBER_LABEL_WIDTH: Float = CELL_SIZE * 1.5f
+        const val COMBO_NUMBER_LABEL_HEIGHT: Float = 1.1957f * COMBO_NUMBER_LABEL_WIDTH
+        const val COMBO_NUMBER_LABEL_LEFT_X: Float = COMBO_LABEL_LEFT_X - (COMBO_NUMBER_LABEL_WIDTH * 1.05f)
+
+        const val B2B_LABEL_WIDTH: Float = 6f * CELL_SIZE
+        const val B2B_LABEL_HEIGHT: Float = 0.355f * B2B_LABEL_WIDTH
+        const val B2B_LABEL_LEFT_X: Float = GRID_LEFT_X - B2B_LABEL_WIDTH - (B2B_LABEL_WIDTH * 0.05f)
+
+        const val T_SPIN_LABEL_WIDTH: Float = 6f * CELL_SIZE
+        const val T_SPIN_LABEL_HEIGHT: Float = 0.34f * T_SPIN_LABEL_WIDTH
     }
 }

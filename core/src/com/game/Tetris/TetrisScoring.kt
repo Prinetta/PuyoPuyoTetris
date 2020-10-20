@@ -11,6 +11,8 @@ class TetrisScoring() {
     val tSpinClearBonus: HashMap<Int, Int> = createTSpinClearBonus()
 
     val scoreTSpinZeroBonus = 400
+    val scoreTSpinMiniZeroBonus = 100
+    val scoreTSpinMiniBonus = 200
     val scoreComboBonus = 50
     val scoreClearBonus: HashMap<Int, Int> = createScoreClearBonus()
     val scorePerfectClearBonus: HashMap<Int, Int> = createScorePerfectClearBonus()

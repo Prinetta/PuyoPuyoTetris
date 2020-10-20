@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.puyo.*
@@ -84,7 +86,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawScore()
         drawTetrisGarbageQueue()
         drawTetrisEffects()
-        drawTetrisCombo()
+        drawTetrisLabels()
         game.batch.end()
         /// -End Draw-
 
@@ -93,13 +95,70 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     /// Tetris Methods
 
-    private fun drawTetrisCombo() {
-        if (tetrisGame.comboTime.isRunning()) {
+    private fun drawTetrisLabels() {
+        drawTetrisComboLabel()
+        drawTetrisB2BLabel()
+        drawTetrisTSpinLabel()
+    }
+
+    private fun drawTetrisComboLabel() {
+        val c = game.batch.color
+        if (tetrisGame.comboTime.isRunning() && tetrisGame.comboTime.runtime() < 4000f) {
             var process: Float = tetrisGame.comboTime.runtime() / tetrisGame.comboTime.delay.toFloat()
-            if (process > 1) process = 1f
-            game.batch.draw(SpriteArea.bgSprites["tcombo"],
-                    TC.COMBO_LABEL_LEFT_X, TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)),
+            if (process > 1) {
+                game.batch.setColor(c.r, c.g, c.b, (3 - (tetrisGame.comboTime.runtime() - tetrisGame.comboTime.delay) / 1000f))
+                process = 1f
+            }
+            game.batch.draw(SpriteArea.gameSprites["tcombo${tetrisGame.comboCount - 1}"], TC.COMBO_NUMBER_LABEL_LEFT_X,
+                    TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)),
+                    TC.COMBO_NUMBER_LABEL_WIDTH, TC.COMBO_NUMBER_LABEL_HEIGHT * process)
+            game.batch.draw(SpriteArea.gameSprites["tcombo"], TC.COMBO_LABEL_LEFT_X,
+                    TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)),
                     TC.COMBO_LABEL_WIDTH, TC.COMBO_LABEL_HEIGHT * process)
+            game.batch.setColor(c.r, c.g, c.b, 1f)
+        }
+    }
+
+    private fun drawTetrisB2BLabel() {
+        val c = game.batch.color
+        if (tetrisGame.b2bTime.isRunning() && tetrisGame.b2bTime.runtime() < 4000f) {
+            var process: Float = tetrisGame.b2bTime.runtime() / tetrisGame.b2bTime.delay.toFloat()
+            if (process > 1) {
+                game.batch.setColor(c.r, c.g, c.b, (3 - (tetrisGame.b2bTime.runtime() - tetrisGame.b2bTime.delay) / 1000f))
+                process = 1f
+            }
+            game.batch.draw(SpriteArea.gameSprites["b2b"], TC.B2B_LABEL_LEFT_X,
+                    TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)) - TC.CELL_SIZE * 4f,
+                    TC.B2B_LABEL_WIDTH, TC.B2B_LABEL_HEIGHT * process)
+            game.batch.setColor(c.r, c.g, c.b, 1f)
+        }
+    }
+
+    private fun drawTetrisTSpinLabel() {
+        val c = game.batch.color
+        var sprite: TextureRegion? = null
+        var time: Time? = tetrisGame.getCurrentTSpinTimer()
+        when (time) {
+            tetrisGame.tSpin1Time -> sprite = SpriteArea.gameSprites["tspinsingle"]
+            tetrisGame.tSpin2Time -> sprite = SpriteArea.gameSprites["tspindouble"]
+            tetrisGame.tSpin3Time -> sprite = SpriteArea.gameSprites["tspintriple"]
+            tetrisGame.tSpinMiniTime -> sprite = SpriteArea.gameSprites["tspinsinglemini"]
+            tetrisGame.tSpin0Time -> sprite = SpriteArea.gameSprites["tspin"]
+            tetrisGame.tSpinMini0Time -> sprite = SpriteArea.gameSprites["tspinmini"]
+        }
+
+        if (time != null) {
+            if (time.runtime() < 4000f) {
+                var process: Float = time.runtime() / time.delay.toFloat()
+                if (process > 1) {
+                    game.batch.setColor(c.r, c.g, c.b, (3 - (time.runtime() - time.delay) / 1000f))
+                    process = 1f
+                }
+                game.batch.draw(sprite, TC.B2B_LABEL_LEFT_X,
+                        TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)) - TC.CELL_SIZE * 7f,
+                        TC.T_SPIN_LABEL_WIDTH, TC.T_SPIN_LABEL_HEIGHT * process)
+                game.batch.setColor(c.r, c.g, c.b, 1f)
+            }
         }
     }
 
