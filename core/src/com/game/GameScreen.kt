@@ -499,6 +499,22 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
     }
 
+    private var chainCount = 0
+    private var numX = 0
+    private var numY = 0
+    private var displayChainTime = Time(500)
+    private var isDisplayed = false
+
+    private fun drawPuyoLabels(){
+        if(!displayChainTime.hasPassed()){
+            game.batch.draw(SpriteArea.gameSprites["p$chainCount"],
+            PC.GRID_START_X + numX * PC.CELL_SIZE, PC.GRID_START_Y - numY * PC.CELL_SIZE, 40f, 60f)
+            isDisplayed = true
+        } else {
+            chainCount = 0
+        }
+    }
+
     private fun drawPop(){
         puyoController.puyoGame.animationDone = puyosToPop.isEmpty()
         for(puyo in puyosToPop){
@@ -515,6 +531,19 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 game.batch.draw(puyo.sprites["dot"], x+pop.coords[0][0], y+pop.coords[0][1], pop.firstSize, pop.firstSize)
                 game.batch.draw(puyo.sprites["dot"], x+pop.coords[1][0], y+pop.coords[1][1], pop.firstSize, pop.firstSize)
             }
+        }
+        if(puyoController.chainCount > 0 && puyosToPop.isNotEmpty()){
+            val puyo = puyosToPop[puyosToPop.size/2]
+            chainCount = puyoController.chainCount
+            numX = puyo.x
+            numY = puyo.y
+            isDisplayed = false
+        }
+        if(chainCount > 0){
+            if(!isDisplayed){
+                displayChainTime.reset()
+            }
+            drawPuyoLabels()
         }
     }
 

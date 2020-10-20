@@ -21,7 +21,7 @@ class Controller() {
     private var doubleTap = Time(3000)
     private var lockIn = Time(puyoGame.puyo.speed/2)
     private var spawnDelay = Time(400) // 500
-    private var chainCount = 0
+    var chainCount = 0
     var count = 0
 
     private var placedGarbage = 0

@@ -46,7 +46,10 @@ class SpriteArea {
                 "tgarbage-queue30" to atlas.findRegion("garbage3"),
                 "pgarbage" to atlas.findRegion("pg"), "pgarbage-shine1" to atlas.findRegion("pg3"), "pgarbage-shine2" to atlas.findRegion("pg4"),
                 "x1" to atlas.findRegion("cross1"), "x2" to atlas.findRegion("cross2"), "x3" to atlas.findRegion("cross3"),
-                "x4" to atlas.findRegion("cross4"), "x5" to atlas.findRegion("cross5"))
+                "x4" to atlas.findRegion("cross4"), "x5" to atlas.findRegion("cross5"),
+                "pchain" to atlas.findRegion("pchain"), "p0" to guiAtlas.findRegion("p0"), "p1" to guiAtlas.findRegion("p1"), "p2" to guiAtlas.findRegion("p2"),
+                "p3" to guiAtlas.findRegion("p3"), "p4" to guiAtlas.findRegion("p4"), "p5" to guiAtlas.findRegion("p5"),
+                "p6" to guiAtlas.findRegion("p6"), "p7" to guiAtlas.findRegion("p7"), "p8" to guiAtlas.findRegion("p8"), "p9" to guiAtlas.findRegion("p9"))
 
         val puyoSprites = createPuyoSprites()
         val cutPuyoSprites = createCutPuyoSprites()
@@ -66,7 +69,8 @@ class SpriteArea {
                     hashMap[sprite] = TextureRegion(sprite, 0, PC.CELL_SIZE.toInt() / 2, PC.CELL_SIZE.toInt(), PC.CELL_SIZE.toInt() / 2)
                 }
             }
-            atlas.textures.forEach(Consumer { t: Texture -> t.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear) })
+            atlas.textures.forEach {it.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)}
+            guiAtlas.textures.forEach {it.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)}
             return hashMap
         }
 
