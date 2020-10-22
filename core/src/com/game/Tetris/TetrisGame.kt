@@ -102,6 +102,10 @@ class TetrisGame {
     }
 
     private fun handleTimers() {
+        // more time to act when tetromino is about to land
+        if (tetrominoLanded(currentTetromino) && currentTetromino.isFalling) dropTetrominoTime.delay = 800
+        else dropTetrominoTime.delay = 500
+
         if (dropTetrominoTime.hasPassed()) {
             if (currentTetromino.isFalling) {
                 dropTetromino(currentTetromino)
@@ -462,8 +466,6 @@ class TetrisGame {
                             block.shape[i][j].row < 0 || block.shape[i][j].row >= rows) {
                         return true
                     } else if (cells[block.shape[i][j].column][block.shape[i][j].row] != null) {
-                        println(block.shape[i][j].column)
-                        println(block.shape[i][j].row)
                         return true
                     }
                 }
