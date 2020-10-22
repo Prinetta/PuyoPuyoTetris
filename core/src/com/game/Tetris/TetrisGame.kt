@@ -279,7 +279,6 @@ class TetrisGame {
                     }
                 }
             }
-            if (tetrominoLanded(block)) block.isFalling = false
         }
     }
 
@@ -463,6 +462,8 @@ class TetrisGame {
                             block.shape[i][j].row < 0 || block.shape[i][j].row >= rows) {
                         return true
                     } else if (cells[block.shape[i][j].column][block.shape[i][j].row] != null) {
+                        println(block.shape[i][j].column)
+                        println(block.shape[i][j].row)
                         return true
                     }
                 }
@@ -506,6 +507,9 @@ class TetrisGame {
                 for (i in cells.size - 1 downTo 0) {
                     cells[i][j] = cells[i][j - 1]
                 }
+            }
+            for (i in cells.indices) {
+                cells[i][0] = null
             }
         }
     }
@@ -729,4 +733,5 @@ class TetrisGame {
         scoring.tetrisGarbage += amount
         println("Tetris received $amount Tetris Garbage")
     }
+
 }

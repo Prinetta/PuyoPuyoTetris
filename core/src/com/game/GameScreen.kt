@@ -1,6 +1,7 @@
 package com.game
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -45,7 +46,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         puyoController.setTetris(tetrisGame)
         tetrisGame.setPuyo(puyoController.puyoGame)
         Sounds.pmove.play()
-        //bgm.play()
     }
 
     private val countdown = Time(1000)
@@ -56,8 +56,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         shapeRenderer.projectionMatrix = camera.combined
         Gdx.gl.glClearColor(0f, 2/255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-
-
 
         if (tetrisGame.gameOver || puyoController.puyoGame.gameOver) gameOver = true
 
@@ -111,11 +109,16 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 gameOverTime.reset()
             }
         } else {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                game.screen = GameScreen(game)
+                bgm.dispose()
+                this.dispose()
+            }
             game.batch.begin()
             drawVictoryScreen()
             game.batch.end()
         }
-        
+
         //println(Gdx.graphics.framesPerSecond)
     }
 
@@ -136,6 +139,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 countdown.reset()
             }
         } else if (count == -1) {
+            bgm.play()
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
