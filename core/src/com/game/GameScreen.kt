@@ -139,7 +139,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 countdown.reset()
             }
         } else if (count == -1) {
-            bgm.play()
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
@@ -662,16 +661,18 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var numX = 0
     private var numY = 0
     private var displayChainTime = Time(500)
-    private val fadeout = Time(100)
     private var startShowing = false
+    private var frames = 0
 
 
     private fun drawPuyoLabels(){
-        if(!displayChainTime.hasPassed()){ // add fade out
+        if(!displayChainTime.hasPassed()){ // change sprites
             if(chainCount > 0){
-                val process: Float = fadeout.runtime() / fadeout.delay.toFloat()
-                if (process > 1) {
-                    game.batch.setColor(c.r, c.g, c.b, (3 - (fadeout.runtime() - fadeout.delay) / 1000f))
+                val c = game.batch.color
+                if (frames <= 30) {
+                    game.batch.setColor(c.r, c.g, c.b, 1-frames/30f)
+                } else {
+                    game.batch.setColor(c.r, c.g, c.b, 1f)
                 }
                 game.batch.draw(SpriteArea.gameSprites["tcombo"],
                         PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
@@ -680,9 +681,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     game.batch.draw(SpriteArea.gameSprites["tcombo${chainString[i]}"],
                     PC.GRID_START_X + numX * PC.CELL_SIZE + 57 + i*24f, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
                 }
+                frames++
             }
         } else if(puyoController.chainCount == 0){
             chainCount = 0
+            frames = 0
         }
     }
 
