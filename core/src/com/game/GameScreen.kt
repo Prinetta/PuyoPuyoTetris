@@ -21,7 +21,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var camera = OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT)
     private var shapeRenderer = ShapeRenderer()
     private var viewport : FitViewport
-    private val titleFont = game.generateTitleFont(55)
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
     private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/corona.mp3"));
@@ -37,7 +36,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         puyoController.setTetris(tetrisGame)
         tetrisGame.setPuyo(puyoController.puyoGame)
         Sounds.pmove.play()
-        //bgm.play()
     }
 
     private val countdown = Time(1000)
@@ -98,6 +96,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawCountDown(){
+        count = -1 // delete
         if(count >= 0) {
             if(count == 0){
                 game.batch.draw(SpriteArea.gameSprites["tcombo"], SCREEN_WIDTH/2-912/2, SCREEN_HEIGHT/2, 912f, 256f)
@@ -117,6 +116,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
+            //bgm.play()
         }
     }
 
@@ -612,11 +612,17 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var numX = 0
     private var numY = 0
     private var displayChainTime = Time(500)
+    private val fadeout = Time(100)
     private var startShowing = false
 
+
     private fun drawPuyoLabels(){
-        if(!displayChainTime.hasPassed()){
+        if(!displayChainTime.hasPassed()){ // add fade out
             if(chainCount > 0){
+                val process: Float = fadeout.runtime() / fadeout.delay.toFloat()
+                if (process > 1) {
+                    game.batch.setColor(c.r, c.g, c.b, (3 - (fadeout.runtime() - fadeout.delay) / 1000f))
+                }
                 game.batch.draw(SpriteArea.gameSprites["tcombo"],
                         PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
                 val chainString = chainCount.toString()
@@ -674,49 +680,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 continue
             }
 
-            if(pop.frames in 1..2){
-                pop.updateFirst(PC.CELL_SIZE * 0.1f, PC.CELL_SIZE * 0.53f,
-                                pop.coords[0][0] + pop.firstSize * 0.72f, PC.CELL_SIZE * 0.52f,pop.firstSize)
-            }
-            if(pop.frames in 2..3){
-                pop.updateSecond(pop.coords[0][0] - pop.firstSize * 0.45f, pop.coords[0][1] + pop.firstSize * 0.4f,
-                                 pop.coords[1][0] + pop.firstSize * 0.2f, pop.coords[1][1] + pop.firstSize * 0.35f, pop.secondSize)
-            }
-            if(pop.frames == 3){
-                pop.updateFirst(pop.coords[2][0] - pop.secondSize * 0.2f, pop.coords[2][1] + pop.secondSize * 0.26f,
-                                pop.coords[3][0] + pop.secondSize * 0.2f, pop.coords[3][1] + pop.secondSize * 0.26f, PC.CELL_SIZE * 0.7f)
-            }
-            if(pop.frames == 4){
-                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.2f, pop.coords[2][1] + pop.secondSize * 0.26f,
-                                 pop.coords[3][0] + pop.secondSize * 0.2f, pop.coords[3][1] + pop.secondSize * 0.26f, PC.CELL_SIZE * 0.7f)
-                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.2f, pop.coords[0][1] + pop.secondSize * 0.13f,
-                                pop.coords[1][0] + pop.secondSize * 0.2f , pop.coords[1][1] + pop.secondSize * 0.11f, PC.CELL_SIZE * 0.77f)
-            }
-            if(pop.frames == 5){
-                pop.updateSecond(pop.coords[0][0], pop.coords[0][1], pop.coords[1][0], pop.coords[1][1], pop.firstSize)
-                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.1f, pop.coords[0][1] + pop.secondSize * 0.1f,
-                                pop.coords[1][0] + pop.secondSize * 0.45f , pop.coords[1][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.6f)
-            }
-            if(pop.frames == 6){
-                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.1f, pop.coords[2][1] + pop.secondSize * 0.1f,
-                                 pop.coords[3][0] + pop.secondSize * 0.1f, pop.coords[3][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.5f)
-                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.25f, pop.coords[0][1],
-                                pop.coords[1][0] + pop.secondSize * 0.25f , pop.coords[1][1], PC.CELL_SIZE * 0.4f)
-            }
-            if(pop.frames == 7){
-                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.3f, pop.coords[2][1] + pop.secondSize * 0.1f,
-                                 pop.coords[3][0] + pop.secondSize * 0.2f, pop.coords[3][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.4f)
-                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.35f, pop.coords[0][1],
-                                pop.coords[1][0] + pop.firstSize * 0.1f , pop.coords[1][1], PC.CELL_SIZE * 0.3f)
-            }
-            if(pop.frames == 8){
-                pop.updateSecond(pop.coords[2][0] - pop.secondSize * 0.3f, pop.coords[2][1] + pop.secondSize * 0.1f,
-                                 pop.coords[3][0] + pop.secondSize * 0.15f, pop.coords[3][1] + pop.secondSize * 0.1f, PC.CELL_SIZE * 0.3f)
-                pop.updateFirst(pop.coords[0][0] - pop.secondSize * 0.3f, pop.coords[0][1],
-                                pop.coords[1][0] + pop.firstSize * 0.1f , pop.coords[1][1], PC.CELL_SIZE * 0.2f)
-            }
-
-            pop.frames++
+            pop.update()
         }
     }
 

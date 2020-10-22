@@ -17,25 +17,6 @@ class PuyoPuyoTetris : Game() {
         //screen = MenuScreen(this)
     }
 
-    fun generateTitleFont(size: Int) : Array<BitmapFont> {
-        val puyoGenerator = FreeTypeFontGenerator(Gdx.files.internal("Bubblegum.ttf"))
-        val tetrisGenerator = FreeTypeFontGenerator(Gdx.files.internal("Tetris.ttf"))
-
-        val puyoParam = FreeTypeFontGenerator.FreeTypeFontParameter()
-        puyoParam.size = size
-        puyoParam.borderWidth = 4f
-        puyoParam.borderColor = Color(233/255f, 33/255f, 153/255f, 1f)
-
-        val tetrisParam = FreeTypeFontGenerator.FreeTypeFontParameter()
-        tetrisParam.size = (size*1.3).toInt()
-        tetrisParam.borderWidth = 2f
-        tetrisParam.shadowOffsetY = 3
-        tetrisParam.shadowOffsetX = 3
-
-        return arrayOf(puyoGenerator.generateFont(puyoParam), tetrisGenerator.generateFont(tetrisParam))
-        // still need to dispose
-    }
-
     fun generateScoreFont(size: Int) : BitmapFont {
         val generator = FreeTypeFontGenerator(Gdx.files.internal("Mont.ttf"))
         val param = FreeTypeFontGenerator.FreeTypeFontParameter()
