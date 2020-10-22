@@ -15,7 +15,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
     private var viewport : FitViewport
     private val bg = Texture(Gdx.files.internal("menubg.png"))
     private val bgShine = Texture(Gdx.files.internal("menubgshine.png"))
-    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/corona.mp3"));
+    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("sounds/welcome.mp3"));
 
     init {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f)
@@ -23,6 +23,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
         viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
         viewport.setScreenPosition(0, 0)
         bg.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+        bgm.play()
     }
 
     override fun render(delta: Float) {
