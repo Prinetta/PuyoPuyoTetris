@@ -193,7 +193,6 @@ class PuyoGame (){
         puyoChain.forEachIndexed { index, chain -> // found big puyo chain
             if(chain.size > 3){
                 chainIndex = index
-                println("i found a big chain")
                 findAdjacentGarbage()
                 return index
             }

@@ -30,7 +30,6 @@ class Controller() {
         if(puyoGame.hasFoundChain()) {
             if (lastChain.hasPassed()) {
                 chainCount++
-                println(chainCount)
                 puyoGame.removeCombo()
                 lastChain.reset()
                 puyoGame.allPuyosDropped = false

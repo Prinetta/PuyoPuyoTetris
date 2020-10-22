@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
@@ -585,14 +584,17 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var numX = 0
     private var numY = 0
     private var displayChainTime = Time(500)
-    private var startedDisplay = false
+    private var startShowing = false
 
     private fun drawPuyoLabels(){
         if(!displayChainTime.hasPassed()){
-            game.batch.draw(SpriteArea.gameSprites["p$chainCount"],
-            PC.GRID_START_X + numX * PC.CELL_SIZE, PC.GRID_START_Y - numY * PC.CELL_SIZE, 40f, 60f)
-            startedDisplay = true
-        } else {
+            if(chainCount > 0){
+                game.batch.draw(SpriteArea.gameSprites["tcombo"],
+                        PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
+                game.batch.draw(SpriteArea.gameSprites["tcombo$chainCount"],
+                PC.GRID_START_X + numX * PC.CELL_SIZE + 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
+            }
+        } else if(puyoController.chainCount == 0){
             chainCount = 0
         }
     }
@@ -614,15 +616,19 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 game.batch.draw(puyo.sprites["dot"], x+pop.coords[1][0], y+pop.coords[1][1], pop.firstSize, pop.firstSize)
             }
         }
-        if(puyoController.chainCount > 0 && puyosToPop.isNotEmpty()){
+
+        if(puyoController.chainCount > chainCount && puyosToPop.isNotEmpty()){
+            println("can show combo now")
             val puyo = puyosToPop[puyosToPop.size/2]
-            chainCount = puyoController.chainCount
             numX = puyo.x
             numY = puyo.y
-            startedDisplay = false
+            chainCount = puyoController.chainCount
+            startShowing = true
         }
-        if(chainCount > 0 && !startedDisplay){
+
+        if(startShowing){
             displayChainTime.reset()
+            startShowing = false
         }
         drawPuyoLabels()
     }
