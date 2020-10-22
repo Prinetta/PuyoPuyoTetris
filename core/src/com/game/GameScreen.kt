@@ -592,7 +592,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 game.batch.draw(SpriteArea.gameSprites["tcombo"],
                         PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
                 val chainString = chainCount.toString()
-                for(i in 0 until chainString.length){
+                for(i in chainString.indices){
                     game.batch.draw(SpriteArea.gameSprites["tcombo${chainString[i]}"],
                     PC.GRID_START_X + numX * PC.CELL_SIZE + 57 + i*24f, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
                 }
@@ -621,7 +621,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
 
         if(puyoController.chainCount > chainCount && puyosToPop.isNotEmpty()){
-            println("can show combo now")
             val puyo = puyosToPop[puyosToPop.size/2]
             numX = puyo.x
             numY = puyo.y
