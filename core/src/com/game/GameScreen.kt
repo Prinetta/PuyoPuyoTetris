@@ -1,20 +1,29 @@
 package com.game
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.game.puyo.*
 import com.game.Tetris.*
+import com.game.puyo.*
 
 const val SCREEN_WIDTH = 1700f
 const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
+    private var gameOver = false
+
+    private var gameOverTime = Time(300)
+
+    private var screenshot: Pixmap? = null
+
     private var tetrisGame: TetrisGame = TetrisGame()
     private val puyoController = Controller()
 
@@ -47,50 +56,67 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         Gdx.gl.glClearColor(0f, 2/255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        /// Background
-        game.batch.begin()
-        //game.batch.draw(bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-        game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-        drawPuyoBgTexture()
-        drawTetrisGridTexture()
-        game.batch.end()
+        if (tetrisGame.gameOver || puyoController.puyoGame.gameOver) gameOver = true
 
-        /// Puyo Controller
-        puyoController.readInput()
-        puyoController.mainLoop()
+        if (screenshot == null) {
+            /// Background
+            game.batch.begin()
+            //game.batch.draw(bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            drawPuyoBgTexture()
+            drawTetrisGridTexture()
+            game.batch.end()
 
-        /// Tetris Controller
-        tetrisGame.run()
+            /// Puyo Controller
+            puyoController.readInput()
+            puyoController.mainLoop()
 
-        /// Shape Renderer Begin
-        drawPuyoBg()
-        drawTetrisGridBackground()
-        drawTetrisGrid()
-        /// Shape Renderer End
+            /// Tetris Controller
+            tetrisGame.run()
 
-        /// -Begin draw-
-        game.batch.begin()
-        /// Puyo Draw
-        drawCross()
-        drawPuyoPreview()
-        drawPuyos()
-        drawNextPuyos()
-        drawGarbageQueue()
-        /// Tetris Draw
-        drawTetrominos()
-        drawHeldTetrominoBg()
-        drawHeldTetromino()
-        drawTetrisNextBg()
-        drawNextTetrominos()
-        drawTetrisShadow()
-        drawScore()
-        drawTetrisGarbageQueue()
-        drawTetrisEffects()
-        drawTetrisLabels()
+            /// Shape Renderer Begin
+            drawPuyoBg()
+            drawTetrisGridBackground()
+            drawTetrisGrid()
+            /// Shape Renderer End
 
-        drawCountDown()
-        game.batch.end()
-        /// -End Draw-
+            /// -Begin draw-
+            game.batch.begin()
+            /// Puyo Draw
+            drawCross()
+            drawPuyoPreview()
+            drawPuyos()
+            drawNextPuyos()
+            drawGarbageQueue()
+            /// Tetris Draw
+            drawTetrominos()
+            drawHeldTetrominoBg()
+            drawHeldTetromino()
+            drawTetrisNextBg()
+            drawNextTetrominos()
+            drawTetrisShadow()
+            drawScore()
+            drawTetrisGarbageQueue()
+            drawTetrisEffects()
+            drawTetrisLabels()
+
+            drawCountDown()
+            game.batch.end()
+            /// -End Draw-
+            if (gameOver) {
+                screenshot = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.width, Gdx.graphics.height)
+                gameOverTime.reset()
+            }
+        } else {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                game.screen = GameScreen(game)
+                bgm.dispose()
+                this.dispose()
+            }
+            game.batch.begin()
+            drawVictoryScreen()
+            game.batch.end()
+        }
 
         //println(Gdx.graphics.framesPerSecond)
     }
@@ -101,23 +127,45 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             if(count == 0){
                 game.batch.draw(SpriteArea.gameSprites["tcombo"], SCREEN_WIDTH/2-912/2, SCREEN_HEIGHT/2, 912f, 256f)
             } else {
-                game.batch.draw(SpriteArea.gameSprites["tcombo$count"], SCREEN_WIDTH/2-230/2, SCREEN_HEIGHT/2, 230f, 275f)
+                game.batch.draw(SpriteArea.gameSprites["tcombo$count"], SCREEN_WIDTH / 2 - 230 / 2, SCREEN_HEIGHT / 2, 230f, 275f)
             }
-            if(countdown.hasPassed()){
+            if (countdown.hasPassed()) {
                 count--
-                if(count > 0){
+                if (count > 0) {
                     Sounds.pmove.play()
                 } else if (count == 0) {
                     Sounds.start.play()
                 }
                 countdown.reset()
             }
-        } else if(count == -1){
+        } else if (count == -1) {
+            bgm.play()
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
             //bgm.play()
         }
+    }
+
+    // Game methods
+
+    private fun drawVictoryScreen() {
+        var process: Float = if (!gameOverTime.hasPassed()) gameOverTime.runtime() / gameOverTime.delay.toFloat() else 1f
+        game.batch.setColor(1f - process / 2, 1 - process / 2, 1 - process / 2, 1f)
+        //screenshot is upside down for some reason
+        game.batch.draw(Texture(screenshot), 0f, Gdx.graphics.height.toFloat(), Gdx.graphics.width.toFloat(), -Gdx.graphics.height.toFloat())
+        game.batch.setColor(1f, 1f, 1f, 1f)
+        var puyo = puyoController.puyoGame
+        var puyoTexture = Texture("winner.png")
+        var tetrisTexture = Texture("loser.png")
+        if (puyo.gameOver) {
+            puyoTexture = Texture("loser.png")
+            tetrisTexture = Texture("winner.png")
+        }
+        game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 4f * PC.CELL_SIZE) / 2,
+                SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
+        game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - 4f * PC.CELL_SIZE) / 2,
+                SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
     }
 
     /// Tetris Methods
@@ -189,9 +237,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     game.batch.setColor(c.r, c.g, c.b, (3 - (time.runtime() - time.delay) / 1000f))
                     process = 1f
                 }
+                var width = if (time != tetrisGame.tSpinMini0Time) TC.T_SPIN_LABEL_WIDTH else TC.T_SPIN_ZERO_LABEL_WIDTH // t spin mini zero is the only label with different size
+                var height = if (time != tetrisGame.tSpinMini0Time) TC.T_SPIN_LABEL_HEIGHT else TC.T_SPIN_ZERO_LABEL_HEIGHT
                 game.batch.draw(sprite, TC.B2B_LABEL_LEFT_X,
                         TC.GRID_TOP_Y - TC.CELL_SIZE * (TC.ROWS / 2) - (process * (TC.CELL_SIZE * 3.5f / 2)) - TC.CELL_SIZE * 7f,
-                        TC.T_SPIN_LABEL_WIDTH, TC.T_SPIN_LABEL_HEIGHT * process)
+                        width, height * process)
                 game.batch.setColor(c.r, c.g, c.b, 1f)
             }
         }
@@ -370,14 +420,14 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     count = 1
                     while (fullRows.contains(fullRows[row] - count)) count++
                     var time: Float = tetrisGame.removeLineTime.runtime() / 1000f
-                    game.batch.draw(SpriteArea.tEffectSprites["erase-big"],
-                            TC.GRID_LEFT_X + (time * ((TC.CELL_SIZE * TC.COLUMNS) / 0.27f)) - (1.5f * TC.CELL_SIZE),
-                            TC.GRID_TOP_Y - ((fullRows[row] + (count - 1)) * TC.CELL_SIZE) - ((1.5f * TC.CELL_SIZE)),
-                            8f * TC.CELL_SIZE, (4f * TC.CELL_SIZE) * count)
                     game.batch.draw(SpriteArea.tEffectSprites["full-line"], TC.GRID_LEFT_X - 3f,
                             TC.GRID_TOP_Y - ((fullRows[row]) * TC.CELL_SIZE) - (3f * count) + (time * 2f * TC.CELL_SIZE * count),
                             TC.COLUMNS * TC.CELL_SIZE + 6f,
                             (TC.CELL_SIZE + 6f) * count - (time * 4f * TC.CELL_SIZE * count))
+                    game.batch.draw(SpriteArea.tEffectSprites["erase-big"],
+                            TC.GRID_LEFT_X + (time * ((TC.CELL_SIZE * TC.COLUMNS) / 0.27f)) - (1.5f * TC.CELL_SIZE),
+                            TC.GRID_TOP_Y - ((fullRows[row] + 1) * TC.CELL_SIZE - (count * 0.25f) / 2),
+                            8f * TC.CELL_SIZE, TC.CELL_SIZE * (count + 2f + (count * 0.25f)))
                 }
             }
         }

@@ -13,8 +13,8 @@ class PuyoPuyoTetris : Game() {
 
     override fun create() {
         batch = SpriteBatch()
-        screen = GameScreen(this)
-        //screen = MenuScreen(this)
+        //screen = GameScreen(this)
+        screen = MenuScreen(this)
     }
 
     fun generateScoreFont(size: Int) : BitmapFont {

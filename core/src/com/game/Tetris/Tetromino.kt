@@ -232,10 +232,10 @@ class Tetromino(var column: Int, var row: Int, var type: Char, var texture: Text
     }
 
     fun createO() {
-        shape[3][3] = TetrisBlock(column, row, texture) // main brick for O-Block
-        shape[3][4] = TetrisBlock(column, row + 1, texture)
-        shape[4][3] = TetrisBlock(column + 1, row, texture)
-        shape[4][4] = TetrisBlock(column + 1, row + 1, texture)
+        shape[2][2] = TetrisBlock(column, row - 1, texture) // main brick for O-Block
+        shape[2][3] = TetrisBlock(column, row, texture)
+        shape[3][2] = TetrisBlock(column + 1, row - 1, texture)
+        shape[3][3] = TetrisBlock(column + 1, row, texture)
     }
 
     fun createI() {

@@ -18,7 +18,7 @@ class TetrisGame {
     private val tetrominoTypes: MutableList<Char> = mutableListOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
     private lateinit var currentTypes: MutableList<Char>
 
-    private var gameIsOver: Boolean = false
+    var gameOver: Boolean = false
     private var enableHold: Boolean = true
     private var wallKicked: Boolean = false
     private var tSpinInput: Boolean = false
@@ -95,13 +95,17 @@ class TetrisGame {
     }
 
     fun run() {
-        if (!gameIsOver && hasStarted) {
+        if (!gameOver && hasStarted) {
             handleTimers()
             handleInputs()
         }
     }
 
     private fun handleTimers() {
+        // more time to act when tetromino is about to land
+        if (tetrominoLanded(currentTetromino) && currentTetromino.isFalling) dropTetrominoTime.delay = 800
+        else dropTetrominoTime.delay = 500
+
         if (dropTetrominoTime.hasPassed()) {
             if (currentTetromino.isFalling) {
                 dropTetromino(currentTetromino)
@@ -279,7 +283,6 @@ class TetrisGame {
                     }
                 }
             }
-            if (tetrominoLanded(block)) block.isFalling = false
         }
     }
 
@@ -507,6 +510,9 @@ class TetrisGame {
                     cells[i][j] = cells[i][j - 1]
                 }
             }
+            for (i in cells.indices) {
+                cells[i][0] = null
+            }
         }
     }
 
@@ -706,8 +712,8 @@ class TetrisGame {
     }
 
     private fun gameOver() {
-        if (!gameIsOver) Sounds.tover.play()
-        gameIsOver = true
+        if (!gameOver) Sounds.tover.play()
+        gameOver = true
         //println("Tetris lost")
     }
 
@@ -729,4 +735,5 @@ class TetrisGame {
         scoring.tetrisGarbage += amount
         println("Tetris received $amount Tetris Garbage")
     }
+
 }
