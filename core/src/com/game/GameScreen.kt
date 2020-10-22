@@ -22,7 +22,9 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
     private var gameOverTime = Time(300)
 
-    private var screenshot: Pixmap? = null
+    private var screenshot: Texture? = null
+    var winTexture = Texture("winner.png")
+    var loseTexture = Texture("loser.png")
 
     private var tetrisGame: TetrisGame = TetrisGame()
     private val puyoController = Controller()
@@ -104,7 +106,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             game.batch.end()
             /// -End Draw-
             if (gameOver) {
-                screenshot = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.width, Gdx.graphics.height)
+                screenshot = Texture(ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.width, Gdx.graphics.height))
                 gameOverTime.reset()
             }
         } else {
@@ -139,6 +141,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 countdown.reset()
             }
         } else if (count == -1) {
+            //bgm.play()
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
@@ -152,14 +155,14 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         var process: Float = if (!gameOverTime.hasPassed()) gameOverTime.runtime() / gameOverTime.delay.toFloat() else 1f
         game.batch.setColor(1f - process / 2, 1 - process / 2, 1 - process / 2, 1f)
         //screenshot is upside down for some reason
-        game.batch.draw(Texture(screenshot), 0f, Gdx.graphics.height.toFloat(), Gdx.graphics.width.toFloat(), -Gdx.graphics.height.toFloat())
+        game.batch.draw(screenshot, 0f, Gdx.graphics.height.toFloat(), Gdx.graphics.width.toFloat(), -Gdx.graphics.height.toFloat())
         game.batch.setColor(1f, 1f, 1f, 1f)
         var puyo = puyoController.puyoGame
-        var puyoTexture = Texture("winner.png")
-        var tetrisTexture = Texture("loser.png")
+        var puyoTexture = winTexture
+        var tetrisTexture = loseTexture
         if (puyo.gameOver) {
-            puyoTexture = Texture("loser.png")
-            tetrisTexture = Texture("winner.png")
+            puyoTexture = loseTexture
+            tetrisTexture = winTexture
         }
         game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 4f * PC.CELL_SIZE) / 2,
                 SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)

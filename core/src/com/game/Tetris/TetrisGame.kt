@@ -114,6 +114,7 @@ class TetrisGame {
                 tSpinInput = false
                 enableHold = true
             }
+            dropTetrominoTime.delay = 500
             dropTetrominoTime.reset()
         }
 
@@ -141,11 +142,9 @@ class TetrisGame {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            if (!tetrominoLanded(currentTetromino)) {
-                if (moveKeyHeldTime.hasPassed()) {
-                    moveLeft(currentTetromino)
-                    moveKeyHeldTime.startAt(190)
-                }
+            if (moveKeyHeldTime.hasPassed()) {
+                moveLeft(currentTetromino)
+                moveKeyHeldTime.startAt(190)
             }
         }
 
@@ -155,11 +154,9 @@ class TetrisGame {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            if (!tetrominoLanded(currentTetromino)) {
-                if (moveKeyHeldTime.hasPassed()) {
-                    moveRight(currentTetromino)
-                    moveKeyHeldTime.startAt(190)
-                }
+            if (moveKeyHeldTime.hasPassed()) {
+                moveRight(currentTetromino)
+                moveKeyHeldTime.startAt(190)
             }
         }
 
