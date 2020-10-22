@@ -8,6 +8,8 @@ class TC {
 
         const val CELL_SIZE: Float = 32.5f
 
+        const val GRID_WIDTH: Float = CELL_SIZE * COLUMNS
+        const val GRID_HEIGHT: Float = CELL_SIZE * (ROWS - 1)
         const val GRID_LEFT_X: Float = (SCREEN_WIDTH - (CELL_SIZE * COLUMNS)) / 1.25f
         const val GRID_TOP_Y: Float = SCREEN_HEIGHT - ((SCREEN_HEIGHT - (CELL_SIZE * (ROWS - 1))) / 2)
         const val GRID_BOTTOM_Y: Float = GRID_TOP_Y - ((ROWS - 1) * CELL_SIZE)
@@ -39,6 +41,9 @@ class TC {
 
         const val T_SPIN_LABEL_WIDTH: Float = 6f * CELL_SIZE
         const val T_SPIN_LABEL_HEIGHT: Float = 0.34f * T_SPIN_LABEL_WIDTH
+
+        const val T_SPIN_ZERO_LABEL_WIDTH: Float = 5f * CELL_SIZE
+        const val T_SPIN_ZERO_LABEL_HEIGHT: Float = 0.4463f * T_SPIN_LABEL_WIDTH
 
         const val TETRIS_WIDTH: Float = CELL_SIZE * COLUMNS
         const val TETRIS_HEIGHT: Float = 0.224f * TETRIS_WIDTH

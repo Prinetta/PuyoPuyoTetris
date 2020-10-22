@@ -7,6 +7,7 @@ class Time (var delay: Int){
         currentTime = System.currentTimeMillis()
     }
 
+
     fun copy(): Time{
         val time = Time(delay)
         time.currentTime = currentTime

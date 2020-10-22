@@ -18,7 +18,7 @@ class TetrisGame {
     private val tetrominoTypes: MutableList<Char> = mutableListOf('T', 'O', 'I', 'J', 'L', 'S', 'Z')
     private lateinit var currentTypes: MutableList<Char>
 
-    private var gameIsOver: Boolean = false
+    var gameOver: Boolean = false
     private var enableHold: Boolean = true
     private var wallKicked: Boolean = false
     private var tSpinInput: Boolean = false
@@ -95,7 +95,7 @@ class TetrisGame {
     }
 
     fun run() {
-        if (!gameIsOver && hasStarted) {
+        if (!gameOver && hasStarted) {
             handleTimers()
             handleInputs()
         }
@@ -706,8 +706,8 @@ class TetrisGame {
     }
 
     private fun gameOver() {
-        if (!gameIsOver) Sounds.tover.play()
-        gameIsOver = true
+        if (!gameOver) Sounds.tover.play()
+        gameOver = true
         //println("Tetris lost")
     }
 
