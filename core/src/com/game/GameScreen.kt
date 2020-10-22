@@ -36,9 +36,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         viewport.setScreenPosition(0, 0)
         puyoController.setTetris(tetrisGame)
         tetrisGame.setPuyo(puyoController.puyoGame)
-        Sounds.start.play()
+        Sounds.pmove.play()
         //bgm.play()
     }
+
+    private val countdown = Time(1000)
+    private var count = 3
 
     override fun render(delta: Float) {
         game.batch.projectionMatrix = camera.combined
@@ -86,10 +89,35 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         drawTetrisGarbageQueue()
         drawTetrisEffects()
         drawTetrisLabels()
+
+        drawCountDown()
         game.batch.end()
         /// -End Draw-
 
         //println(Gdx.graphics.framesPerSecond)
+    }
+
+    private fun drawCountDown(){
+        if(count >= 0) {
+            if(count == 0){
+                game.batch.draw(SpriteArea.gameSprites["tcombo"], SCREEN_WIDTH/2-912/2, SCREEN_HEIGHT/2, 912f, 256f)
+            } else {
+                game.batch.draw(SpriteArea.gameSprites["tcombo$count"], SCREEN_WIDTH/2-230/2, SCREEN_HEIGHT/2, 230f, 275f)
+            }
+            if(countdown.hasPassed()){
+                count--
+                if(count > 0){
+                    Sounds.pmove.play()
+                } else if (count == 0) {
+                    Sounds.start.play()
+                }
+                countdown.reset()
+            }
+        } else if(count == -1){
+            puyoController.hasStarted = true
+            tetrisGame.hasStarted = true
+            count--
+        }
     }
 
     /// Tetris Methods

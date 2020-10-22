@@ -22,6 +22,7 @@ class TetrisGame {
     private var enableHold: Boolean = true
     private var wallKicked: Boolean = false
     private var tSpinInput: Boolean = false
+    var hasStarted = false
 
     var scoring: TetrisScoring = TetrisScoring()
     var comboCount: Int = 0
@@ -94,7 +95,7 @@ class TetrisGame {
     }
 
     fun run() {
-        if (!gameIsOver) {
+        if (!gameIsOver && hasStarted) {
             handleTimers()
             handleInputs()
         }

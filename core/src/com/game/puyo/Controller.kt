@@ -24,10 +24,14 @@ class Controller() {
     private var spawnDelay = Time(400) // 500
     var chainCount = 0
     var count = 0
+    var hasStarted = false
 
     private var placedGarbage = 0
 
     fun mainLoop(){
+        if(!hasStarted){
+            return
+        }
         if(puyoGame.hasFoundChain()) {
             if (lastChain.hasPassed()) {
                 chainCount++
