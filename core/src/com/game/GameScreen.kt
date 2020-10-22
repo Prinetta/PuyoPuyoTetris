@@ -519,7 +519,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
 
         game.batch.draw(crossAnim.currentSprite,
-                PC.GRID_START_X + 3 * PC.CELL_SIZE,
+                PC.GRID_START_X + 3 * PC.CELL_SIZE + PC.CELL_SIZE*0.07f,
                 PC.GRID_START_Y - PC.CELL_SIZE,
                 PC.CELL_SIZE*0.7f, PC.CELL_SIZE*0.7f)
     }
@@ -591,8 +591,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             if(chainCount > 0){
                 game.batch.draw(SpriteArea.gameSprites["tcombo"],
                         PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
-                game.batch.draw(SpriteArea.gameSprites["tcombo$chainCount"],
-                PC.GRID_START_X + numX * PC.CELL_SIZE + 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
+                val chainString = chainCount.toString()
+                for(i in 0 until chainString.length){
+                    game.batch.draw(SpriteArea.gameSprites["tcombo${chainString[i]}"],
+                    PC.GRID_START_X + numX * PC.CELL_SIZE + 57 + i*24f, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
+                }
             }
         } else if(puyoController.chainCount == 0){
             chainCount = 0

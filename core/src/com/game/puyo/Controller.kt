@@ -3,6 +3,7 @@ package com.game.puyo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.game.Block
+import com.game.PC
 import com.game.Sounds
 import com.game.Tetris.TetrisGame
 
@@ -223,7 +224,8 @@ class Controller() {
 
     private fun allowInput() : Boolean {
         return lastInput.hasPassed() && !puyoGame.puyo.isLocked &&
-                !(puyoGame.puyo.fullRotateCount > 7 && (!puyoGame.canFall(puyoGame.puyo.first) || !puyoGame.canFall(puyoGame.puyo.second)))
+                !(puyoGame.puyo.fullRotateCount > 7 && (!puyoGame.canFall(puyoGame.puyo.first) || !puyoGame.canFall(puyoGame.puyo.second)
+                || puyoGame.puyo.first.y >= PC.GRID_LENGTH-1 || puyoGame.puyo.second.y >= PC.GRID_LENGTH-1))
     }
 
     private fun movePuyo(direction: Int){
