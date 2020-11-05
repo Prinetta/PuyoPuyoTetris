@@ -156,17 +156,21 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         //screenshot is upside down for some reason
         game.batch.draw(screenshot, 0f, Gdx.graphics.height.toFloat(), Gdx.graphics.width.toFloat(), -Gdx.graphics.height.toFloat())
         game.batch.setColor(1f, 1f, 1f, 1f)
-        var puyo = puyoController.puyoGame
         var puyoTexture = winTexture
         var tetrisTexture = loseTexture
-        if (puyo.gameOver) {
+        if (puyoController.puyoGame.gameOver) {
             puyoTexture = loseTexture
             tetrisTexture = winTexture
+            game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 4.5f * PC.CELL_SIZE) / 2,
+                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4.5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
+            game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - 5f * PC.CELL_SIZE) / 2,
+                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
+        } else {
+            game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 5f * PC.CELL_SIZE) / 2,
+                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
+            game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - 4.5f * PC.CELL_SIZE) / 2,
+                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4.5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
         }
-        game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 4f * PC.CELL_SIZE) / 2,
-                SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
-        game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - 4f * PC.CELL_SIZE) / 2,
-                SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
     }
 
     /// Tetris Methods
