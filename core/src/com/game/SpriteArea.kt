@@ -36,7 +36,8 @@ class SpriteArea {
                 "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
                 "grid-bg" to guiAtlas.findRegion("gridbg"), "next-bg" to guiAtlas.findRegion("nextbg2"), "next2-bg" to guiAtlas.findRegion("nextbg2"),
                 "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"),
-                "press-button" to guiAtlas.findRegion("pressbutton"), "title" to guiAtlas.findRegion("title"))
+                "press-button" to guiAtlas.findRegion("pressbutton"), "title" to guiAtlas.findRegion("title"),
+                "loading" to guiAtlas.findRegion("loading"), "loading-dark" to guiAtlas.findRegion("loadingdark"), "loading-darker" to guiAtlas.findRegion("loadingdarker"))
 
 
         val gameSprites = hashMapOf<String, TextureRegion>("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),

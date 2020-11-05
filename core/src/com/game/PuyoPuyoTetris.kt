@@ -2,6 +2,7 @@ package com.game
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -10,11 +11,15 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 
 class PuyoPuyoTetris : Game() {
     lateinit var batch: SpriteBatch
+    lateinit var menuGif: GifAnimation
     lateinit var bgGif: GifAnimation
+    lateinit var manager: AssetManager
 
     override fun create() {
         batch = SpriteBatch()
-        bgGif = GifAnimation("bg", 121, 0.1f)
+        manager = AssetManager()
+        menuGif = GifAnimation(this, "menu", 30, 0.075f)
+        bgGif = GifAnimation(this, "bg", 121, 0.1f)
         //screen = GameScreen(this)
         screen = MenuScreen(this)
     }
