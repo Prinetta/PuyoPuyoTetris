@@ -6,7 +6,7 @@ filter: Nearest,Nearest
 repeat: none
 backtoback
   rotate: false
-  xy: 1334, 940
+  xy: 1735, 830
   size: 231, 82
   orig: 231, 82
   offset: 0, 0
@@ -20,100 +20,107 @@ gridbg
   index: -1
 holdbg
   rotate: false
-  xy: 797, 391
+  xy: 797, 271
   size: 161, 161
   orig: 161, 161
   offset: 0, 0
   index: -1
 nextbg
   rotate: false
-  xy: 797, 554
+  xy: 797, 434
   size: 161, 162
   orig: 161, 162
   offset: 0, 0
   index: -1
 nextbg2
   rotate: false
-  xy: 797, 300
+  xy: 325, 112
   size: 113, 89
   orig: 113, 89
   offset: 0, 0
   index: -1
 p0
   rotate: false
-  xy: 960, 522
-  size: 60, 96
-  orig: 60, 96
+  xy: 904, 235
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p1
   rotate: false
-  xy: 860, 207
-  size: 47, 91
-  orig: 47, 91
+  xy: 1066, 692
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p2
   rotate: false
-  xy: 1960, 930
-  size: 57, 92
-  orig: 57, 92
+  xy: 1038, 656
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p3
   rotate: false
-  xy: 1777, 926
-  size: 59, 96
-  orig: 59, 96
+  xy: 1114, 749
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p4
   rotate: false
-  xy: 1899, 931
-  size: 59, 91
-  orig: 59, 91
+  xy: 615, 167
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p5
   rotate: false
-  xy: 1838, 928
-  size: 59, 94
-  orig: 59, 94
+  xy: 1979, 931
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p6
   rotate: false
-  xy: 960, 424
-  size: 60, 96
-  orig: 60, 96
+  xy: 271, 36
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p7
   rotate: false
-  xy: 271, 36
-  size: 57, 91
-  orig: 57, 91
+  xy: 1038, 620
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p8
   rotate: false
-  xy: 797, 203
-  size: 61, 95
-  orig: 61, 95
+  xy: 584, 167
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 p9
   rotate: false
-  xy: 960, 620
-  size: 63, 96
-  orig: 63, 96
+  xy: 960, 334
+  size: 29, 34
+  orig: 29, 34
   offset: 0, 0
   index: -1
 pchain
   rotate: false
-  xy: 1567, 929
-  size: 208, 93
-  orig: 208, 93
+  xy: 797, 234
+  size: 105, 35
+  orig: 105, 35
+  offset: 0, 0
+  index: -1
+pressbutton
+  rotate: false
+  xy: 797, 785
+  size: 350, 20
+  orig: 350, 20
   offset: 0, 0
   index: -1
 puyobg
@@ -132,70 +139,70 @@ tcombo
   index: -1
 tcombo0
   rotate: false
-  xy: 912, 334
+  xy: 1066, 728
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo1
   rotate: false
-  xy: 960, 367
+  xy: 1979, 967
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo2
   rotate: false
-  xy: 325, 146
+  xy: 960, 541
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo3
   rotate: false
-  xy: 373, 146
+  xy: 440, 146
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo4
   rotate: false
-  xy: 661, 146
+  xy: 960, 370
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo5
   rotate: false
-  xy: 421, 146
+  xy: 271, 72
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo6
   rotate: false
-  xy: 469, 146
+  xy: 960, 484
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo7
   rotate: false
-  xy: 517, 146
+  xy: 488, 146
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo8
   rotate: false
-  xy: 565, 146
+  xy: 960, 427
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo9
   rotate: false
-  xy: 613, 146
+  xy: 536, 146
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
@@ -207,37 +214,44 @@ tetris
   orig: 321, 72
   offset: 0, 0
   index: -1
+title
+  rotate: false
+  xy: 797, 807
+  size: 668, 215
+  orig: 668, 215
+  offset: 0, 0
+  index: -1
 tspin
   rotate: false
-  xy: 797, 718
+  xy: 1735, 914
   size: 242, 108
   orig: 242, 108
   offset: 0, 0
   index: -1
 tspindouble
   rotate: false
-  xy: 797, 828
+  xy: 1467, 828
   size: 266, 90
   orig: 266, 90
   offset: 0, 0
   index: -1
 tspinmini
   rotate: false
-  xy: 1065, 837
+  xy: 797, 598
   size: 239, 92
   orig: 239, 92
   offset: 0, 0
   index: -1
 tspinsingle
   rotate: false
-  xy: 1065, 931
+  xy: 797, 692
   size: 267, 91
   orig: 267, 91
   offset: 0, 0
   index: -1
 tspinsinglemini
   rotate: false
-  xy: 797, 920
+  xy: 1467, 920
   size: 266, 102
   orig: 266, 102
   offset: 0, 0

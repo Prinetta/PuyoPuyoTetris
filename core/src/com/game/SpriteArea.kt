@@ -35,7 +35,8 @@ class SpriteArea {
         val bgSprites = hashMapOf("next-field" to guiAtlas.findRegion("next-field"),
                 "hold-field" to guiAtlas.findRegion("hold-field"), "next-field-sec" to guiAtlas.findRegion("next-field-sec"),
                 "grid-bg" to guiAtlas.findRegion("gridbg"), "next-bg" to guiAtlas.findRegion("nextbg2"), "next2-bg" to guiAtlas.findRegion("nextbg2"),
-                "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"))
+                "hold-bg" to guiAtlas.findRegion("holdbg"), "puyo-bg" to guiAtlas.findRegion("puyobg"),
+                "press-button" to guiAtlas.findRegion("pressbutton"), "title" to guiAtlas.findRegion("title"))
 
 
         val gameSprites = hashMapOf<String, TextureRegion>("garbage-queue1" to atlas.findRegion("g1"), "garbage-queue6" to atlas.findRegion("g6"),
@@ -46,7 +47,7 @@ class SpriteArea {
                 "pgarbage" to atlas.findRegion("pg"), "pgarbage-shine1" to atlas.findRegion("pg3"), "pgarbage-shine2" to atlas.findRegion("pg4"),
                 "x1" to atlas.findRegion("cross1"), "x2" to atlas.findRegion("cross2"), "x3" to atlas.findRegion("cross3"),
                 "x4" to atlas.findRegion("cross4"), "x5" to atlas.findRegion("cross5"),
-                "pchain" to atlas.findRegion("pchain"), "p0" to guiAtlas.findRegion("p0"), "p1" to guiAtlas.findRegion("p1"), "p2" to guiAtlas.findRegion("p2"),
+                "pchain" to guiAtlas.findRegion("pchain"), "p0" to guiAtlas.findRegion("p0"), "p1" to guiAtlas.findRegion("p1"), "p2" to guiAtlas.findRegion("p2"),
                 "p3" to guiAtlas.findRegion("p3"), "p4" to guiAtlas.findRegion("p4"), "p5" to guiAtlas.findRegion("p5"),
                 "p6" to guiAtlas.findRegion("p6"), "p7" to guiAtlas.findRegion("p7"), "p8" to guiAtlas.findRegion("p8"), "p9" to guiAtlas.findRegion("p9"),
                 "tcombo" to guiAtlas.findRegion("tcombo"), "tcombo1" to guiAtlas.findRegion("tcombo1"),

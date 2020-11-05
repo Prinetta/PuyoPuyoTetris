@@ -35,7 +35,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
     private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/corona.mp3"));
-    //private val bgGif = GifAnimation("bg", 121, 0.1f)
 
     // Tetris
     private val nextFont = game.generateTetrisNextFont(25)
@@ -63,8 +62,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         if (screenshot == null) {
             /// Background
             game.batch.begin()
-            //game.batch.draw(bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-            game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            game.batch.draw(game.bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            //game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
             drawPuyoBgTexture()
             drawTetrisGridTexture()
             game.batch.end()
@@ -669,19 +668,19 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
 
 
     private fun drawPuyoLabels(){
+        val c = game.batch.color
         if(!displayChainTime.hasPassed()){ // change sprites
             if(chainCount > 0){
-                val c = game.batch.color
                 if (frames <= 30) {
                     game.batch.setColor(c.r, c.g, c.b, 1-frames/30f)
                 } else {
-                    game.batch.setColor(c.r, c.g, c.b, 1f)
+                    frames = 0
                 }
-                game.batch.draw(SpriteArea.gameSprites["tcombo"],
+                game.batch.draw(SpriteArea.gameSprites["pchain"],
                         PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
                 val chainString = chainCount.toString()
                 for(i in chainString.indices){
-                    game.batch.draw(SpriteArea.gameSprites["tcombo${chainString[i]}"],
+                    game.batch.draw(SpriteArea.gameSprites["p${chainString[i]}"],
                     PC.GRID_START_X + numX * PC.CELL_SIZE + 57 + i*24f, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
                 }
                 frames++
@@ -690,6 +689,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             chainCount = 0
             frames = 0
         }
+        game.batch.setColor(c.r, c.g, c.b, 1f)
     }
 
     private fun drawPop(){

@@ -10,9 +10,11 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 
 class PuyoPuyoTetris : Game() {
     lateinit var batch: SpriteBatch
+    lateinit var bgGif: GifAnimation
 
     override fun create() {
         batch = SpriteBatch()
+        bgGif = GifAnimation("bg", 121, 0.1f)
         //screen = GameScreen(this)
         screen = MenuScreen(this)
     }
