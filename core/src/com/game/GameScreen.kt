@@ -34,7 +34,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var viewport : FitViewport
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
-    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/corona.mp3"));
 
     // Tetris
     private val nextFont = game.generateTetrisNextFont(25)
@@ -113,7 +112,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         } else {
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 game.screen = GameScreen(game)
-                bgm.dispose()
                 this.dispose()
             }
             game.batch.begin()
@@ -145,7 +143,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
-            //bgm.play()
         }
     }
 

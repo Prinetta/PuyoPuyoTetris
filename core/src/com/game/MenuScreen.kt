@@ -14,7 +14,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
     private var shapeRenderer = ShapeRenderer()
     private var viewport : FitViewport
     private val bgGif = GifAnimation("menu", 92, 0.075f)
-    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("sounds/welcome.mp3"))
+    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/wood.mp3"));
     private var frame = 0
 
     init {
@@ -22,7 +22,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT)
         viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
         viewport.setScreenPosition(0, 0)
-        //bgm.play()
+        bgm.play()
     }
 
     override fun render(delta: Float) {
