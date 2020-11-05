@@ -154,7 +154,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         var process: Float = if (!gameOverTime.hasPassed()) gameOverTime.runtime() / gameOverTime.delay.toFloat() else 1f
         game.batch.setColor(1f - process / 2, 1 - process / 2, 1 - process / 2, 1f)
         //screenshot is upside down for some reason
-        game.batch.draw(screenshot, 0f, Gdx.graphics.height.toFloat(), Gdx.graphics.width.toFloat(), -Gdx.graphics.height.toFloat())
+        game.batch.draw(screenshot, 0f, SCREEN_HEIGHT, SCREEN_WIDTH, -SCREEN_HEIGHT)
         game.batch.setColor(1f, 1f, 1f, 1f)
         var puyoTexture = winTexture
         var tetrisTexture = loseTexture
