@@ -108,6 +108,7 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 screenshot = if (Gdx.graphics.width > SCREEN_WIDTH) Texture(ScreenUtils.getFrameBufferPixmap(100, 0, SCREEN_WIDTH.toInt(), SCREEN_HEIGHT.toInt()))
                 else Texture(ScreenUtils.getFrameBufferPixmap(0, 0, SCREEN_WIDTH.toInt(), SCREEN_HEIGHT.toInt()))
                 gameOverTime.reset()
+                Sounds.lose.play()
             }
         } else {
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
