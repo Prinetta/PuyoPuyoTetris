@@ -182,6 +182,7 @@ class TetrisGame {
                     downKeyHeldTime.startAt(160)
                     scoring.tetrisScore++
                     dropTetrominoTime.reset()
+                    Sounds.tfall.play()
                 }
             }
         } else downKeyHeldTime.reset()

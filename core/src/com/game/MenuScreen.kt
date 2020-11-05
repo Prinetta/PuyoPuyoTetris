@@ -49,6 +49,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     override fun resize(width: Int, height: Int) {
+        viewport.update(width, height)
     }
 
     override fun pause() {

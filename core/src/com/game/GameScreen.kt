@@ -105,7 +105,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             game.batch.end()
             /// -End Draw-
             if (gameOver) {
-                screenshot = Texture(ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.width, Gdx.graphics.height))
+                screenshot = if (Gdx.graphics.width > SCREEN_WIDTH) Texture(ScreenUtils.getFrameBufferPixmap(100, 0, SCREEN_WIDTH.toInt(), SCREEN_HEIGHT.toInt()))
+                else Texture(ScreenUtils.getFrameBufferPixmap(0, 0, SCREEN_WIDTH.toInt(), SCREEN_HEIGHT.toInt()))
                 gameOverTime.reset()
             }
         } else {
@@ -140,7 +141,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 countdown.reset()
             }
         } else if (count == -1) {
-            //bgm.play()
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
