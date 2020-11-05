@@ -23,7 +23,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
         viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
         viewport.setScreenPosition(0, 0)
         bg.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
-        bgm.play()
+        //bgm.play()
     }
 
     override fun render(delta: Float) {
