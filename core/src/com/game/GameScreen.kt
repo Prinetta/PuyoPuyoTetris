@@ -19,6 +19,7 @@ const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var gameOver = false
+    private var hasStarted = false
 
     private var gameOverTime = Time(300)
 
@@ -144,9 +145,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
-            bgm.volume = 0.4f
-            bgm.isLooping = true
-            bgm.play()
+            if(!hasStarted){
+                bgm.volume = 0.4f
+                bgm.isLooping = true
+                bgm.play()
+                hasStarted = true
+            }
         }
     }
 
