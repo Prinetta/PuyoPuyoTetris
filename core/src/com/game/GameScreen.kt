@@ -19,7 +19,6 @@ const val SCREEN_HEIGHT = 1040f
 
 class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var gameOver = false
-    private var hasStarted = false
 
     private var gameOverTime = Time(300)
 
@@ -35,7 +34,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var viewport : FitViewport
     private val scoreFont = game.generateScoreFont(50)
     private val background = Texture(Gdx.files.internal("animations/bg/frame (1).gif"))
-    private val bgm = Gdx.audio.newMusic(Gdx.files.internal("music/wood.mp3"));
 
     // Tetris
     private val nextFont = game.generateTetrisNextFont(25)
@@ -70,7 +68,9 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             game.batch.end()
 
             /// Puyo Controller
-            puyoController.readInput()
+            if(count < 0){
+                puyoController.readInput()
+            }
             puyoController.mainLoop()
 
             /// Tetris Controller
@@ -125,7 +125,6 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawCountDown(){
-        //count = -1
         if(count >= 0) {
             if(count == 0){
                 game.batch.draw(SpriteArea.gameSprites["cd-start"], SCREEN_WIDTH/2-458/2, SCREEN_HEIGHT/2, 458f, 127f)
@@ -145,11 +144,10 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             puyoController.hasStarted = true
             tetrisGame.hasStarted = true
             count--
-            if(!hasStarted){
-                bgm.volume = 0.4f
-                bgm.isLooping = true
-                bgm.play()
-                hasStarted = true
+            if(!game.bgm.isPlaying){
+                game.bgm.volume = 0.4f
+                game.bgm.isLooping = true
+                game.bgm.play()
             }
         }
     }

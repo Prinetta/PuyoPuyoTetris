@@ -1,8 +1,10 @@
 package com.game
 
+import com.badlogic.gdx.Audio
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -15,9 +17,12 @@ class PuyoPuyoTetris : Game() {
     lateinit var bgGif: GifAnimation
     lateinit var manager: AssetManager
 
+    lateinit var bgm: Music
+
     override fun create() {
         batch = SpriteBatch()
         manager = AssetManager()
+        bgm = Gdx.audio.newMusic(Gdx.files.internal("music/wood.mp3"))
         //menuGif = GifAnimation(this, "menu", 100, 0.075f)
         //bgGif = GifAnimation(this, "bg", 121, 0.1f)
         screen = MenuScreen(this)
