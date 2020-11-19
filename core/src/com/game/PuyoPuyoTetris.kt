@@ -16,13 +16,14 @@ class PuyoPuyoTetris : Game() {
     lateinit var menuGif: GifAnimation
     lateinit var bgGif: GifAnimation
     lateinit var manager: AssetManager
-
+    lateinit var titleBgm: Music
     lateinit var bgm: Music
 
     override fun create() {
         batch = SpriteBatch()
         manager = AssetManager()
         bgm = Gdx.audio.newMusic(Gdx.files.internal("music/wood.mp3"))
+        titleBgm = Gdx.audio.newMusic(Gdx.files.internal("music/title.mp3"))
         //menuGif = GifAnimation(this, "menu", 100, 0.075f)
         //bgGif = GifAnimation(this, "bg", 121, 0.1f)
         screen = MenuScreen(this)

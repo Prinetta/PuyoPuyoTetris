@@ -23,8 +23,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var gameOverTime = Time(300)
 
     private var screenshot: Texture? = null
-    private var winTexture = Texture("winner.png")
-    private var loseTexture = Texture("loser.png")
+    private var winTexture = SpriteArea.gameSprites["winner"]
+    private var loseTexture = SpriteArea.gameSprites["loser"]
 
     private var tetrisGame: TetrisGame = TetrisGame()
     private val puyoController = Controller()
@@ -116,6 +116,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 game.screen = GameScreen(game)
                 this.dispose()
             }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                game.screen = MenuScreen(game)
+                game.bgm.stop()
+                this.dispose()
+            }
             game.batch.begin()
             drawVictoryScreen()
             game.batch.end()
@@ -165,15 +170,15 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         if (puyoController.puyoGame.gameOver) {
             puyoTexture = loseTexture
             tetrisTexture = winTexture
-            game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 4.5f * PC.CELL_SIZE) / 2,
-                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4.5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
-            game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - 5f * PC.CELL_SIZE) / 2,
-                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
+            game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - GC.LOSE_LABEL_WIDTH) / 2,
+                    SCREEN_HEIGHT * 0.675f - GC.LOSE_LABEL_HEIGHT * process / 2, GC.LOSE_LABEL_WIDTH, GC.LOSE_LABEL_HEIGHT * process)
+            game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - GC.WIN_LABEL_WIDTH) / 2,
+                    SCREEN_HEIGHT * 0.675f - GC.WIN_LABEL_HEIGHT * process / 2, GC.WIN_LABEL_WIDTH, GC.WIN_LABEL_HEIGHT * process)
         } else {
-            game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - 5f * PC.CELL_SIZE) / 2,
-                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
-            game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - 4.5f * PC.CELL_SIZE) / 2,
-                    SCREEN_HEIGHT * 0.6f - 1.5f * PC.CELL_SIZE * process / 2, 4.5f * PC.CELL_SIZE, 1.5f * PC.CELL_SIZE * process)
+            game.batch.draw(puyoTexture, PC.GRID_START_X + (PC.GRID_WIDTH * PC.CELL_SIZE - GC.WIN_LABEL_WIDTH) / 2,
+                    SCREEN_HEIGHT * 0.675f - GC.WIN_LABEL_HEIGHT * process / 2, GC.WIN_LABEL_WIDTH, GC.WIN_LABEL_HEIGHT * process)
+            game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - GC.LOSE_LABEL_WIDTH) / 2,
+                    SCREEN_HEIGHT * 0.675f - GC.LOSE_LABEL_HEIGHT * process / 2, GC.LOSE_LABEL_WIDTH, GC.LOSE_LABEL_HEIGHT * process)
         }
     }
 

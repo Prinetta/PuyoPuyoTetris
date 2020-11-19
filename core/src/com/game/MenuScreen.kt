@@ -25,6 +25,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT)
         viewport = FitViewport(camera.viewportWidth, camera.viewportHeight, camera)
         viewport.setScreenPosition(0, 0)
+        game.titleBgm.play()
     }
     // 1200
     override fun render(delta: Float) {
@@ -50,6 +51,7 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
             frame = if(frame > 100) 0 else frame+1
 
             if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) || Gdx.input.isButtonPressed(Input.Keys.ANY_KEY)) {
+                game.titleBgm.stop()
                 game.screen = GameScreen(game)
             }
         } else {
