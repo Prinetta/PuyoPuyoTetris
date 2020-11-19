@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.Tetris.*
@@ -112,21 +113,38 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                 Sounds.lose.play()
             }
         } else {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                game.screen = GameScreen(game)
-                this.dispose()
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                game.screen = MenuScreen(game)
-                game.bgm.stop()
-                this.dispose()
-            }
+            handleInputs()
             game.batch.begin()
             drawVictoryScreen()
             game.batch.end()
         }
 
         //println(Gdx.graphics.framesPerSecond)
+    }
+
+    private fun handleInputs() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            game.screen = GameScreen(game)
+            this.dispose()
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            game.screen = MenuScreen(game)
+            game.bgm.stop()
+            this.dispose()
+        }
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            if (Gdx.input.x.toFloat() in (SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2..(SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2 + GC.OPTION_LABEL_WIDTH) {
+                // for some reason coordinates don't fully match labels
+                if (SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.46f - GC.OPTION_LABEL_HEIGHT..SCREEN_HEIGHT * 0.46f) {
+                    game.screen = GameScreen(game)
+                    this.dispose()
+                } else if (SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.335f - GC.OPTION_LABEL_HEIGHT..SCREEN_HEIGHT * 0.335f) {
+                    game.screen = MenuScreen(game)
+                    game.bgm.stop()
+                    this.dispose()
+                }
+            }
+        }
     }
 
     private fun drawCountDown(){
@@ -180,6 +198,13 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             game.batch.draw(tetrisTexture, TC.GRID_LEFT_X + (TC.GRID_WIDTH - GC.LOSE_LABEL_WIDTH) / 2,
                     SCREEN_HEIGHT * 0.675f - GC.LOSE_LABEL_HEIGHT * process / 2, GC.LOSE_LABEL_WIDTH, GC.LOSE_LABEL_HEIGHT * process)
         }
+        process = (gameOverTime.runtime() - gameOverTime.delay.toFloat()) / gameOverTime.delay.toFloat()
+        if (process < 0f) process = 0f else if (process > 1f) process = 1f
+        game.batch.draw(Texture("option.png"), (SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2,
+                SCREEN_HEIGHT * 0.425f - GC.OPTION_LABEL_HEIGHT * process / 2, GC.OPTION_LABEL_WIDTH, GC.OPTION_LABEL_HEIGHT * process)
+        game.batch.draw(Texture("option.png"), (SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2,
+                SCREEN_HEIGHT * 0.3f - GC.OPTION_LABEL_HEIGHT * process / 2, GC.OPTION_LABEL_WIDTH, GC.OPTION_LABEL_HEIGHT * process)
+        // shouldn't create a new Texture every time, gotta add labels to sprite area
     }
 
     /// Tetris Methods

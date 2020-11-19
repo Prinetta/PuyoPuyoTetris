@@ -50,7 +50,8 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
             }
             frame = if(frame > 100) 0 else frame+1
 
-            if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) || Gdx.input.isButtonPressed(Input.Keys.ANY_KEY)) {
+            // for honey Gdx.input.isButtonJustPressed(Input.Keys.ANY_KEY) worked
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                 game.titleBgm.stop()
                 game.screen = GameScreen(game)
             }
