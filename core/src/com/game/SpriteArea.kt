@@ -60,7 +60,9 @@ class SpriteArea {
                 "b2b" to guiAtlas.findRegion("backtoback"), "tspin" to guiAtlas.findRegion("tspin"),
                 "tspinmini" to guiAtlas.findRegion("tspinmini"), "tspinsingle" to guiAtlas.findRegion("tspinsingle"),
                 "tspindouble" to guiAtlas.findRegion("tspindouble"), "tspintriple" to guiAtlas.findRegion("tspintriple"),
-                "tspinsinglemini" to guiAtlas.findRegion("tspinsinglemini"))
+                "tspinsinglemini" to guiAtlas.findRegion("tspinsinglemini"),
+                "cd1" to guiAtlas.findRegion("cd1"), "cd2" to guiAtlas.findRegion("cd2"), "cd3" to guiAtlas.findRegion("cd3"),
+                "cd-start" to guiAtlas.findRegion("cdstart"))
 
 
         val puyoSprites = createPuyoSprites()

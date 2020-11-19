@@ -18,9 +18,8 @@ class PuyoPuyoTetris : Game() {
     override fun create() {
         batch = SpriteBatch()
         manager = AssetManager()
-        menuGif = GifAnimation(this, "menu", 30, 0.075f)
-        bgGif = GifAnimation(this, "bg", 121, 0.1f)
-        //screen = GameScreen(this)
+        //menuGif = GifAnimation(this, "menu", 100, 0.075f)
+        //bgGif = GifAnimation(this, "bg", 121, 0.1f)
         screen = MenuScreen(this)
     }
 

@@ -23,8 +23,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     private var gameOverTime = Time(300)
 
     private var screenshot: Texture? = null
-    var winTexture = Texture("winner.png")
-    var loseTexture = Texture("loser.png")
+    private var winTexture = Texture("winner.png")
+    private var loseTexture = Texture("loser.png")
 
     private var tetrisGame: TetrisGame = TetrisGame()
     private val puyoController = Controller()
@@ -62,8 +62,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         if (screenshot == null) {
             /// Background
             game.batch.begin()
-            game.batch.draw(game.bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-            //game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            //game.batch.draw(game.bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
             drawPuyoBgTexture()
             drawTetrisGridTexture()
             game.batch.end()
@@ -123,12 +123,12 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     }
 
     private fun drawCountDown(){
-        count = -1 // delete
+        //count = -1
         if(count >= 0) {
             if(count == 0){
-                game.batch.draw(SpriteArea.gameSprites["tcombo"], SCREEN_WIDTH/2-912/2, SCREEN_HEIGHT/2, 912f, 256f)
+                game.batch.draw(SpriteArea.gameSprites["cd-start"], SCREEN_WIDTH/2-458/2, SCREEN_HEIGHT/2, 458f, 127f)
             } else {
-                game.batch.draw(SpriteArea.gameSprites["tcombo$count"], SCREEN_WIDTH / 2 - 230 / 2, SCREEN_HEIGHT / 2, 230f, 275f)
+                game.batch.draw(SpriteArea.gameSprites["cd$count"], SCREEN_WIDTH / 2 - 123 / 2, SCREEN_HEIGHT / 2, 123f, 168f)
             }
             if (countdown.hasPassed()) {
                 count--
@@ -681,11 +681,11 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
                     frames = 0
                 }
                 game.batch.draw(SpriteArea.gameSprites["pchain"],
-                        PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 114f, 32f)
+                        PC.GRID_START_X + numX * PC.CELL_SIZE - 57, PC.GRID_START_Y - numY * PC.CELL_SIZE, 99f, 26f)
                 val chainString = chainCount.toString()
                 for(i in chainString.indices){
                     game.batch.draw(SpriteArea.gameSprites["p${chainString[i]}"],
-                    PC.GRID_START_X + numX * PC.CELL_SIZE + 57 + i*24f, PC.GRID_START_Y - numY * PC.CELL_SIZE, 26f, 30f)
+                    PC.GRID_START_X + numX * PC.CELL_SIZE + 57 + i*24f, PC.GRID_START_Y - numY * PC.CELL_SIZE, 25f, 29f)
                 }
                 frames++
             }
