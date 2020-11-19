@@ -93,7 +93,7 @@ class Controller() {
                         chainCount = 0
                         puyoGame.calculateChainScore()
                         if(puyoGame.hasReceivedGarbage() || !puyoGame.isDoneDroppingGarbage()){ // still need to test garbage placement more
-                            if(puyoGame.hasReceivedGarbage() && delay.hasPassed()){
+                            if(puyoGame.hasReceivedGarbage() && delay.hasPassed() && puyoGame.allowSpawn()){
                                 placedGarbage = puyoGame.scoring.garbageToReceive
                                 puyoGame.placeGarbage()
                                 delay.reset()

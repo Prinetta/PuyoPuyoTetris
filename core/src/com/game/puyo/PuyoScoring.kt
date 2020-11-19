@@ -27,8 +27,10 @@ class PuyoScoring(){
     }
 
     private fun calculateGarbage(chainScore : Int){
-        val nuisancePoints = chainScore / TARGET_POINTS + leftover
+        println(chainScore)
+        val nuisancePoints = (chainScore / TARGET_POINTS + leftover) * 0.4 // nerfed
         val garbageRounded = nuisancePoints.toInt()
+        println(garbageRounded)
         leftover = nuisancePoints - garbageRounded
 
         if(garbageToReceive > 0){
@@ -48,7 +50,7 @@ class PuyoScoring(){
         }
         val colorBonus = colorBonuses[chains.flatten().distinctBy { it.color }.size]?: 0
         val chainPower = chainBonuses[if(chains.size <= 24) chains.size else 24]?: 0
-        val puyoBonus = chains.fold(0){sum, chain -> sum + (puyoBonuses[chain.size]?: puyoBonuses[11]!!)}
+        val puyoBonus = chains.fold(0){sum, chain -> sum + (puyoBonuses[chain.size]?: 0)}
         return if(colorBonus + chainPower + puyoBonus == 0) 1 else colorBonus + chainPower + puyoBonus
     }
 

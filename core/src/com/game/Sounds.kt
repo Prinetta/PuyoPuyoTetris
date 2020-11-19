@@ -13,6 +13,7 @@ class Sounds {
         val garbage: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/pojama.wav"))
         val garbage2: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/pojama2.wav"))
         val start: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/start.wav"))
+        val lose: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/lose.wav"))
 
 
         val gsend1: Sound = Gdx.audio.newSound(Gdx.files.internal("sounds/gsend1.wav"))
