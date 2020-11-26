@@ -63,7 +63,9 @@ class SpriteArea {
                 "tspinsinglemini" to guiAtlas.findRegion("tspinsinglemini"),
                 "cd1" to guiAtlas.findRegion("cd1"), "cd2" to guiAtlas.findRegion("cd2"), "cd3" to guiAtlas.findRegion("cd3"),
                 "cd-start" to guiAtlas.findRegion("cdstart"), "winner" to guiAtlas.findRegion("winner"),
-                "loser" to guiAtlas.findRegion("loser"))
+                "loser" to guiAtlas.findRegion("loser"), "btt" to guiAtlas.findRegion("btt"),
+                "btt-dark" to guiAtlas.findRegion("btt-dark"), "rematch" to guiAtlas.findRegion("rematch"),
+                "rematch-dark" to guiAtlas.findRegion("rematch-dark"))
 
 
         val puyoSprites = createPuyoSprites()

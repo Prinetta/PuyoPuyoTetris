@@ -114,31 +114,20 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
             }
         } else {
             handleInputs()
-            game.batch.begin()
             drawVictoryScreen()
-            game.batch.end()
         }
 
         //println(Gdx.graphics.framesPerSecond)
     }
 
     private fun handleInputs() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            game.screen = GameScreen(game)
-            this.dispose()
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.screen = MenuScreen(game)
-            game.bgm.stop()
-            this.dispose()
-        }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            if (Gdx.input.x.toFloat() in (SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2..(SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2 + GC.OPTION_LABEL_WIDTH) {
+            if (Gdx.input.x.toFloat() in (SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2..(SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2 + GC.GAMEOVER_LABEL_WIDTH) {
                 // for some reason coordinates don't fully match labels
-                if (SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.46f - GC.OPTION_LABEL_HEIGHT..SCREEN_HEIGHT * 0.46f) {
+                if (SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.46f - GC.GAMEOVER_LABEL_HEIGHT..SCREEN_HEIGHT * 0.46f) {
                     game.screen = GameScreen(game)
                     this.dispose()
-                } else if (SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.335f - GC.OPTION_LABEL_HEIGHT..SCREEN_HEIGHT * 0.335f) {
+                } else if (SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.365f - GC.GAMEOVER_LABEL_HEIGHT..SCREEN_HEIGHT * 0.365f) {
                     game.screen = MenuScreen(game)
                     game.bgm.stop()
                     this.dispose()
@@ -178,8 +167,9 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
     // Game methods
 
     private fun drawVictoryScreen() {
+        game.batch.begin()
         var process: Float = if (!gameOverTime.hasPassed()) gameOverTime.runtime() / gameOverTime.delay.toFloat() else 1f
-        game.batch.setColor(1f - process / 2, 1 - process / 2, 1 - process / 2, 1f)
+        game.batch.setColor(1f - process / 1.75f, 1 - process / 1.75f, 1 - process / 1.75f, 1f)
         //screenshot is upside down for some reason
         game.batch.draw(screenshot, 0f, SCREEN_HEIGHT, SCREEN_WIDTH, -SCREEN_HEIGHT)
         game.batch.setColor(1f, 1f, 1f, 1f)
@@ -200,11 +190,46 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         }
         process = (gameOverTime.runtime() - gameOverTime.delay.toFloat()) / gameOverTime.delay.toFloat()
         if (process < 0f) process = 0f else if (process > 1f) process = 1f
-        game.batch.draw(Texture("option.png"), (SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2,
-                SCREEN_HEIGHT * 0.425f - GC.OPTION_LABEL_HEIGHT * process / 2, GC.OPTION_LABEL_WIDTH, GC.OPTION_LABEL_HEIGHT * process)
-        game.batch.draw(Texture("option.png"), (SCREEN_WIDTH - GC.OPTION_LABEL_WIDTH) / 2,
-                SCREEN_HEIGHT * 0.3f - GC.OPTION_LABEL_HEIGHT * process / 2, GC.OPTION_LABEL_WIDTH, GC.OPTION_LABEL_HEIGHT * process)
-        // shouldn't create a new Texture every time, gotta add labels to sprite area
+        drawGameOverButtons(process)
+    }
+
+    private fun drawGameOverButtons(process: Float) {
+        drawGameOverButtonBg(process)
+
+        var label: TextureRegion?
+        if (Gdx.input.x.toFloat() in (SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2..(SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2 + GC.GAMEOVER_LABEL_WIDTH
+                && SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.46f - GC.GAMEOVER_LABEL_HEIGHT..SCREEN_HEIGHT * 0.46f) {
+            label = SpriteArea.gameSprites["rematch"]
+        } else label = SpriteArea.gameSprites["rematch-dark"]
+        game.batch.draw(label, (SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2,
+                SCREEN_HEIGHT * 0.425f - GC.GAMEOVER_LABEL_HEIGHT * process / 2, GC.GAMEOVER_LABEL_WIDTH, GC.GAMEOVER_LABEL_HEIGHT * process)
+
+        if (Gdx.input.x.toFloat() in (SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2..(SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2 + GC.GAMEOVER_LABEL_WIDTH
+                && SCREEN_HEIGHT - Gdx.input.y.toFloat() in SCREEN_HEIGHT * 0.365f - GC.GAMEOVER_LABEL_HEIGHT..SCREEN_HEIGHT * 0.365f) {
+            label = SpriteArea.gameSprites["btt"]
+        } else label = SpriteArea.gameSprites["btt-dark"]
+        game.batch.draw(label, (SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2,
+                SCREEN_HEIGHT * 0.33f - GC.GAMEOVER_LABEL_HEIGHT * process / 2, GC.GAMEOVER_LABEL_WIDTH, GC.GAMEOVER_LABEL_HEIGHT * process)
+
+        game.batch.end()
+    }
+
+    private fun drawGameOverButtonBg(process: Float) {
+        game.batch.draw(SpriteArea.bgSprites["grid-bg"], (SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2 - 1.5f * TC.CELL_SIZE + 2f,
+                SCREEN_HEIGHT * ((0.33f + 0.425f) / 2) - 0.2f * SCREEN_HEIGHT * process / 2, GC.GAMEOVER_LABEL_WIDTH + 3f * TC.CELL_SIZE,
+                0.2f * SCREEN_HEIGHT * process)
+        game.batch.end()
+
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.setColor(1/255f, 3/255f, 7/255f, 0.5f)
+        shapeRenderer.rect((SCREEN_WIDTH - GC.GAMEOVER_LABEL_WIDTH) / 2 - TC.CELL_SIZE + 2f,
+                SCREEN_HEIGHT * ((0.33f + 0.425f) / 2) - 0.2f * SCREEN_HEIGHT * process / 2, GC.GAMEOVER_LABEL_WIDTH + 2f * TC.CELL_SIZE,
+                0.2f * SCREEN_HEIGHT * process)
+        shapeRenderer.end()
+        Gdx.gl.glDisable(GL20.GL_BLEND)
+
+        game.batch.begin()
     }
 
     /// Tetris Methods

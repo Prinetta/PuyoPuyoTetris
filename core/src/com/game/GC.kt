@@ -10,7 +10,7 @@ class GC {
         const val LOSE_LABEL_HEIGHT: Float = 2.75f * TC.CELL_SIZE
         const val LOSE_LABEL_WIDTH: Float = 3.1078f * LOSE_LABEL_HEIGHT
 
-        const val OPTION_LABEL_WIDTH: Float = 10f * TC.CELL_SIZE
-        const val OPTION_LABEL_HEIGHT: Float = OPTION_LABEL_WIDTH * 0.2f
+        const val GAMEOVER_LABEL_WIDTH: Float = 10f * TC.CELL_SIZE
+        const val GAMEOVER_LABEL_HEIGHT: Float = GAMEOVER_LABEL_WIDTH * 0.222f
     }
 }
