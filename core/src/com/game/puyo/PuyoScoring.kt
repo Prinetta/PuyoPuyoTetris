@@ -28,7 +28,7 @@ class PuyoScoring(){
 
     private fun calculateGarbage(chainScore : Int){
         println(chainScore)
-        val nuisancePoints = (chainScore / TARGET_POINTS + leftover) * 0.4 // nerfed
+        val nuisancePoints = (chainScore / TARGET_POINTS + leftover) * 0.6 // nerfed
         val garbageRounded = nuisancePoints.toInt()
         println(garbageRounded)
         leftover = nuisancePoints - garbageRounded
