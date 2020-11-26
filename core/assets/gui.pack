@@ -6,322 +6,350 @@ filter: Nearest,Nearest
 repeat: none
 backtoback
   rotate: false
-  xy: 1630, 748
+  xy: 1344, 216
   size: 231, 82
   orig: 231, 82
   offset: 0, 0
   index: -1
+btt
+  rotate: false
+  xy: 797, 462
+  size: 545, 121
+  orig: 545, 121
+  offset: 0, 0
+  index: -1
+btt-dark
+  rotate: false
+  xy: 2, 71
+  size: 545, 121
+  orig: 545, 121
+  offset: 0, 0
+  index: -1
 cd1
   rotate: false
-  xy: 797, 262
+  xy: 1344, 300
   size: 205, 283
   orig: 205, 283
   offset: 0, 0
   index: -1
 cd2
   rotate: false
-  xy: 1004, 262
+  xy: 1551, 404
   size: 205, 283
   orig: 205, 283
   offset: 0, 0
   index: -1
 cd3
   rotate: false
-  xy: 1211, 262
+  xy: 1758, 508
   size: 205, 283
   orig: 205, 283
   offset: 0, 0
   index: -1
 cdstart
   rotate: false
-  xy: 797, 811
+  xy: 797, 802
   size: 763, 211
   orig: 763, 211
   offset: 0, 0
   index: -1
 gridbg
   rotate: false
-  xy: 432, 203
+  xy: 432, 194
   size: 363, 819
   orig: 363, 819
   offset: 0, 0
   index: -1
 holdbg
   rotate: false
-  xy: 1467, 648
+  xy: 1163, 6
   size: 161, 161
   orig: 161, 161
   offset: 0, 0
   index: -1
 loading
   rotate: false
-  xy: 2, 109
+  xy: 549, 122
   size: 568, 45
   orig: 568, 45
   offset: 0, 0
   index: -1
 loadingdark
   rotate: false
-  xy: 2, 156
+  xy: 797, 169
   size: 568, 45
   orig: 568, 45
   offset: 0, 0
   index: -1
 loadingdarker
   rotate: false
-  xy: 797, 547
+  xy: 2, 24
   size: 568, 45
   orig: 568, 45
   offset: 0, 0
   index: -1
 loser
   rotate: false
-  xy: 2, 5
+  xy: 1562, 793
   size: 317, 102
   orig: 317, 102
   offset: 0, 0
   index: -1
 nextbg
   rotate: false
-  xy: 1885, 742
+  xy: 1577, 240
   size: 161, 162
   orig: 161, 162
   offset: 0, 0
   index: -1
 nextbg2
   rotate: false
-  xy: 1630, 657
+  xy: 1740, 213
   size: 113, 89
   orig: 113, 89
   offset: 0, 0
   index: -1
 p0
   rotate: false
-  xy: 1367, 556
+  xy: 1326, 131
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p1
   rotate: false
-  xy: 813, 109
+  xy: 2002, 977
   size: 31, 36
   orig: 31, 36
   offset: 0, 0
   index: -1
 p2
   rotate: false
-  xy: 2002, 986
+  xy: 1119, 131
   size: 31, 36
   orig: 31, 36
   offset: 0, 0
   index: -1
 p3
   rotate: false
-  xy: 2002, 948
+  xy: 1467, 594
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p4
   rotate: false
-  xy: 1841, 634
+  xy: 2002, 901
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p5
   rotate: false
-  xy: 1396, 556
+  xy: 1515, 651
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p6
   rotate: false
-  xy: 2002, 910
+  xy: 1881, 802
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p7
   rotate: false
-  xy: 1841, 672
+  xy: 1910, 802
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p8
   rotate: false
-  xy: 1425, 556
+  xy: 1684, 145
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 p9
   rotate: false
-  xy: 1841, 710
+  xy: 2002, 939
   size: 27, 36
   orig: 27, 36
   offset: 0, 0
   index: -1
 pchain
   rotate: false
-  xy: 858, 2
+  xy: 1855, 269
   size: 124, 33
   orig: 124, 33
   offset: 0, 0
   index: -1
 pressbutton
   rotate: false
-  xy: 797, 240
+  xy: 2, 2
   size: 350, 20
   orig: 350, 20
   offset: 0, 0
   index: -1
 puyobg
   rotate: false
-  xy: 2, 203
+  xy: 2, 194
   size: 428, 819
   orig: 428, 819
   offset: 0, 0
   index: -1
+rematch
+  rotate: false
+  xy: 797, 339
+  size: 545, 121
+  orig: 545, 121
+  offset: 0, 0
+  index: -1
+rematch-dark
+  rotate: false
+  xy: 797, 216
+  size: 545, 121
+  orig: 545, 121
+  offset: 0, 0
+  index: -1
 tcombo
   rotate: false
-  xy: 984, 3
+  xy: 1855, 235
   size: 114, 32
   orig: 114, 32
   offset: 0, 0
   index: -1
 tcombo0
   rotate: false
-  xy: 1954, 967
+  xy: 1954, 958
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo1
   rotate: false
-  xy: 1082, 183
+  xy: 1881, 840
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo2
   rotate: false
-  xy: 1745, 691
+  xy: 1954, 901
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo3
   rotate: false
-  xy: 1954, 910
+  xy: 1595, 66
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo4
   rotate: false
-  xy: 1793, 634
+  xy: 1684, 183
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo5
   rotate: false
-  xy: 1793, 691
+  xy: 1595, 9
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo6
   rotate: false
-  xy: 1467, 591
+  xy: 1929, 840
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo7
   rotate: false
-  xy: 1515, 591
+  xy: 1636, 183
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo8
   rotate: false
-  xy: 1563, 591
+  xy: 1636, 126
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tcombo9
   rotate: false
-  xy: 1745, 634
+  xy: 1467, 632
   size: 46, 55
   orig: 46, 55
   offset: 0, 0
   index: -1
 tetris
   rotate: false
-  xy: 1562, 832
+  xy: 572, 48
   size: 321, 72
   orig: 321, 72
   offset: 0, 0
   index: -1
 title
   rotate: false
-  xy: 797, 594
+  xy: 797, 585
   size: 668, 215
   orig: 668, 215
   offset: 0, 0
   index: -1
 tspin
   rotate: false
-  xy: 858, 37
+  xy: 1758, 398
   size: 242, 108
   orig: 242, 108
   offset: 0, 0
   index: -1
 tspindouble
   rotate: false
-  xy: 1149, 170
+  xy: 895, 30
   size: 266, 90
   orig: 266, 90
   offset: 0, 0
   index: -1
 tspinmini
   rotate: false
-  xy: 572, 109
+  xy: 1740, 304
   size: 239, 92
   orig: 239, 92
   offset: 0, 0
   index: -1
 tspinsingle
   rotate: false
-  xy: 589, 16
+  xy: 1326, 30
   size: 267, 91
   orig: 267, 91
   offset: 0, 0
   index: -1
 tspinsinglemini
   rotate: false
-  xy: 321, 5
+  xy: 1467, 689
   size: 266, 102
   orig: 266, 102
   offset: 0, 0
   index: -1
 tspintriple
   rotate: false
-  xy: 813, 147
+  xy: 1367, 123
   size: 267, 91
   orig: 267, 91
   offset: 0, 0
   index: -1
 winner
   rotate: false
-  xy: 1562, 906
+  xy: 1562, 897
   size: 390, 116
   orig: 390, 116
   offset: 0, 0
