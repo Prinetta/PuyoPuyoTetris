@@ -24,8 +24,8 @@ class PuyoPuyoTetris : Game() {
         manager = AssetManager()
         bgm = Gdx.audio.newMusic(Gdx.files.internal("music/wood.mp3"))
         titleBgm = Gdx.audio.newMusic(Gdx.files.internal("music/title.mp3"))
-        //menuGif = GifAnimation(this, "menu", 100, 0.075f)
-        //bgGif = GifAnimation(this, "bg", 121, 0.1f)
+        menuGif = GifAnimation(this, "menu", 100, 0.075f)
+        bgGif = GifAnimation(this, "bg", 121, 0.1f)
         screen = MenuScreen(this)
     }
 

@@ -36,15 +36,15 @@ class MenuScreen(val game: PuyoPuyoTetris) : Screen {
 
         game.batch.begin()
         if(game.manager.update()){
-            /*
+
             if(!hasLoaded){
                 game.batch.draw(TextureRegion(SpriteArea.bgSprites["loading"], 0, 0, 568, 45), (SCREEN_WIDTH-568f)/2, SCREEN_HEIGHT*0.05f)
                 game.menuGif.load()
                 game.bgGif.load()
                 hasLoaded = true
             }
-            game.batch.draw(game.menuGif.update(delta), 0f, 0f)*/
-            game.batch.draw(bg, 0f, 0f)
+            game.batch.draw(game.menuGif.update(delta), 0f, 0f)
+            //game.batch.draw(bg, 0f, 0f)
             if(frame in 0..70){
                 game.batch.draw(SpriteArea.bgSprites["press-button"], (SCREEN_WIDTH-350f)/2, SCREEN_HEIGHT*0.05f, 350f, 20f)
             }

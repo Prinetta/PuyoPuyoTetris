@@ -62,8 +62,8 @@ class GameScreen(val game: PuyoPuyoTetris) : Screen {
         if (screenshot == null) {
             /// Background
             game.batch.begin()
-            //game.batch.draw(game.bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
-            game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            game.batch.draw(game.bgGif.update(delta), 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
+            //game.batch.draw(background, 0f, 0f, SCREEN_WIDTH, SCREEN_HEIGHT)
             drawPuyoBgTexture()
             drawTetrisGridTexture()
             game.batch.end()
